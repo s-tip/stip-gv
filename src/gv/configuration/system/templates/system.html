@@ -1,0 +1,80 @@
+{% include 'header.html' %}
+<head>
+<!--  for system_configurations -->
+<link href="/static/css/profile_configuration_common.css" rel="stylesheet">
+<script type="text/javascript" src="/static/js/system_configuration.js"></script>
+</head>
+
+<body>
+{% include 'nav_header.html' %}
+<form name="modify_system" id="modify-system-form" action="/configuration/system/modify" method="POST">{% csrf_token %}
+<div class="container">
+    <br/>
+    <h1>System</h1>
+    <br/>
+    <hr/>
+    <h2>Settings</h2>
+    <div class="form-group">
+    <p id="error-msg">{{ error_msg |default:'' }}</p>
+    <p id="info-msg">{{ info_msg |default:'' }}</p>
+    </div>
+    {% if taxiis %}
+    <div class="form-group">
+        <div class="row">
+            <div class="col-xs-2">
+                Default Taxii
+            </div>
+            <div class="col-xs-4 dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                  {{ config.default_taxii.name | default:'Choose' }}
+                <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" id="modify-default-taxii">
+                	{% for taxii in taxiis %}
+                        <li><a href="#" data-value="{{taxii.name}}">{{taxii.name}}</a></li>
+                    {% endfor %}
+                </ul>
+                <input type="hidden" name="upload_default_taxii" value="{{ config.default_taxii.name | default:'' }}"/>
+            </div>
+        </div> <!-- <div class="row">-->
+    </div><!-- <div class="form-group"> -->
+    {% endif %}
+    <div class="form-group">
+        <div class="row">
+            <div class="col-xs-2">
+                Sharing Policy Specifications File Path
+            </div>
+            <div class="col-xs-4 checkbox">
+                <input id="modify-sharing-policy-specifications-file-path" type="text" name="upload_sharing_policy_specifications_file_path" class="form-control" value="{{ config.path_sharing_policy_specifications}}"/>
+            </div>
+        </div> <!-- <div class="row">-->
+    </div><!-- <div class="form-group"> -->
+    <div class="form-group">
+        <div class="row">
+            <div class="col-xs-2">
+                Bootstrap CSS Directory
+            </div>
+            <div class="col-xs-4 checkbox">
+                <input id="modify-bootstrap-css-dir" type="text" name="upload_bootstrap_css_dir" class="form-control" value="{{ config.path_bootstrap_css_dir}}"/>
+            </div>
+        </div> <!-- <div class="row">-->
+    </div><!-- <div class="form-group"> -->
+    <div class="form-group">
+        <div class="row">
+            <div class="col-xs-2">
+                RS: HOST
+            </div>
+            <div class="col-xs-4 checkbox">
+                <input id="modify-ctirs-host" type="text" name="rs_host" class="form-control" value="{{ config.ctirs_host}}"/>
+            </div>
+        </div> <!-- <div class="row">-->
+    </div><!-- <div class="form-group"> -->
+    <div class="form-group">
+        <div class="row">
+            <button type="button" id="modify-system-submit" class="btn btn-default">Modify</button>
+        </div> <!-- <div class="row">-->
+    </div><!-- <div class="form-group"> -->
+</div> <!--  <div class="container"> -->
+</form>
+</body>
+</html>

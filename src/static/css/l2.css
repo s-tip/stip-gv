@@ -1,0 +1,136 @@
+/*
+add for modal
+*/
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    /*overflow: auto;*/ /* Enable scroll if needed */
+    opacity:0.9;
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    -webkit-animation-name: fadeIn; /* Fade in the background */
+    -webkit-animation-duration: 0.4s;
+    animation-name: fadeIn;
+    animation-duration: 0.4s
+}
+
+/* Modal Content */
+.modal-content {
+    position: fixed;
+    bottom: 0;
+    background-color: #fefefe;
+    width: 100%;
+    -webkit-animation-name: slideIn;
+    -webkit-animation-duration: 0.4s;
+    animation-name: slideIn;
+    animation-duration: 0.4s
+}
+
+/* The Close Button */
+.close {
+    color: white;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-header {
+    padding: 2px 16px;
+    background-color: #5cb85c;
+    color: white;
+}
+
+.modal-body {
+    padding: 2px 16px;
+    word-break: break-all;
+}
+
+.modal-footer {
+    padding: 2px 16px;
+    background-color: #5cb85c;
+    color: white;
+}
+
+.modal-body {
+    font-size: 28px;
+    color: #000000;
+}
+
+.modal-body ::-webkit-scrollbar{
+    display: none;
+}
+
+.animation-enable-label{
+    font-weight:normal;:
+}
+
+#l2-container,#left-column-div,#right-column-div,#graph{
+padding-left: 0px;
+padding-right: 0px;
+}
+#l2-container{
+width: 100%;
+}
+
+/* for Drawer */
+.drawer--left .drawer-hamburger {
+  left: 0px;
+  top: 52px;
+}
+
+/* for DataTables */
+.table.dataTable.no-footer {
+    border-bottom:none;
+}
+
+/* for Chardin.js */
+.chardinjs-overlay{
+    opacity:0.5!important;
+}
+
+/* for progress label */
+#progress-label{
+    text-align: center;
+}
+
+#related-package-table{
+    background-color: transparent;
+}
+
+.display-limit .ui-dialog-titlebar {
+        display: none;
+}
+
+.right-justified{
+    text-align: right;
+}
+
+.select2-container--default .select2-results>.select2-results__options{
+	max-height: 500px;
+}
+
+.content-language{
+	display: none;
+}
+
+.display-content-language-href{
+	font-weight: bolder;	
+	color: #C00000;
+}
+
+.l2_stix2_span_key{
+	font-weight: bold;
+	background-color: yellow;
+}

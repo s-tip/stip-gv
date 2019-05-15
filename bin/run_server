@@ -1,0 +1,11 @@
+#!/bin/sh
+CTIM_BASE=/home/terra/ctim
+CTIM_GV_BASE=$CTIM_BASE/gv
+CTIM_GV_BIN_BASE=$CTIM_GV_BASE/bin
+CTIM_GV_SRC_BASE=$CTIM_GV_BASE/src
+IP=0.0.0.0
+PORT=10002
+export PYTHONPATH=$CTIM_GV_SRC_BASE
+export CTIM_GV_CONF_PATH=$CTIM_GV_BASE/conf/ctim_gv.conf
+
+python CTIM_GV_BIN_BASE/manage.py runserver $IP:$PORT

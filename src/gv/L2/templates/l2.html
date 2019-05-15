@@ -1,0 +1,232 @@
+{% include 'header.html' %}
+<head>
+<!--  for drawer -->
+<link href="/static/drawer/css/drawer.min.css" rel="stylesheet">
+<script type="text/javascript" src="/static/drawer/js/drawer.js"></script>
+<script type="text/javascript" src="/static/iScroll/js/iscroll.js"></script>
+<!--  for alchemy -->
+<link type="text/css" rel="stylesheet" href="/static/alchemy/alchemy.min.css">
+<link type="text/css" rel="stylesheet" href="/static/alchemy/alchemy.css">
+<script type="text/javascript" src="/static/alchemy/underscore-min.js"></script>
+<script type="text/javascript" src="/static/alchemy/lodash.min.js"></script>
+<script type="text/javascript" src="/static/alchemy/d3.v3.min.js"></script>
+<script type="text/javascript" src="/static/alchemy/alchemy.js"></script>
+<script type="text/javascript" src="/static/alchemy/alchemy_config.js"></script>
+<!--  for resize box -->
+<script type="text/javascript" src="/static/js/resize-box.js"></script>
+<!--  for DataTable -->
+<link href="/static/datatable/css/dataTables.bootstrap.min.css" rel="stylesheet">
+<script type="text/javascript" src="/static/datatable/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/datatable/js/dataTables.bootstrap.min.js"></script>
+<!--  for Chardin.js -->
+<link href="/static/chardin/css/chardinjs.css" rel="stylesheet" />
+<script type="text/javascript" src="/static/chardin/js/chardinjs.min.js"></script>
+<!--  for bootstrap-switch -->
+<link href="/static/bootstrap/css/bootstrap-switch.min.css" rel="stylesheet">
+<script type="text/javascript" src="/static/bootstrap/js/bootstrap-switch.min.js"></script>
+<!--  for select2 -->
+<link href="/static/select2/css/select2.min.css" rel="stylesheet">
+<script type="text/javascript" src="/static/select2/js/select2.min.js"></script>
+<!--  for l2 -->
+<script type="text/javascript" src="/static/js/l2.js"></script>
+<link href="/static/css/l2.css" rel="stylesheet">
+</head>
+<body class="drawer drawer--left">
+{% include 'nav_header.html' %}
+<main role="main">
+<form name="l2" id="l2" action="/L2" method="get">{% csrf_token %}
+<div class="container-fluid" id='l2-container'style="width:100%;">
+    <div class="col-lg-12" id="left-column-div">
+        <div class="col-xl-12 col-lg-12 col-md-12  col-sm-12 col-xs-12" id="graph">
+            <div id="alchemy" class="alchemy"></div>
+        </div> <!--  <div class="col-lg-12" id="graph"> -->
+        <div class="col-lg-12">
+            <div id="l2-description-modal" class="modal">
+                <div class="modal-content" id="l2-modal-content">
+                    <div class="modal-header">
+                        <span class="close" id="l2-description-modal-close">×</span>
+                        <h2 id="l2-title">title</h2>
+                        <h4 id="l2-language-options">language-options</h4>
+                    </div>
+                    <div id="modal_body" class="modal-body">
+                        <p id="l2-value"></p>
+                        <p id="l2-description"></p>
+                    </div>
+                </div>
+            </div>
+        </div> <!--  <div class="col-lg-12" id="graph"> -->
+    </div><!--  <div class="col-lg-12"> -->
+</div> <!--  <div class="container"> -->
+</form>
+</main>
+
+<div id="l2-progress-dialog" title="Progress..." style="align:center;">
+    <div id="progress-label"></div>
+</div>
+
+<div id="l2-tutorial-dialog" title="L2 Graph View help" style="align:center;display: none;">
+    <table>
+    <tr>
+    <td>
+        <img src="/static/image/l2_sample.jpg" width="432px" height="514px"/>
+    </td>
+    <td valign="top">
+    <div>
+        大きい紺色のノードがキャンペーン<br/>
+        中くらいのノードが属性を取りまとめるノード<br/>
+        小さいノードが各情報を表すノード<br/>
+        ノードを結ぶ太い赤い線がノードの情報が一致した関係性を表す。
+        <br/>
+        <hr/>
+        ちなみにこのダイアログはEscキーでも消えます。
+        <br/>
+        <hr/>
+        あと、ドラッグで移動、サイズ拡大もできます。
+        画像と文言は適時差し替え可能です。
+    </div>
+    </td>
+    </tr>
+    </table>
+</div>
+
+<div id="l2-display-limit" style="align:center;display: none;">
+    <br>
+    Too many nodes. Would you like to thin out?
+    <br>
+    <br>
+</div>
+
+<!-- slider menu -->
+<header role="banner">
+    <button type="button" class="drawer-toggle drawer-hamburger" id="drawer-hamburger">
+        <span class="sr-only">toggle navigation</span>
+        <span class="drawer-hamburger-icon"></span>
+    </button>
+
+    <nav class="drawer-nav" id="drawer-nav" role="navigation">
+        <input id="toggle-switch-drawer-option" type="checkbox" data-label-text="Option"/>
+        <div class="col-lg-12">
+            <div id="drawer-option">
+                <div style="margin-left:auto;width:14px" data-intro="このヘルプを表示する" data-position="right">
+                    <span class="glyphicon glyphicon-question-sign slide-menu-help"></span>
+                </div>
+                <div class="dropdown" data-intro="ノードの色分け基準を指定" data-position="right">
+                    Choose view mode:
+                    <br/>
+                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                    Normal View
+                    <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" id="l2-dropdown-choose-view-mode">
+                            <li><a href="#" data-value="normal">Normal View</a></li>
+                            <li><a href="#" data-value="cluster">Cluster View</a></li>
+                    </ul>
+                    <input type="hidden" name="view_mode" value="normal"/>
+                </div><!--  <div class="dropdown">-->
+                <br/>
+                <div data-intro="ノードアニメーション演出有効" data-position="right">
+                    <input type="checkbox" id="enable-animation-checkbox"/>Enable Animation
+                </div>
+                <br/>
+                <div data-intro="ノードのラベル表示有効" data-position="right">
+                    <input type="checkbox" id="enable-label-show" checked/>Show Label
+                </div>
+                <br/>
+                <div data-intro="描画エリアの背景色" data-position="right">
+                    Background Color:
+                    <input type="text" id="alchemy-background-color-text" value="#fffff0"/>
+                </div>
+                <br/>
+                <div data-intro="再描画ボタン" data-position="right">
+                    <button class="btn btn-default" type="button" id='l2-redraw-button'>
+                    Redraw
+                    </button>
+                </div>
+                <br/>
+                <br/>
+                <div data-intro="IPv4の類似度のカウント表示有効" data-position="right">
+                    <input type="checkbox" id="include-ipv4-similarity"/>Include IPv4 Similarity
+                </div>
+                <br/>
+                <div data-intro="Domainの類似度のカウント表示有効" data-position="right">
+                 <input type="checkbox" id="include-domain-similarity"/>Include Domain Similarity
+                </div>
+
+                <hr/>
+            </div><!-- <div class="drawer-option"> -->
+            <div style="margin-left:auto;width:14px" data-intro="L2ビューの説明" data-position="right">
+                <span class="glyphicon glyphicon-question-sign l2-turorial-dialog-help" ></span>
+            </div>
+            <div class="dropdown">
+                {% if packages %}
+                    Choose CTI ({{packages|length}})
+
+                <br/>
+                <div data-intro="比較対象パッケージを選択" data-position="right">
+                        <input type="hidden" name="base_package" value=""/>
+                        <select id="l2-dropdown-menu-base-package-single" class="form-control" name="state">
+                            <option value=""></option>
+                            {% for package in packages %}
+                                <option value="{{package.package_id}}">{{package.package_name}}</option>
+                            {% endfor %}
+                        </select>
+
+                {% endif %}
+                </div> <!-- <div data-intro> -->
+            </div><!--  <div class="dropdown">-->
+            <br/>
+            Related CTI:
+            <div data-intro="比較対象キャンペーンと関係性があるキャンペーンの一覧を表示" data-position="right">
+                <table class="row-border" cellspacing="0" id="related-package-table">
+                    <thead>
+                    <tr>
+                        <th>Show</th>
+                        <th>Package</th>
+                        <th>Count</th>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Show</th>
+                        <th>Package</th>
+                        <th>Count</th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    </tbody>
+                </table>
+                <table class="row-border" cellspacing="0" id="related-package-similar-table">
+                    <thead>
+                    <tr>
+                        <th rowspan="2">Show</th>
+                        <th rowspan="2">Package</th>
+                        <th colspan="2">Count</th>
+                    </tr>
+                    <tr>
+                        <th>Exact</th>
+                        <th>Similar</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Show</th>
+                        <th>Package</th>
+                        <th>Exact</th>
+                        <th>Similar</th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    </tbody>
+                </table>
+                <br/>
+                <span id="related-package-phrase"></span>
+            <div><!-- <div data-intro> -->
+        </div><!--  <div class="col-lg-12"> -->
+    </nav>
+</header>
+<form name="url_param_form">
+    <input type="hidden" id="package_id" value="{{ package_id }}">
+    <input type="hidden" id="ipv4" value="{{ ipv4 }}">
+    <input type="hidden" id="domain" value="{{ domain }}">
+</form>
+</body>
+</html>

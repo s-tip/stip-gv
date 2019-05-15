@@ -1,0 +1,9 @@
+[
+  {
+    "model": "ctirs.taxii",
+    "fields": {
+      "name": "dummy"
+    }
+  }
+]
+                                  

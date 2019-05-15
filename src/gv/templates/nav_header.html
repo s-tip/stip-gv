@@ -1,0 +1,82 @@
+<!--  for nav_header -->
+<head>
+<script type="text/javascript" src="/static/js/nav_header.js"></script>
+<link href="/static/css/nav_header.css" rel="stylesheet">
+</head>
+<nav class="navbar navbar-default" id="navbar">
+    <div class="container-fluid">
+        <div class="nav-header">
+            <a class="navbar-brand" href="#">S-TIP{% if git_version %} <font style="font-size:8px;">({{git_version}})</font>{% endif %}</a>
+
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#top-nav">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="collapse navbar-collapse" id="top-nav">
+            <ul class="nav navbar-nav">
+                <li><a href="/dashboard">Dashboard</a></li>
+                {% if stip_user.gv_auth_user.is_l1_view %}
+                <li><a href="/L1">List</a></li>
+                {% endif %}
+                {% if stip_user.gv_auth_user.is_l2_view %}
+                <li><a href="/L2">Graph</a></li>
+                {% endif %}
+                {% if stip_user.gv_auth_user.is_sharing_view %}
+                <li><a href="/sharing">Sharing</a></li>
+                {% endif %}
+				<li class="dropdown">
+					<a href="#" id="navbar-configuration" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Configuration <span class="caret"></span></a>
+					<ul class="dropdown-menu">
+				        {% if stip_user.is_admin %}
+						<li><a href="/configuration/user">User</a></li>
+						<li><a href="/configuration/taxii">TAXII</a></li>
+						<li><a href="/configuration/system">System</a></li>
+						{% endif %}
+						<li><a href="/configuration/alias">Alias</a></li>
+					</ul>
+				</li>
+
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-center">
+              <li><a href="/profile/">
+                Hello,&nbsp;
+                {% if stip_user %}
+                    {% if stip_user.screen_name %}
+                        {{ stip_user.screen_name }}
+                    {% else %}
+                        {{ stip_user }}
+                    {% endif %}
+                {% else %}
+                    Anonymous
+                {% endif %}
+                &nbsp;(Last login: {{stip_user.last_login|default:"First Login"}})
+                </a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <div class="dropdown">
+                  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                  {% if user.css_thema %}
+                  {{ user.css_thema }}
+                  {% else %}
+                  default
+                  {% endif %}
+                  <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu" id="nav-header-dropdown-css-thema">
+                          {% if css_themas %}
+                          {% for css_thema in css_themas %}
+                          <li><a href="#" data-value="{{css_thema}}">{{css_thema}}</a></li>
+                          {% endfor %}
+                          {% endif  %}
+                  </ul>
+                  <form name="change_css_thema" id="change-css-thema-from" action="/css/change" method="get">{% csrf_token %}
+                  <input type="hidden" name="css_thema"/>
+                  </form>
+              </div><!--  <div class="dropdown navbar-right">-->
+            </ul>
+        </div> <!-- <div class="collapse navbar-collapse">-->
+    </div><!--  <div class="container-fluid"> -->
+</nav>

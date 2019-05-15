@@ -1,0 +1,192 @@
+{% include 'header.html' %}
+<head>
+<!--  for taxii_configurations -->
+<link href="/static/css/profile_configuration_common.css" rel="stylesheet">
+<script type="text/javascript" src="/static/js/taxii_configuration.js"></script>
+</head>
+
+<body>
+{% include 'nav_header.html' %}
+<form name="delete_taxii" id="delete-taxii-form" action="/configuration/taxii/delete_taxii" method="GET"></form>
+<form name="create_taxii" id="create-taxii-form" action="/configuration/taxii/create_taxii" method="POST">{% csrf_token %}
+<div class="container">
+    <br/>
+    <h1>TAXII</h1>
+    <br/>
+    <hr/>
+    <h2>Create or Modify TAXII Setting</h2>
+    <div class="form-group">
+    <p id="error-msg">{{ error_msg |default:'' }}</p>
+    <p id="info-msg">{{ info_msg |default:'' }}</p>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-xs-2">
+                Display Name
+            </div>
+            <div class="col-xs-4">
+                <input id="create-display-name" type="text" name="display_name" class="form-control"/>
+            </div>
+        </div> <!-- <div class="row">-->
+    </div><!-- <div class="form-group"> -->
+    <div class="form-group">
+        <div class="row">
+            <div class="col-xs-2">
+                Address
+            </div>
+            <div class="col-xs-4">
+                <input id="create-address" type="text" name="address" class="form-control"/>
+            </div>
+        </div> <!-- <div class="row">-->
+    </div><!-- <div class="form-group"> -->
+    <div class="form-group">
+        <div class="row">
+            <div class="col-xs-2">
+                Port
+            </div>
+            <div class="col-xs-4">
+                <input id="create-port" type="text" name="port" class="form-control"/>
+            </div>
+        </div> <!-- <div class="row">-->
+    </div><!-- <div class="form-group"> -->
+    <div class="form-group">
+        <div class="row">
+            <div class="col-xs-2">
+                Path
+            </div>
+            <div class="col-xs-4">
+                <input id="create-path" type="text" name="path" class="form-control"/>
+            </div>
+        </div> <!-- <div class="row">-->
+    </div><!-- <div class="form-group"> -->
+    <div class="form-group">
+        <div class="row">
+            <div class="col-xs-2">
+                Collection
+            </div>
+            <div class="col-xs-4">
+                <input id="create-collection" type="text" name="collection" class="form-control"/>
+            </div>
+        </div> <!-- <div class="row">-->
+    </div><!-- <div class="form-group"> -->
+    <div class="form-group">
+        <div class="row">
+            <div class="col-xs-2">
+                Login ID
+            </div>
+            <div class="col-xs-4">
+                <input id="create-login-id" type="text" name="login_id" class="form-control"/>
+            </div>
+        </div> <!-- <div class="row">-->
+    </div><!-- <div class="form-group"> -->
+    <div class="form-group">
+        <div class="row">
+            <div class="col-xs-2">
+                Login Password
+            </div>
+            <div class="col-xs-4">
+                <input id="create-login-password" type="password" name="login_password" class="form-control"/>
+            </div>
+        </div> <!-- <div class="row">-->
+    </div><!-- <div class="form-group"> -->
+    <div class="form-group">
+        <div class="row">
+            <div class="col-xs-2">
+                Use SSL
+            </div>
+            <div class="col-xs-4 checkbox">
+                <input id="create-ssl" type="checkbox" name="ssl"/>
+            </div>
+        </div> <!-- <div class="row">-->
+    </div><!-- <div class="form-group"> -->
+    <br/>
+    <div class="form-group">
+        <div class="row">
+            <button type="button" id="create-taxii-submit" class="btn btn-default">Create Or Modify</button>
+        </div> <!-- <div class="row">-->
+    </div><!-- <div class="form-group"> -->
+    <hr/>
+    <h2>TAXII Configuration</h2>
+    {% if taxiis %}
+    <table class="table table-striped table-hover" style="table-layout: fixed;">
+    <thead>
+    <tr>
+    <td>
+        Delete
+    </td>
+    <td>
+        Modify
+    </td>
+    <td>
+        Display Name
+    </td>
+    <td>
+        Address
+    </td>
+    <td>
+        Port
+    </td>
+    <td>
+        Path
+    </td>
+    <td>
+        Collection
+    </td>
+    <td>
+        Login ID
+    </td>
+    <td>
+        Login Password
+    </td>
+    <td>
+        Use SSL
+    </td>
+    </tr>
+    </thead>
+    <tbody>
+    {% for taxii in taxiis %}
+    <tr class="configure-tr">
+    <td>
+        <div class="form-group">
+            <button class="btn btn-default delete-taxii-button btn-sm" type="button" display_name="{{ taxii.name }}" >Delete</button>
+        </div><!-- <div class="form-group"> -->
+    </td>
+    <td>
+        <div class="form-group">
+            <button class="btn btn-default modify-taxii-button btn-sm" type="button" display_name="{{ taxii.name }}" >Modify</button>
+        </div><!-- <div class="form-group"> -->
+    </td>
+    <td>
+        <p class="display-name">{{ taxii.name }}</p>
+    </td>
+    <td>
+        <p class="address">{{ taxii.address }}</p>
+    </td>
+    <td>
+        <p class="port">{{ taxii.port }}</p>
+    </td>
+    <td>
+        <p class="path">{{ taxii.path }}</p>
+    </td>
+    <td>
+        <p class="collection">{{ taxii.collection }}</p>
+    </td>
+    <td>
+        <p class="login-id">{{ taxii.login_id }}</p>
+    </td>
+    <td>
+        <p class="login-password">xxx</p>
+    </td>
+    <td>
+        <input type="checkbox" disabled {% if taxii.ssl %}checked{% endif %} class='ssl'/> 
+    </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    {% endif %}
+    </table>
+    <hr/>
+</div> <!--  <div class="container"> -->
+</form>
+</body>
+</html>

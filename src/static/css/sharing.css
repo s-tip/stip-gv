@@ -1,0 +1,52 @@
+h1,h2{
+    font-family: 'Roboto', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+h1{
+    text-align: center;
+}
+.GateKeeper-On
+{
+    background-color: #A0A0A0 !important;
+    color: #FF0000 !important;
+}
+
+.GateKeeper-Off
+{
+    background-color: #FFFFFF;
+    color: #000000;
+}
+#raw-stix-view-textarea{
+    width:100%;
+}
+.vendor-source-div{
+    display: none;
+}
+
+#taxii-file-icon {
+    position: absolute;
+    top:58px;
+    font-size:32px;
+    color: #F7D358;
+}
+
+#globe-icon {
+    position: absolute;
+    left: 540px;
+    top: 50px;
+    font-size: 48px;
+    color: #2E2EFE;
+    z-index:-1;
+}
+.stix-comment-dialog{
+    word-break: break-all;
+}
+.draw-package{
+	word-break:break-all;
+}
+.csv-download-td,.file-delete-td{
+    text-align: center;
+}
+.package-name-td{
+	word-wrap:break-all;
+}

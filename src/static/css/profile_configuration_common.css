@@ -1,0 +1,23 @@
+h1,h2{
+    font-family: 'Roboto', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1{
+    text-align: center;
+}
+
+#error-msg,#info-msg,#error-change-password-msg,#info-change-password-msg,#error-change-screen-msg,#info-change-screen-msg{
+    font-family: 'Roboto', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-size: large;
+    color: #ff0000;
+}
+
+#error-msg,#error-change-password-msg,#error-change-screen-msg{
+    color: #ff0000;
+}
+
+#info-msg,#info-change-password-msg,#info-change-screen-msg{
+    color: #0000ff;
+}

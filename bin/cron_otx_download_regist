@@ -1,0 +1,31 @@
+#!/bin/sh
+###############################
+#cron_otx_download_regist
+#AlienVault OTX Download/regist
+###############################
+
+export PYTHONPATH=$PYTHONPATH:/home/terra/ctim/gv/src
+CTIM_ROOT=/home/terra/ctim/gv
+APIKEY=22a6463b5c006c4177cbef37899b3af9abb3ce7c915b0dc46067b29331ca8165
+DOWNLOAD_STIX_DIR_ROOT=$CTIM_ROOT/otx_stix
+BIN_DIR=$CTIM_ROOT/bin
+LAST_OTX_REQUIRED_PATH=$BIN_DIR/last_otx_required
+OTX_DOWNLOADER_SCRIPT_PATH=$BIN_DIR/otx_downloader.py
+REGIST_SCRIPT_PATH=$BIN_DIR/regist.py
+UPLOADER=system
+VENDOR_SOURCE='AlienVault OTX'
+
+#最終要求時間取得
+LAST_OTX_REQUIRED=`cat $LAST_OTX_REQUIRED_PATH`
+
+#STIX格納dir作成
+STIX_DIR_PATH=$DOWNLOAD_STIX_DIR_ROOT/$LAST_OTX_REQUIRED
+mkdir $STIX_DIR_PATH > /dev/null 2>&1
+
+#OTXから取得/最終更新時間更新
+python $OTX_DOWNLOADER_SCRIPT_PATH $APIKEY $STIX_DIR_PATH -mt $LAST_OTX_REQUIRED > $LAST_OTX_REQUIRED_PATH
+
+#CTIM GraphViewに登録
+python $REGIST_SCRIPT_PATH $STIX_DIR_PATH $UPLOADER "$VENDOR_SOURCE"
+
+

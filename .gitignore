@@ -1,0 +1,7 @@
+stix
+json
+db.sqlite3*
+*.pyc
+.pydevproject
+/otx_stix/
+/staticfiles/

@@ -1,0 +1,69 @@
+{% include 'header.html' %}
+<head>
+<!--  for Toastr -->
+<link href="/static/toastr/css/toastr.min.css" rel="stylesheet">
+<script type="text/javascript" src="/static/toastr/js/toastr.min.js"></script>
+<!--  for user_configurations -->
+<link href="/static/css/profile_configuration_common.css" rel="stylesheet">
+<script type="text/javascript" src="/static/js/user_configuration.js"></script>
+</head>
+
+<body>
+{% include 'nav_header.html' %}
+<form name="delete_user" id="delete-user-form" action="/configuration/user/delete_user" method="GET"></form>
+<form name="create_user" id="create-user-form" action="/configuration/user/create_user" method="POST">{% csrf_token %}
+<div class="container">
+    <br/>
+    <h1>User</h1>
+    <br/>
+    <hr/>
+    <h2>User Configuration</h2>
+    {% if gv_users %}
+    <table class="table table-striped table-hover" style="table-layout: fixed;">
+    <thead>
+    <tr>
+    <td>
+        Username
+    </td>
+    <td>
+        Screen Name
+    </td>
+    <td>
+        L1
+    </td>
+    <td>
+        L2
+    </td>
+    <td>
+        Sharing
+    </td>
+    </tr>
+    </thead>
+    <tbody>
+    {% for stip_user in gv_users %}
+    <tr>
+    <td>
+        {{ stip_user }}
+    </td>
+    <td>
+        {{ stip_user.screen_name }}
+    </td>
+    <td>
+        <input class="change-auth" type="checkbox" username="{{ stip_user }}" config_name="is_l1_view" {% if stip_user.gv_auth_user.is_l1_view %}checked{% endif %} {% if stip_user.is_superuser %}disabled{% endif %}>
+    </td>
+    <td>
+        <input class="change-auth" type="checkbox" username="{{ stip_user }}" config_name="is_l2_view" {% if stip_user.gv_auth_user.is_l2_view %}checked{% endif %} {% if stip_user.is_superuser %}disabled{% endif %}>
+    </td>
+    <td>
+        <input class="change-auth" type="checkbox" username="{{ stip_user }}" config_name="is_sharing_view" {% if stip_user.gv_auth_user.is_sharing_view %}checked{% endif %} {% if stip_user.is_superuser %}disabled{% endif %}>
+    </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    {% endif %}
+    </table>
+    <hr/>
+</div> <!--  <div class="container"> -->
+</form>
+</body>
+</html>

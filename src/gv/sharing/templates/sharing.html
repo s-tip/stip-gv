@@ -1,0 +1,254 @@
+{%include "header.html"%}
+<head>
+<!--  for jstree -->
+<link href="/static/jstree/themes/default/style.min.css" rel="stylesheet">
+<script type="text/javascript" src="/static/jstree/jstree.js"></script>
+<!--  for DataTable -->
+<link href="/static/datatable/css/dataTables.bootstrap.min.css" rel="stylesheet">
+<script type="text/javascript" src="/static/datatable/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/static/datatable/js/dataTables.bootstrap.min.js"></script>
+<!--  for Toastr -->
+<link href="/static/toastr/css/toastr.min.css" rel="stylesheet">
+<script type="text/javascript" src="/static/toastr/js/toastr.min.js"></script>
+<!--  for sharing -->
+<link href="/static/css/sharing.css" rel="stylesheet">
+<script type="text/javascript" src="/static/js/sharing.js"></script>
+<script type="text/javascript" src="/static/js/sharing_tree.js"></script>
+</head>
+
+<body>
+{%include "nav_header.html"%}
+<br/>
+<div class="container">
+    <form name="stix_download" id="stix-download-from" action="/sharing/stix_download" method="POST" enctype="multipart/form-data">{% csrf_token %}</form>
+    <form name="stix_data_csv_download" id="csv-download-form" action="/sharing/stix_data_csv_download" method="POST">{% csrf_token %}</form>
+    <form name="draw_package_form" id="draw-package-form" action="/L2" method="GET"></form>
+    <form name="stix_upload" id="stix-upload-form" action="/sharing/stix_upload" method="POST" enctype="multipart/form-data">{% csrf_token %}
+        <div id="upload-form">
+
+        <div class="row">
+            <div class="col-lg-12">
+                <h1>Upload</h1>
+            </div> <!-- <div class="col-lg-12"> -->
+        </div> <!-- <div class="row"> -->
+
+        <div class="row">
+            <div class="col-lg-12">
+            <br/>
+            </div> <!-- <div class="col-lg-12"> -->
+        </div> <!-- <div class="row"> -->
+
+        <div class="row">
+                <input id="stix-file-file" type="file" name="stix" style="display:none">
+            <div class="col-lg-1">
+                <span>File</span>
+            </div> <!-- <div class="col-lg-1"> -->
+            <div class="col-lg-4">
+                <input type="text" id="stix-file-text" class="form-control" placeholder="Choose STIX File..." disabled>
+            </div> <!-- <div class="col-lg-4"> -->
+            <div class="col-lg-1">
+                <span class="input-group-btn">
+                    <button type="button" id="stix-file-button" class="btn btn-default">Browse</button>
+                </span>
+            </div> <!-- <div class="col-lg-1"> -->
+        </div> <!-- <div class="row"> -->
+
+        <div class="row">
+            <div class="col-lg-12">
+            <br/>
+            </div> <!-- <div class="col-lg-12"> -->
+        </div> <!-- <div class="row"> -->
+
+        <div class="row">
+            <div class="col-lg-1">
+                <span>Package Name</span>
+            </div> <!-- <div class="col-lg-1"> -->
+            <div class="col-lg-4">
+                <input id="upload-package-name" type="text" name="upload_package_name" class="form-control" placeholder="(Option) Enter a Package Name..."/>
+            </div> <!-- <div class="col-lg-4"> -->
+        </div> <!-- <div class="row"> -->
+
+        <div class="row">
+            <div class="col-lg-12">
+            <br/>
+            </div> <!-- <div class="col-lg-12"> -->
+        </div> <!-- <div class="row"> -->
+ 
+        <div class="row">
+			<div class="col-lg-1">
+                <span>Vendor</span>
+            </div> <!-- <div class="col-lg-1"> -->
+            <div class="col-lg-4">
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                    	Choose Vendor Source
+                    <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" id="sharing-vendor-type">
+                        {% if rs_communities %}
+                        {% for rs_community in rs_communities %}
+                        <li><a data-value="{{rs_community.id}}">{{rs_community.name}}</a></li>
+                        {% endfor %}
+                        {% endif %}
+                        <input id="upload-vendor-id" type="hidden" name="upload_vendor_id"/>
+                        <input id="upload-vendor-name" type="hidden" name="upload_vendor_name"/>
+                    </ul>
+                    <br/>
+                    <br/>
+                </div> <!--  <div class="dropdown">-->
+            </div> <!--  <div class="col-lg-4"> -->
+        </div> <!-- <div class="row"> -->
+
+       <div class="row">
+            <div class="col-lg-12">
+            <br/>
+            </div> <!-- <div class="col-lg-12"> -->
+        </div> <!-- <div class="row"> -->
+
+        <div class="row">
+            <div class="col-lg-1">
+                <button type="button" id="stix-file-upload-button" class="btn btn-default">Upload</button>
+            </div> <!-- <div class="col-lg-1"> -->
+        </div> <!-- <div class="row"> -->
+
+        <div class="row">
+            <div class="col-lg-12">
+                  <hr/>
+            </div> <!-- <div class="col-lg-12"> -->
+        </div> <!-- <div class="row"> -->
+
+        </div> <!-- <div id="upload-form"> -->
+    </form> <!-- <form name="stix-upload-from" -->
+
+    <h1>Packages</h1>
+    <div class="col-lg-12">
+    <form name="delete_package_form" id="delete-package-form" action="/sharing/delete_package" method="GET"></form>
+        <table class="table table-striped table-hover" id="package-table" style="table-layout: fixed;">
+        <thead>
+        <tr>
+            <th>
+    			<a><span class="glyphicon glyphicon-trash" id="delete-icon" title="Delete"></span></a> 
+	    		<a><span class="glyphicon glyphicon-check" id="select-all-icon" title="Select All"></span> </a>
+		    	<a><span class="glyphicon glyphicon-unchecked" id="deselect-all-icon" title="Deselect All"></span></a> 
+            </th>
+            <th>
+                Comment
+            </th>
+            <th>
+                CSV
+            </th>
+            <th>
+                Package Name
+            </th>
+            <th>
+                Vendor Source
+            </th>
+            {% for community in communities %}
+            <th>
+                {{ community }}
+            </th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        </table>
+    </div> <!--  <div class="col-lg-12"> -->
+
+    <!--  Comment-dialog -->
+    <div id="comment-dialog" title="STIX_Comment" style="align:center;display: none;">
+        <textarea id="comment" name="comment" rows="16" cols="64" maxlength="10240"></textarea>
+    </div>
+
+	<div id="send-taxii-animate-dialog" title="Sending..." style="align:center;display: none;" demo="{% if demo %}true{% else %}false{% endif %}">
+		<table>
+		<tr>
+			<td>
+		        <div id="taxii-file-icon"><span class="glyphicon glyphicon-file" ></span></div>
+		    </td>
+		    <td>
+		        <div id="globe-icon"><span class="glyphicon glyphicon-globe" ></span></div>
+		    </td>
+		</tr>
+        </table>
+		<div id="send-taxii-message-div" style="position:relative;top:100px">
+			<span id="send-taxii-message-span"></span>
+		</div>
+	</div>
+
+	<div id="send-taxii-confirm-dialog" title="Choose TAXII Server" style="align:center;display: none;">
+        {% if taxiis %}
+            <div class="dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                {{ config.default_taxii.name | default:'Choose Taxii' }}
+                <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" id="dropdown-choose-taxii">
+                	{% for taxii in taxiis %}
+                        <li><a href="#" data-value="{{taxii.name}}">{{taxii.name}}</a></li>
+                	{% endfor %}
+                </ul>
+                <input type="hidden"  id="hidden-taxii-name" name="taxii_name" value="{{ config.default_taxii.name | default:'' }}"/>
+            </div>
+        {% else %}
+        No TAXII Configuration.
+        {% endif %}
+	</div>
+
+    <div class="col-lg-12" id="tree-div">
+
+        <input type="button" class="btn btn-default stix-back-button" value="Back"/>
+        <input type="button" class="btn btn-default btn stix-download-button" value="Download"/>
+        <input type="button" class="btn btn-default btn stix-send-taxii-button" value="Send TAXII"/>
+        <input type="button" class="btn btn-default btn stix-view-button" value="View Raw STIX"/>
+        <br/><br/>
+        <label class="tree-div-label"></label>
+        <br/><br/>
+        Redaction String:&nbsp;<input type="text" class="form-conrol" name="redacton-string" id="redacton-string"/>
+        <input type="button" class="btn btn-sm redact-button" id="redact-btn" value="Redact"/>
+    </div>
+
+    <div class="col-lg-12">
+    <br/>
+    </div>
+
+    <div class="col-lg-12" id="jstree"></div>
+    <div class="col-lg-12" id="raw-stix-view-div">
+        <input type="button" class="btn btn-default raw-stix-view-back-button" value="back"/>
+        <input type="hidden"  id="hidden-tree-display-stix-version"  value=""/>
+        <br/><br/>
+        <textarea id="raw-stix-view-textarea" resize="none" rows="30" readonly></textarea>
+    </div>
+    
+    <div id="language-content-input-dialog" style="display:none">
+    <p>Fill a translate message</p><br/>
+    <p style="display:inline">Object ID:</p>&nbsp;<p id="language-content-p-object-ref" style="display:inline"></p><br/><br/>
+    <p style="display:inline">Object Type:</p>&nbsp;<p id="language-content-p-objet-type" style="display:inline"></p><br/><br/>
+    <p style="display:inline">Selector:</p>&nbsp;<p id="language-content-p-selector" style="display:inline"></p><br/><br/>
+    {% if languages %}
+    <div class="dropdown">
+	    <p style="display:inline">Choose Language:</p>
+        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+        {{ user.get_language_display | default:'Choose Language Code' }}
+        <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" id="dropdown-language-content-language">
+        	{% for language in languages %}
+                <li><a data-value="{{language.0}}">{{language.1}}</a></li>
+        	{% endfor %}
+        </ul>
+        <input type="hidden"  id="hidden-language-content-language" name="language_content_language" value="{{ user.language | default:'' }}"/>
+    </div>
+    {% endif  %}
+    <br/>
+    <p style="display:inline">Content:</p><br/>
+    <textarea id="language-content-textarea-content" name="language_content_content" resize="none" cols="80" rows="3"></textarea>
+    <br/><br/>
+    <p style="display:inline">Original Content:</p><br/>
+    <textarea id="language-content-textarea-original-content" resize="none" cols="80" rows="3" readonly disabled></textarea>
+    </div>
+
+</div> <!--  <div class="container"> -->
+<form name="info"> <input type="hidden" id="info_msg" value="{{ info_msg }}"> </form>
+</body>
+</html>
