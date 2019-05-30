@@ -976,13 +976,17 @@ function onNodeClickFunction(node){
     	//表示する言語コードを決定
     	var display_language = get_default_language(user_language,language_contents);
     	var display_language_content = null;
+    	var original_language = 'no lang_property';
     	if(language_contents != null){
     		display_language_content = language_contents[display_language];
     	}
     	$.each(stix2_object,function(key,index){
-    		//key が name の
+    		//key が name
     		if (key == "name"){
     			title_text = stix2_object[key] ;
+    		}
+    		if (key == "lang"){
+    			original_language = stix2_object[key] ;
     		}
     		var span_key = '<span class="l2_stix2_span_key">'+ key + ':</span> ';
     		var v = stix2_object[key];
@@ -1007,7 +1011,7 @@ function onNodeClickFunction(node){
     						}
     					});
     					v = JSON.stringify(transalated_list);
-    				}else if(typeof(display_language_content[key])){
+    				}else if(typeof(display_language_content[key])== 'object'){
     					//dict
     					var transalated_dict = {};
     					$.each(stix2_object[key],function(dlc_key,dict_display_value){
@@ -1044,7 +1048,7 @@ function onNodeClickFunction(node){
     		//language-contents 用のリンクを作成する
     		var language_options = 'Language-Options: ';
     		// Original への link
-            language_options += '<a class="content-language-href" data-language= "original_content">original</a> ';
+            language_options += '<a class="content-language-href" data-language= "original_content">' + original_language + ' (original)</a>, ';
             $.each(language_contents,function(language,index){
             	var content_dict = language_contents[language];
             	var anchor = '<a class="content-language-href';
@@ -1063,9 +1067,10 @@ function onNodeClickFunction(node){
             		}
             		anchor += attr;
             	});
-            	anchor += ('>' + language + '</a>\n');
+            	anchor += ('>' + language + '</a>,\n');
             	language_options += anchor;
             });
+            language_options = language_options.slice(0,-2);
             $("#l2-language-options").html(language_options);
             $("#l2-language-options").css("display","inline");
     	}

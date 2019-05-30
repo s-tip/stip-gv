@@ -607,7 +607,8 @@ $(function(){
     		}
     	});
     	
-    	if (click_href.text == 'original'){
+    	if ($(this).data('language') == 'original_content'){
+    		var title= $('#l2-title').text();
     		// original-data に変更する
         	$.each($('span.stix2-description'),function(){
         		var original_v = $(this).data('original');
@@ -620,8 +621,14 @@ $(function(){
         		else{
         			v = original_v;
         		}
+        		//title 退避
+        		if ($(this).attr('id') == 'stix2-name'){
+        			title = v;
+        		}
        			$(this).html(v);
         	});
+    		//title 設定
+    		 $('#l2-title').text(title);
     	}else{
     		// language-content で上書きする
         	var language_contents = $(this).data();
