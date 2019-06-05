@@ -4,6 +4,7 @@ from core.common import get_text_field_value, get_common_replace_dict
 from gv.error.views import error_page, error_page_inactive
 from django.contrib.auth.decorators import login_required
 from ctim.constant import SESSION_EXPIRY
+from ctirs.models import STIPUser
 
 def get_profile_change_password_old_password(request):
     return get_text_field_value(request,'old_password',default_value='')
@@ -57,6 +58,9 @@ def change_password(request):
 
         #新しいパスワードに変更
         stip_user.set_password(new_password)
+        if stip_user.username == 'admin':
+            #build_in account のパスワード変更
+            STIPUser.change_build_password(new_password)
         stip_user.is_modified_password = True
         stip_user.save()
         #レンダリング
