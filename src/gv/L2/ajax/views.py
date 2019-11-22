@@ -1270,6 +1270,8 @@ def get_description_string_from_attr(dict_,key_,title=None):
         for label in v:
             if isinstance(label,str) == True:
                 s += str(label) + ', '
+            elif isinstance(label,dict) == True:
+                s += str(label) + ', '
             else:
                 s += label + ', '
     elif isinstance(v,str) == True:
