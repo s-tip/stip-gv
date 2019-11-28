@@ -56,7 +56,7 @@ def get_stix_counts(request):
             vendors.append(item['community'])
 
         #棒グラフのラベル取得
-        for i in list(reversed(range(latest_days))):
+        for i in reversed(range(latest_days)):
             bar_labels.append(str(start_date - datetime.timedelta(i)))
 
         #円グラフのラベル作成
@@ -145,7 +145,7 @@ def get_package_info(request):
             type_,values = l1_type
             r[type_] = values
     except Exception as e:
-        print 'Excepton:' + str(e)
+        print('Excepton:' + str(e))
         r = {'status': 'NG',
              'message' : str(e)}
     finally:

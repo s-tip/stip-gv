@@ -130,9 +130,9 @@ def related_package_nodes(request):
     aj.set_json_node_user_language(request.user.language)
 
     #Language-Contents 作成する
-    for object_ref,o_ in aj._json_nodes.iteritems():
+    for object_ref,o_ in aj._json_nodes.items():
         if o_._stix2_object is not None:
-            modified =  o_._stix2_object[u'modified']
+            modified =  o_._stix2_object['modified']
             language_contents = ctirs.get_language_contents(object_ref,modified)
             if len(language_contents) > 0:
                 #最新の language-contents を採用する
@@ -181,41 +181,41 @@ def get_v2_observable_value(observable):
     TYPE_V2_WINDOWS_REGISTRY_KEY_OBSERVABLE = 'v2_Windows_Registry_Key_Observable'
 
     values = []
-    if observable[u'type'] == u'ipv4-addr':
+    if observable['type'] == 'ipv4-addr':
         value = observable['value']
         values.append(value)
         return values,value,value,TYPE_V2_IPV4_ADDR_OBSERVABLE
-    elif observable[u'type'] == u'file':
+    elif observable['type'] == 'file':
         s = '<br/>\n'
-        if observable.has_key('name') == True:
+        if ('name' in observable) == True:
             values.append(observable['name'])
             s += ('Name: %s<br/>\n' % (observable['name']))
-        if observable.has_key('size') == True:
+        if ('size' in observable) == True:
             s += ('size: %d<br/>\n' % (observable['size']))
-        if observable.has_key('hashes') == True:
+        if ('hashes' in observable) == True:
             hashes = observable['hashes']
-            if hashes.has_key('MD5') == True:
+            if ('MD5' in hashes) == True:
                 values.append(hashes['MD5'])
                 s += ('MD5: %s<br/>\n' % (hashes['MD5']))
-            if hashes.has_key('SHA-1') == True:
+            if ('SHA-1' in hashes) == True:
                 values.append(hashes['SHA-1'])
                 s += ('SHA-1: %s<br/>\n' % (hashes['SHA-1']))
-            if hashes.has_key('SHA-256') == True:
+            if ('SHA-256' in hashes) == True:
                 values.append(hashes['SHA-256'])
                 s += ('SHA-256: %s<br/>\n' % (hashes['SHA-256']))
-            if hashes.has_key('SHA-512') == True:
+            if ('SHA-512' in hashes) == True:
                 values.append(hashes['SHA-512'])
                 s += ('SHA-512: %s<br/>\n' % (hashes['SHA-512']))
         return values,'File',s,TYPE_V2_FILE_OBSERVABLE
-    elif observable[u'type'] == u'windows-registry-key':
+    elif observable['type'] == 'windows-registry-key':
         value = observable['key']
         values.append(value)
         return values,value,value,TYPE_V2_WINDOWS_REGISTRY_KEY_OBSERVABLE
-    elif observable[u'type'] == u'domain-name':
+    elif observable['type'] == 'domain-name':
         value = observable['value']
         values.append(value)
         return values,value,value,TYPE_V2_DOMAIN_NAME_OBSERVABLE
-    return values,observable[u'type'],unicode(str(observable)),TYPE_V2_ETC_OBSERVABLE
+    return values,observable['type'],str(str(observable)),TYPE_V2_ETC_OBSERVABLE
 
 #単一の Observable 要素から値を抽出し list で返却する
 #また、ノードタイプを合わせて tuple 形式で返却する
@@ -239,33 +239,33 @@ def get_observable_value(observable):
                 if _hash.simple_hash_value is not None:
                     if _hash.simple_hash_value is not None:
                         value_list.append(_hash.simple_hash_value)
-                        type_ = u'Observable_hash'
+                        type_ = 'Observable_hash'
                 if _hash.fuzzy_hash_value is not None:
                     if _hash.fuzzy_hash_value is not None:
                         value_list.append(_hash.fuzzy_hash_value)
-                        type_ = u'Observable_hash'
+                        type_ = 'Observable_hash'
         elif prop.file_name is not None:
             value_list.append(prop.file_name.value)
-            type_ = u'Observable_file_name'
+            type_ = 'Observable_file_name'
         else:
-            print 'no prop'
+            print('no prop')
     elif isinstance(prop,DomainName) == True:
         if prop.value is not None:
             if prop.value.value is not None:
                 value_list.append(prop.value.value)
-                type_ = u'Observable_domain'
+                type_ = 'Observable_domain'
     elif isinstance(prop,URI) == True:
         if prop.value is not None:
             if prop.value.value is not None:
                 value_list.append(prop.value.value)
-                type_ = u'Observable_uri'
+                type_ = 'Observable_uri'
     elif isinstance(prop,Address) == True:
         if prop.category == Address.CAT_IPV4:
             if prop.address_value is not None:
                 value_list.append(prop.address_value)
-                type_ = u'Observable_ip'
+                type_ = 'Observable_ip'
     else:
-        print type(prop)
+        print(type(prop))
     return value_list,type_
 
 #packageのグラフを作成する
@@ -417,7 +417,7 @@ def set_alchemy_nodes(aj,content):
         #STIX 1.x の場合 indicators と headers を結ぶ
         if is_stix_v2 == False:
             #indicators の node 作成
-            an = AlchemyNode(an_indicators_id,u'Indicators',u'Indicators',u'',cluster=an_package_id)
+            an = AlchemyNode(an_indicators_id,'Indicators','Indicators','',cluster=an_package_id)
             an.set_value(get_observable_value_string_from_list(indicators_values))
             aj.add_json_node(an)
             #header と indicators を edge で結ぶ
@@ -440,7 +440,7 @@ def set_alchemy_nodes(aj,content):
 
         if is_stix_v2 == False:
             #observables の node 作成
-            an = AlchemyNode(an_observables_id,u'Observables',u'Observables',u'',cluster=an_package_id)
+            an = AlchemyNode(an_observables_id,'Observables','Observables','',cluster=an_package_id)
             an.set_value(get_observable_value_string_from_list(obsevables_values))
             aj.add_json_node(an)
             #header と observables を edge で結ぶ
@@ -452,7 +452,7 @@ def set_alchemy_nodes(aj,content):
         if is_stix_v2 == False:
             #campaigns の node 作成
             an_campaigns_id = an_package_id + '--campaigns'
-            an = AlchemyNode(an_campaigns_id,u'Campaigns',u'Campaigns',u'',cluster=an_package_id)
+            an = AlchemyNode(an_campaigns_id,'Campaigns','Campaigns','',cluster=an_package_id)
             aj.add_json_node(an)
             #header と campaigns を edge で結ぶ
             ae = AlchemyEdge(an_header_id,an_campaigns_id,LABEL_EDGE)
@@ -468,7 +468,7 @@ def set_alchemy_nodes(aj,content):
         if is_stix_v2 == False:
             #Threat_Actors の node 作成
             an_tas_id = an_package_id + '--tas'
-            an = AlchemyNode(an_tas_id,u'Threat_Actors',u'Threat_Actors',u'',cluster=an_package_id)
+            an = AlchemyNode(an_tas_id,'Threat_Actors','Threat_Actors','',cluster=an_package_id)
             aj.add_json_node(an)
             #header と threat_actors を edge で結ぶ
             ae = AlchemyEdge(an_header_id,an_tas_id,LABEL_EDGE)
@@ -484,7 +484,7 @@ def set_alchemy_nodes(aj,content):
         if is_stix_v2 == False:
             #Courses_Of_Action の node 作成
             an_coas_id = an_package_id + '--coas'
-            an = AlchemyNode(an_coas_id,u'Courses_Of_Action',u'Courses_Of_Action',u'',cluster=an_package_id)
+            an = AlchemyNode(an_coas_id,'Courses_Of_Action','Courses_Of_Action','',cluster=an_package_id)
             aj.add_json_node(an)
             #header と courses_of_action を edge で結ぶ
             ae = AlchemyEdge(an_header_id,an_coas_id,LABEL_EDGE)
@@ -499,7 +499,7 @@ def set_alchemy_nodes(aj,content):
     if ttps is not None:
         #TTPs の node 作成
         an_ttps_id = an_package_id + '--ttps'
-        an = AlchemyNode(an_ttps_id,u'TTPs',u'TTPs',u'',cluster=an_package_id)
+        an = AlchemyNode(an_ttps_id,'TTPs','TTPs','',cluster=an_package_id)
         aj.add_json_node(an)
         #header と ttps を edge で結ぶ
         ae = AlchemyEdge(an_header_id,an_ttps_id,LABEL_EDGE)
@@ -511,7 +511,7 @@ def set_alchemy_nodes(aj,content):
     if ets is not None:
         #Exploit_Targets の node 作成
         an_ets_id = an_package_id + '--ets'
-        an = AlchemyNode(an_ets_id,u'Exploit_Targets',u'Exploit_Targets',u'',cluster=an_package_id)
+        an = AlchemyNode(an_ets_id,'Exploit_Targets','Exploit_Targets','',cluster=an_package_id)
         aj.add_json_node(an)
         #header と exploit_targets を edge で結ぶ
         ae = AlchemyEdge(an_header_id,an_ets_id,LABEL_EDGE)
@@ -523,7 +523,7 @@ def set_alchemy_nodes(aj,content):
     if incidents is not None:
         #Incidents の node 作成
         an_incidents_id = an_package_id + '--incidents'
-        an = AlchemyNode(an_incidents_id,u'Incidents',u'Incidents',u'',cluster=an_package_id)
+        an = AlchemyNode(an_incidents_id,'Incidents','Incidents','',cluster=an_package_id)
         aj.add_json_node(an)
         #header と incidents を edge で結ぶ
         ae = AlchemyEdge(an_header_id,an_incidents_id,LABEL_EDGE)
@@ -613,9 +613,9 @@ def set_alchemy_node_campaign_v2(aj,object_,an_package_id):
     #description に出力する key
     keys = ['aliases', 'first_seen', 'last_seen', 'objective']
     for key in keys:
-        if object_.has_key(key) == True:
+        if (key in object_) == True:
             description += get_description_string_from_attr(object_,key)
-    an = AlchemyNode(an_campaign_id,u'v2_Campaign',title,description,cluster=an_package_id)
+    an = AlchemyNode(an_campaign_id,'v2_Campaign',title,description,cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     #created_by_ref を結ぶ
@@ -625,7 +625,7 @@ def set_alchemy_node_campaign_v2(aj,object_,an_package_id):
 #STIX 1.x object_ の node 追加処理
 def set_alchemy_node_campaign_v1(aj,campaign,an_campaigns_id,an_package_id):
     an_campaign_id = convert_valid_node_id(campaign.id_)
-    an = AlchemyNode(an_campaign_id,u'Campaign',campaign.title,campaign.description,cluster=an_package_id)
+    an = AlchemyNode(an_campaign_id,'Campaign',campaign.title,campaign.description,cluster=an_package_id)
     aj.add_json_node(an)
     #campaigns と campaign を edge で結ぶ
     ae = AlchemyEdge(an_campaigns_id,an_campaign_id,LABEL_EDGE)
@@ -674,7 +674,7 @@ def set_alchemy_node_indicator(aj,indicator,an_indicators_id=None,is_stix_v2=Fal
     if is_stix_v2 == True:
         an_indicator_id = convert_valid_node_id(indicator['id'])
         value_list = []
-        type_ = u'v2_indicator'
+        type_ = 'v2_indicator'
     else:
         an_indicator_id = convert_valid_node_id(indicator.id_)
         if indicator.observable is not None:
@@ -755,7 +755,7 @@ def get_alchemy_indicator_title_description_v2(object_):
     #description に出力する key
     keys = ['labels','pattern', 'valid_from', 'valid_until', 'kill_chain_phases']
     for key in keys:
-        if object_.has_key(key) == True:
+        if (key in object_) == True:
             description += get_description_string_from_attr(object_,key)
     return title, description
 
@@ -806,7 +806,7 @@ def set_alchemy_node_observable_v2(aj,object_,an_package_id):
     value_list = []
     #ID 取得
     node_id = convert_valid_node_id(object_['id'])
-    for key,observable in object_['objects'].iteritems():
+    for key,observable in object_['objects'].items():
         values,title,description,type_ = get_v2_observable_value(observable)
         value_list.extend(values)
         #Node 作成
@@ -819,15 +819,15 @@ def set_alchemy_node_observable_v2(aj,object_,an_package_id):
         aj.add_json_edge(ae)
     #observed-data の node 作成
     caption = node_id
-    description = u'<br/>\n'
+    description = '<br/>\n'
     keys = ['first_observed', 'last_observed', 'number_observed']
     for key in keys:
-        if object_.has_key(key) == True:
+        if (key in object_) == True:
             description += get_description_string_from_attr(object_,key)
-    description += u'Values:<br/>\n'
+    description += 'Values:<br/>\n'
     for v in value_list:
-        description += (u'%s<br/>\n' % (v))
-    an = AlchemyNode(node_id,u'v2_observables-data',caption,description,cluster=an_package_id)
+        description += ('%s<br/>\n' % (v))
+    an = AlchemyNode(node_id,'v2_observables-data',caption,description,cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     #created_by_ref を結ぶ
@@ -849,7 +849,7 @@ def set_alchemy_node_threat_actor(aj,threat_actor,an_tas_id=None,is_stix_v2=Fals
 #STIX 1.x threat_actors の node 追加処理
 def set_alchemy_node_threat_actor_v1(aj,threat_actor,an_tas_id,an_package_id):
     node_id = convert_valid_node_id(threat_actor.id_)
-    an = AlchemyNode(node_id,u'Threat_Actor',threat_actor.title,threat_actor.description,cluster=an_package_id)
+    an = AlchemyNode(node_id,'Threat_Actor',threat_actor.title,threat_actor.description,cluster=an_package_id)
     aj.add_json_node(an)
     #Threat_Actors と Threat_Actor を edge で結ぶ
     ae = AlchemyEdge(an_tas_id,node_id,LABEL_EDGE)
@@ -865,13 +865,13 @@ def set_alchemy_node_threat_actor_v2(aj,object_,an_package_id):
     #ID 取得
     node_id = convert_valid_node_id(object_['id'])
     #STIX 2.0 の title, description
-    title,description = get_common_title_description(object_,default_title=u'No title',default_description=u'No description')
+    title,description = get_common_title_description(object_,default_title='No title',default_description='No description')
     #description に出力する key
     keys = ['aliases', 'roles', 'goals', 'sophistication', 'resource_level', 'primary_motivation', 'secondary_motivations']
     for key in keys:
-        if object_.has_key(key) == True:
+        if (key in object_) == True:
             description += get_description_string_from_attr(object_,key)
-    an = AlchemyNode(node_id,u'v2_Threat_Actor',title,description,cluster=an_package_id)
+    an = AlchemyNode(node_id,'v2_Threat_Actor',title,description,cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     #created_by_ref を結ぶ
@@ -892,7 +892,7 @@ def set_alchemy_node_coa(aj,coa,an_coas_id,is_stix_v2,an_package_id):
 #STIX 1.x coa の node 追加処理
 def set_alchemy_node_coa_v1(aj,coa,an_coas_id,an_package_id):
     node_id = convert_valid_node_id(coa.id_)
-    an = AlchemyNode(node_id,u'Course_Of_Action',coa.title,coa.description,cluster=an_package_id)
+    an = AlchemyNode(node_id,'Course_Of_Action',coa.title,coa.description,cluster=an_package_id)
     aj.add_json_node(an)
     #Courses_Of_Action と Course_Of_Action を edge で結ぶ
     ae = AlchemyEdge(an_coas_id,node_id,LABEL_EDGE)
@@ -903,13 +903,13 @@ def set_alchemy_node_coa_v2(aj,object_,an_package_id):
     #ID 取得
     node_id = convert_valid_node_id(object_['id'])
     #STIX 2.0 の title, description
-    title,description = get_common_title_description(object_,default_title=u'No title',default_description=u'No description')
+    title,description = get_common_title_description(object_,default_title='No title',default_description='No description')
     #description に出力する key
     keys = ['action']
     for key in keys:
-        if object_.has_key(key) == True:
+        if (key in object_) == True:
             description += get_description_string_from_attr(object_,key)
-    an = AlchemyNode(node_id,u'v2_CoA',title,description,cluster=an_package_id)
+    an = AlchemyNode(node_id,'v2_CoA',title,description,cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     #created_by_ref を結ぶ
@@ -919,7 +919,7 @@ def set_alchemy_node_coa_v2(aj,object_,an_package_id):
 #STIX 1.x ttp の node 追加処理
 def set_alchemy_node_ttp(aj,ttp,an_ttps_id,an_package_id):
     node_id = convert_valid_node_id(ttp.id_)
-    an = AlchemyNode(node_id,u'TTP',ttp.title,ttp.description,cluster=an_package_id)
+    an = AlchemyNode(node_id,'TTP',ttp.title,ttp.description,cluster=an_package_id)
     aj.add_json_node(an)
     #TTPs と TTP を edge で結ぶ
     ae = AlchemyEdge(an_ttps_id,node_id,LABEL_EDGE)
@@ -929,7 +929,7 @@ def set_alchemy_node_ttp(aj,ttp,an_ttps_id,an_package_id):
 #STIX 1.x Exploit_target の node 追加処理
 def set_alchemy_node_et(aj,et,an_ets_id,an_package_id):
     node_id = convert_valid_node_id(et.id_)
-    an = AlchemyNode(node_id,u'Exploit_Target',et.title,et.description,cluster=an_package_id)
+    an = AlchemyNode(node_id,'Exploit_Target',et.title,et.description,cluster=an_package_id)
     aj.add_json_node(an)
     #Exploit_Targets と Exploit_Target を edge で結ぶ
     ae = AlchemyEdge(an_ets_id,node_id,LABEL_EDGE)
@@ -939,7 +939,7 @@ def set_alchemy_node_et(aj,et,an_ets_id,an_package_id):
 #STIX 1.x Incidents の node 追加処理
 def set_alchemy_node_incident(aj,incident,an_incidents_id,an_package_id):
     node_id = convert_valid_node_id(incident.id_)
-    an = AlchemyNode(node_id,u'Incident',incident.title,incident.description,cluster=an_package_id)
+    an = AlchemyNode(node_id,'Incident',incident.title,incident.description,cluster=an_package_id)
     aj.add_json_node(an)
     #Incidents と Incident を edge で結ぶ
     ae = AlchemyEdge(an_incidents_id,node_id,LABEL_EDGE)
@@ -950,13 +950,13 @@ def set_alchemy_node_incident(aj,incident,an_incidents_id,an_package_id):
 def set_alchemy_node_identity(aj,object_,an_package_id):
     node_id = convert_valid_node_id(object_['id'])
     #STIX 2.0 の title, description
-    title,description = get_common_title_description(object_,default_title=u'No title',default_description=u'No description')
+    title,description = get_common_title_description(object_,default_title='No title',default_description='No description')
     #description に出力する key
     keys = ['labels', 'identity_class', 'sectors', 'contact_information']
     for key in keys:
-        if object_.has_key(key) == True:
+        if (key in object_) == True:
             description += get_description_string_from_attr(object_,key)
-    an = AlchemyNode(node_id,u'v2_identity',title,description,cluster=an_package_id)
+    an = AlchemyNode(node_id,'v2_identity',title,description,cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     return
@@ -970,10 +970,10 @@ def set_alchemy_node_malware(aj,object_,an_package_id):
     #description に出力する key
     keys = ['labels', 'kill_chain_phases']
     for key in keys:
-        if object_.has_key(key) == True:
+        if (key in object_) == True:
             description += get_description_string_from_attr(object_,key)
     #Node 作成
-    an = AlchemyNode(node_id,u'v2_malware',title,description,cluster=an_package_id)
+    an = AlchemyNode(node_id,'v2_malware',title,description,cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     #created_by_ref を結ぶ
@@ -988,25 +988,25 @@ def set_alchemy_node_sighting(aj,object_,an_package_id):
     #ID 取得
     node_id = convert_valid_node_id(object_['id'])
     #STIX 2.0 の title, description
-    title,description = get_common_title_description(object_,default_title=object_['id'],default_description=u'')
+    title,description = get_common_title_description(object_,default_title=object_['id'],default_description='')
     #description に出力する key
     keys = ['first_seen', 'last_seen', 'count', 'summary']
     for key in keys:
-        if object_.has_key(key) == True:
+        if (key in object_) == True:
             description += get_description_string_from_attr(object_,key)
     #Node 作成
-    an = AlchemyNode(node_id,u'v2_sighting',title,description,cluster=an_package_id)
+    an = AlchemyNode(node_id,'v2_sighting',title,description,cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     #created_by_ref を結ぶ
     set_created_by_ref_edge(aj,object_)
     #where_sighted_refs 結ぶ
-    if object_.has_key('where_sighted_refs') == True:
+    if ('where_sighted_refs' in object_) == True:
         for where_sighted_ref in object_['where_sighted_refs']:
             ae = AlchemyEdge(convert_valid_node_id(where_sighted_ref),node_id,LABEL_V2_WHERE_SIGHTED_REF)
             aj.add_json_edge(ae)
     #observabed_data_refs 結ぶ
-    if object_.has_key('observed_data_refs') == True:
+    if ('observed_data_refs' in object_) == True:
         for observed_data_ref in object_['observed_data_refs']:
             ae = AlchemyEdge(convert_valid_node_id(observed_data_ref),node_id,LABEL_V2_OBSERVED_DATA_REF)
             aj.add_json_edge(ae)
@@ -1020,10 +1020,10 @@ def set_alchemy_node_intrusion_set(aj,object_,an_package_id):
     title,description = get_common_title_description(object_,default_title=object_['id'],default_description=object_['id'])
     keys = ['aliases', 'first_seen', 'last_seen', 'goals', 'resource_level', 'primary_motivation', 'secondary_motivations']
     for key in keys:
-        if object_.has_key(key) == True:
+        if (key in object_) == True:
             description += get_description_string_from_attr(object_,key)
     #Node 作成
-    an = AlchemyNode(node_id,u'v2_intrusion_set',title,description,cluster=an_package_id)
+    an = AlchemyNode(node_id,'v2_intrusion_set',title,description,cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     #created_by_ref を結ぶ
@@ -1038,10 +1038,10 @@ def set_alchemy_node_attack_pattern(aj,object_,an_package_id):
     title,description = get_common_title_description(object_,default_title=object_['id'],default_description=object_['id'])
     keys = ['external_references', 'kill_chain_phases']
     for key in keys:
-        if object_.has_key(key) == True:
+        if (key in object_) == True:
             description += get_description_string_from_attr(object_,key)
     #Node 作成
-    an = AlchemyNode(node_id,u'v2_attack_pattern',title,description,cluster=an_package_id)
+    an = AlchemyNode(node_id,'v2_attack_pattern',title,description,cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     #created_by_ref を結ぶ
@@ -1056,16 +1056,16 @@ def set_alchemy_node_report(aj,object_,an_package_id):
     title,description = get_common_title_description(object_,default_title=object_['id'],default_description=object_['id'])
     keys = ['labels', 'published']
     for key in keys:
-        if object_.has_key(key) == True:
+        if (key in object_) == True:
             description += get_description_string_from_attr(object_,key)
     #Node 作成
-    an = AlchemyNode(node_id,u'v2_Report',title,description,cluster=an_package_id)
+    an = AlchemyNode(node_id,'v2_Report',title,description,cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     #created_by_ref を結ぶ
     set_created_by_ref_edge(aj,object_)
     #object_refs 結ぶ
-    if object_.has_key('object_refs') == True:
+    if ('object_refs' in object_) == True:
         for observed_data_ref in object_['object_refs']:
             ae = AlchemyEdge(convert_valid_node_id(observed_data_ref),node_id,LABEL_V2_OBJECT_REF)
             aj.add_json_edge(ae)
@@ -1079,10 +1079,10 @@ def set_alchemy_node_tool(aj,object_,an_package_id):
     title,description = get_common_title_description(object_,default_title=object_['id'],default_description=object_['id'])
     keys = ['labels', 'kill_chain_phases', 'tool_version']
     for key in keys:
-        if object_.has_key(key) == True:
+        if (key in object_) == True:
             description += get_description_string_from_attr(object_,key)
     #Node 作成
-    an = AlchemyNode(node_id,u'v2_Tool',title,description,cluster=an_package_id)
+    an = AlchemyNode(node_id,'v2_Tool',title,description,cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     #created_by_ref を結ぶ
@@ -1097,10 +1097,10 @@ def set_alchemy_node_vulnerability(aj,object_,an_package_id):
     title,description = get_common_title_description(object_,default_title=object_['id'],default_description=object_['id'])
     keys = ['external_references']
     for key in keys:
-        if object_.has_key(key) == True:
+        if (key in object_) == True:
             description += get_description_string_from_attr(object_,key)
     #Node 作成
-    an = AlchemyNode(node_id,u'v2_Vulerability',title,description,cluster=an_package_id)
+    an = AlchemyNode(node_id,'v2_Vulerability',title,description,cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     #created_by_ref を結ぶ
@@ -1108,15 +1108,15 @@ def set_alchemy_node_vulnerability(aj,object_,an_package_id):
 
     #CVE node と　edge を結ぶ
     index = 1
-    if object_.has_key('external_references'):
+    if 'external_references' in object_:
         for external_reference in object_['external_references']:
-            if external_reference.has_key('source_name') == True:
+            if ('source_name' in external_reference) == True:
                 if external_reference['source_name'] == 'cve':
-                    if external_reference.has_key('external_id') == True:
+                    if ('external_id' in external_reference) == True:
                         #CVE node 作成
                         cve = external_reference['external_id']
                         cve_node_id = convert_valid_node_id('%s-%s' % (node_id,cve))
-                        cve_an = AlchemyNode(cve_node_id,u'V2_CVE',cve,cve,cluster=an_package_id)
+                        cve_an = AlchemyNode(cve_node_id,'V2_CVE',cve,cve,cluster=an_package_id)
                         aj.add_json_node(cve_an)
                         index += 1
                         #Vulnerability と CVE を結ぶ
@@ -1132,10 +1132,10 @@ def set_alchemy_node_location(aj,object_,an_package_id):
     title,description = get_common_title_description(object_,default_title=object_['id'],default_description=object_['id'])
     keys = ['latitude', 'longitude', 'precision', 'region', 'country', 'administrative_area', 'city', 'code', 'postal_code']
     for key in keys:
-        if object_.has_key(key) == True:
+        if (key in object_) == True:
             description += get_description_string_from_attr(object_,key)
     #Node 作成
-    an = AlchemyNode(node_id,u'v2_Location',title,description,cluster=an_package_id)
+    an = AlchemyNode(node_id,'v2_Location',title,description,cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     #created_by_ref を結ぶ
@@ -1150,16 +1150,16 @@ def set_alchemy_node_opinion(aj,object_,an_package_id):
     title,description = get_common_title_description(object_,default_title=object_['id'],default_description=object_['id'])
     keys = ['explanation', 'authors', 'opinion']
     for key in keys:
-        if object_.has_key(key) == True:
+        if (key in object_) == True:
             description += get_description_string_from_attr(object_,key)
     #Node 作成
-    an = AlchemyNode(node_id,u'v2_Opinion',title,description,cluster=an_package_id)
+    an = AlchemyNode(node_id,'v2_Opinion',title,description,cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     #created_by_ref を結ぶ
     set_created_by_ref_edge(aj,object_)
     #object_refs 結ぶ
-    if object_.has_key('object_refs') == True:
+    if ('object_refs' in object_) == True:
         for observed_data_ref in object_['object_refs']:
             ae = AlchemyEdge(convert_valid_node_id(observed_data_ref),node_id,LABEL_V2_OBJECT_REF)
             aj.add_json_edge(ae)
@@ -1173,16 +1173,16 @@ def set_alchemy_node_note(aj,object_,an_package_id):
     title,description = get_common_title_description(object_,default_title=object_['id'],default_description=object_['id'])
     keys = ['abstract', 'content', 'authors']
     for key in keys:
-        if object_.has_key(key) == True:
+        if (key in object_) == True:
             description += get_description_string_from_attr(object_,key)
     #Node 作成
-    an = AlchemyNode(node_id,u'v2_Note',title,description,cluster=an_package_id)
+    an = AlchemyNode(node_id,'v2_Note',title,description,cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     #created_by_ref を結ぶ
     set_created_by_ref_edge(aj,object_)
     #object_refs 結ぶ
-    if object_.has_key('object_refs') == True:
+    if ('object_refs' in object_) == True:
         for observed_data_ref in object_['object_refs']:
             ae = AlchemyEdge(convert_valid_node_id(observed_data_ref),node_id,LABEL_V2_OBJECT_REF)
             aj.add_json_edge(ae)
@@ -1195,13 +1195,13 @@ def set_alchemy_node_custom_object(aj,object_,an_package_id):
     #STIX 2.0 の title, description
     title,description = get_common_title_description(object_,default_title=object_['id'],default_description=object_['id'])
     #Node 作成
-    an = AlchemyNode(node_id,u'v2_CustomObject',title,description,cluster=an_package_id)
+    an = AlchemyNode(node_id,'v2_CustomObject',title,description,cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     #created_by_ref を結ぶ
     set_created_by_ref_edge(aj,object_)
     #object_refs 結ぶ
-    if object_.has_key('object_refs') == True:
+    if ('object_refs' in object_) == True:
         for observed_data_ref in object_['object_refs']:
             ae = AlchemyEdge(convert_valid_node_id(observed_data_ref),node_id,LABEL_V2_OBJECT_REF)
             aj.add_json_edge(ae)
@@ -1226,13 +1226,13 @@ def set_alchemy_node_relationship(aj,object_,an_package_id):
     target_ref = object_['target_ref']
     relationship_type = object_['relationship_type']
 
-    title,description = get_common_title_description(object_,default_title=node_id,default_description=u'')
+    title,description = get_common_title_description(object_,default_title=node_id,default_description='')
     keys = ['relationship_type']
     for key in keys:
-        if object_.has_key(key) == True:
+        if (key in object_) == True:
             description += get_description_string_from_attr(object_,key)
     #Node 作成
-    an = AlchemyNode(node_id,u'v2_Relationship',title,description,cluster=an_package_id)
+    an = AlchemyNode(node_id,'v2_Relationship',title,description,cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     #source_ref をむすぶ
@@ -1245,26 +1245,26 @@ def set_alchemy_node_relationship(aj,object_,an_package_id):
 
 #詳細説明ウインドウに表示する title, description を取得する　
 def get_common_title_description(object_,default_title=None,default_description=None):
-    title = u''
-    description = u''
-    if object_.has_key('name') == True:
+    title = ''
+    description = ''
+    if ('name' in object_) == True:
         title = object_['name']
     else:
         title = default_title
-    if object_.has_key('description') == True:
+    if ('description' in object_) == True:
         description = object_['description']
     else:
         description = default_description
-    description += u'<br/>\n'
+    description += '<br/>\n'
     return title,description
 
 #STIX 2.0 の attribute から description 文字列を作成する。後ろに <br/>\n を付与する
 def get_description_string_from_attr(dict_,key_,title=None):
-    s = u''
+    s = ''
     if title is None:
-        s += (u'%s: ' % (key_))
+        s += ('%s: ' % (key_))
     else:
-        s += (u'%s: ' % (title))
+        s += ('%s: ' % (title))
     v = dict_[key_]
     if isinstance(v,list) == True:
         for label in v:
@@ -1276,7 +1276,7 @@ def get_description_string_from_attr(dict_,key_,title=None):
                 s += label + ', '
     elif isinstance(v,str) == True:
         s += str(v)
-    elif isinstance(v,unicode) == True:
+    elif isinstance(v,str) == True:
         s += v
     elif isinstance(v,int) == True:
         s += str(v)
@@ -1289,7 +1289,7 @@ def get_description_string_from_attr(dict_,key_,title=None):
 #created_by_ref を結ぶ
 def set_created_by_ref_edge(aj,dict_):
     #created_by_ref 結ぶ
-    if dict_.has_key('created_by_ref') == True:
+    if ('created_by_ref' in dict_) == True:
         ae = AlchemyEdge(convert_valid_node_id(dict_['created_by_ref']),convert_valid_node_id(dict_['id']),LABEL_V2_CREATED_BY_REF)
         aj.add_json_edge(ae)
 

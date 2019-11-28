@@ -155,8 +155,8 @@ def stix_download(request):
     #XML変換した文字列をStringIO化する
     output = io.StringIO()
     if isinstance(contents,str) == True:
-        output.write(unicode(contents,'utf-8'))
-    elif isinstance(contents,unicode) == True:
+        output.write(str(contents,'utf-8'))
+    elif isinstance(contents,str) == True:
         output.write(contents)
     #response作成
     response = HttpResponse(output.getvalue(),content_type='application/xml')
@@ -178,7 +178,7 @@ def stix_data_csv_download(request):
         l1_type_list = get_package_l1_info(request,package_id)
 
         #ファイルの中身を作成する
-        contents = u''
+        contents = ''
         for l1_list in l1_type_list:
             type_,l_ = l1_list
             for value in l_:

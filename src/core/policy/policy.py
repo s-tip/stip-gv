@@ -24,7 +24,7 @@ def get_policy_communities():
         comms = comms[:-1] if comms[-1] == ',' else comms+'}'
         return comms
     except Exception as e:
-        print e
+        print(e)
     return ''
 
 #/**
@@ -70,5 +70,5 @@ def get_policy(arg_community):
                             rules.append(d)
         return rules
     except Exception as e:
-        print e
+        print(e)
         return None

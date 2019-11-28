@@ -10,7 +10,7 @@ class AlchemyJsonData:
 
     def add_json_node(self,n):
         id_ = n.get_id()
-        if(self._json_nodes.has_key(id_) == True):
+        if(id_ in self._json_nodes == True):
             return
         self._json_nodes[id_] = n
 
@@ -76,10 +76,10 @@ class AlchemyJsonData:
                 #json_nodesに追加しない
                 continue
             if edge._source not in json_node_ids:
-                print 'no edge. skip (%s)' % (edge._source)
+                print('no edge. skip (%s)' % (edge._source))
                 continue
             if edge._target not in json_node_ids:
-                print 'no edge. skip (%s)' % (edge._target)
+                print('no edge. skip (%s)' % (edge._target))
                 continue
             json_edges.append(edge.get_json())
         json['edges'] = json_edges
@@ -189,8 +189,8 @@ class AlchemyNode(AlchemyJsonBase):
             self._description = ''
         else:
             v = ''
-            if isinstance(description,unicode) == True:
-                #description は Uniode (主にプログラムで決定する場合)
+            if isinstance(description,str) == True:
+                #description は str (主にプログラムで決定する場合)
                 v = description
             elif isinstance(description,StructuredText) == True:
                 #description は StructedText (主に STIX から取得する場合)

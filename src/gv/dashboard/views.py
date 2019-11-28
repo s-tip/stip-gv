@@ -47,7 +47,7 @@ def dashboard_view_top(request):
             #レンダリング
             return render(request,'dashboard.html',replace_dict)
         except Exception:
-            if request.session.has_key('caution_msg_ctirs_flag') == True and request.session['caution_msg_ctirs_flag'] == True:
+            if ('caution_msg_ctirs_flag' in request.session) == True and request.session['caution_msg_ctirs_flag'] == True:
                 #CTIRSの情報に接続できない旨通知するメッセージを表示
                 replace_dict['caution_msg_ctirs'] = 'You missed the connection setting to CTIRS.'
                 request.session['caution_msg_ctirs_flag'] = False

@@ -33,7 +33,7 @@ def get_configuration_user_create_user_is_sharing_view(request):
     return get_configuration_user_check_value(request,'is_sharing_view')
 
 def get_configuration_user_check_value(request,key):
-    if request.POST.has_key(key) == True:
+    if (key in request.POST) == True:
         if(request.POST[key] == 'on'):
             return True
     return False

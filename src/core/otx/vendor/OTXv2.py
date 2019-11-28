@@ -3,13 +3,8 @@
 import json
 import logging
 
-try:
-    # For Python2
-    from urllib2 import URLError, build_opener
-except ImportError:
-    # For Python3
-    from urllib.error import URLError
-    from urllib.request import build_opener
+from urllib.error import URLError
+from urllib.request import build_opener
 
 
 logger = logging.getLogger("OTXv2")
