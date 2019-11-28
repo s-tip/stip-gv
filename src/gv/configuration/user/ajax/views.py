@@ -35,7 +35,7 @@ def change_auth(request):
     try:
         username =  get_configuration_user_ajax_change_auth_username(request)
         key = get_configuration_user_ajax_change_auth_key(request)
-        value  = True if get_configuration_user_ajax_change_auth_value(request) == u'true' else False
+        value  = True if get_configuration_user_ajax_change_auth_value(request) == 'true' else False
 
         u = STIPUser.objects.get(username=username).gv_auth_user
         #superユーザーの変更は不可能
@@ -44,11 +44,11 @@ def change_auth(request):
                  'message' : '%s is superuser.' % (u)}
             return JsonResponse(r,safe=False)
         #keyに応じて属性の値を変更
-        if(key == u'is_l1_view'):
+        if(key == 'is_l1_view'):
             u.is_l1_view = value
-        elif(key == u'is_l2_view'):
+        elif(key == 'is_l2_view'):
             u.is_l2_view = value
-        elif(key == u'is_sharing_view'):
+        elif(key == 'is_sharing_view'):
             u.is_sharing_view = value
         #変更を保存
         u.save()

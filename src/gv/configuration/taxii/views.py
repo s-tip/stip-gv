@@ -30,7 +30,7 @@ def get_configuration_taxii_create_login_password(request):
     return get_text_field_value(request,'login_password',default_value='')
 
 def get_configuration_taxii_create_ssl(request):
-    return request.POST.has_key('ssl')
+    return 'ssl' in request.POST
 
 def get_configuration_taxii_delete_display_name(request):
     return get_text_field_value(request,'display_name',default_value='')
@@ -159,7 +159,7 @@ def delete_taxii(request):
         if(display_name == None or len(display_name) == 0):
             return error_page_free_format(request,'No Display Name.')
         taxii = Taxii.objects.get(name=display_name)
-        print Config.objects.get().default_taxii
+        print(Config.objects.get().default_taxii)
         if Config.objects.get().default_taxii == taxii:
             return error_page_free_format(request,'Cannot Delete A Default Taxii Setting.')
         taxii.delete()

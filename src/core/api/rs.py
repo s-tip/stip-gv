@@ -201,7 +201,7 @@ class Ctirs(object):
     def get_language_contents(self,object_ref,modified):
         #問い合わせオプション作成
         params = {
-            u'object_modified'   :   modified
+            'object_modified'   :   modified
         }
         url = '/api/v1/stix_files_v2/%s/language_contents' % (object_ref)
         #ajax呼び出し
@@ -212,7 +212,7 @@ class Ctirs(object):
         #問い合わせオプション作成
         params = {}
         j = {
-            u'language_contents'        :   language_contents,
+            'language_contents'        :   language_contents,
         }
         url = '/api/v1/stix_files_v2/%s/language_contents' % (object_ref)
         #ajax呼び出し
@@ -224,16 +224,16 @@ class Ctirs(object):
         response = self._call_ctirs_api(url_suffix,params,'GET')
         j = response.json()
         #statusがない場合はエラー
-        if j.has_key('return_code') == False:
+        if ('return_code' in j) == False:
             raise Exception('No return_code')
         #statusが0以外はエラー
-        if j['return_code'] != u'0':
-            if j.has_key('userMessage') == False:
+        if j['return_code'] != '0':
+            if ('userMessage' in j) == False:
                 raise Exception('Error has occured. No message.')
             else:
                 raise Exception('Error has occured. %s' % j['userMessage'])
         #dataがない場合は None
-        if j.has_key('data') == False:
+        if ('data' in j) == False:
             return None
         #200以外はエラー
         if response.status_code is not 200:
@@ -256,16 +256,16 @@ class Ctirs(object):
         response = self._call_ctirs_api(url_suffix,params,'POST',files,json)
         j = response.json()
         #statusがない場合はエラー
-        if j.has_key('return_code') == False:
+        if ('return_code' in j) == False:
             raise Exception('No return_code')
         #statusが0以外はエラー
-        if j['return_code'] != u'0':
-            if j.has_key('userMessage') == True:
+        if j['return_code'] != '0':
+            if ('userMessage' in j) == True:
                 raise Exception('Error has occured. %s' % j['userMessage'])
             else:
                 raise Exception('Error has occured. No message.')
         #dataがない場合は None
-        if j.has_key('data') == False:
+        if ('data' in j) == False:
             return None
         if response.status_code is not 201:
             raise Exception('Error has occured. CTIRS REST api HTTP Response (%d).' % (response.status_code))

@@ -3,7 +3,7 @@ import datetime
 import xmltodict
 import md5
 import traceback
-import StringIO
+import io
 import json
 from xml.dom.minidom import parseString
 from stix.core.stix_package import STIXPackage
@@ -93,7 +93,7 @@ def change_stix_comment(request):
              'message': 'Success.',
              'display_comment': display_comment}
     except Exception as e:
-        print 'Excepton:' + str(e)
+        print('Excepton:' + str(e))
         r = {'status': 'NG',
              'message' : str(e)}
     finally:
@@ -127,7 +127,7 @@ def get_stix_comment(request):
         r = {'status': 'OK',
              'comment' : data['comment'] }
     except Exception as e:
-        print 'Excepton:' + str(e)
+        print('Excepton:' + str(e))
         r = {'status': 'NG',
              'message' : str(e)}
     finally:
@@ -137,7 +137,7 @@ def get_stix_comment(request):
 def _is_stix2_(dict_):
     #STIX 2.x であるかの判定を行う
     v2_flag = False
-    if  dict_.has_key('type') == True and dict_['type'] == u'bundle':
+    if  ('type' in dict_) == True and dict_['type'] == 'bundle':
         v2_flag = True
     return v2_flag
 
@@ -261,7 +261,7 @@ def save_redacted_stix_file(request):
 def update_stix_file_v1(pacakge_id,content):
     #文字列イメージの引数のxmlをxml形式にして、インデントを揃えてダウンロードする
     file_path = get_file_name_from_package_id(pacakge_id) + '.xml'
-    output = StringIO.StringIO(content)
+    output = io.StringIO(content)
     #xml整形して再書き込み
     p = STIXPackage.from_xml(output)
     #中身とファイル名を返却
@@ -297,7 +297,7 @@ def get_upload_stix(request):
              'message' : 'Success.'}
     except Exception as e:
         traceback.print_exc()
-        print 'Exception:' + str(e)
+        print('Exception:' + str(e))
         r = {'status': 'NG',
              'message' : str(e)}
     finally:
@@ -328,7 +328,7 @@ def send_taxii(request):
                  'message' : msg}
     except Exception as e:
         traceback.print_exc()
-        print 'Exception:' + str(e)
+        print('Exception:' + str(e))
         r = {'status': 'NG',
              'message' : str(e)}
     finally:
@@ -336,7 +336,7 @@ def send_taxii(request):
 
 def get_package_name_no_specify_package_name(content,vendor_name):
     #xml->OrderedDict変換
-    d = xmltodict.parse(content,attr_prefix=u'ATTR')
+    d = xmltodict.parse(content,attr_prefix='ATTR')
     #1.stix:Campaignsタグから
     #→廃止
 
@@ -366,14 +366,14 @@ def get_package_name_from_stix(request):
 #stix:STIX_Headerタグからpackage名が取得可能か？
 def get_package_name_from_stix_header_tag(d):
     try:
-        return d[u'stix:STIX_Package'][u'stix:STIX_Header'][u'stix:Title']
+        return d['stix:STIX_Package']['stix:STIX_Header']['stix:Title']
     except:
         return None
 
 #stix:STIX_Pacakgeタグからpackage名が取得可能か？
 def get_package_name_from_stix_package_tag(d):
     try:
-        return d[u'stix:STIX_Package'][u'ATTRid']
+        return d['stix:STIX_Package']['ATTRid']
     except:
         return None
 
@@ -391,14 +391,14 @@ def create_language_content(request):
              'message' : 'Invalid HTTP method'}
         return JsonResponse(r,safe=False)
     try:
-        content = request.POST[u'content']
-        object_ref = request.POST[u'object_ref']
-        language = request.POST[u'language']
-        selector = request.POST[u'selector']
+        content = request.POST['content']
+        object_ref = request.POST['object_ref']
+        language = request.POST['language']
+        selector = request.POST['selector']
         language_content = {
-            u'content': content,
-            u'selector': selector,
-            u'language': language,
+            'content': content,
+            'selector': selector,
+            'language': language,
         }
         language_contents = [language_content]
 
@@ -499,7 +499,7 @@ def create_display_comment(comment):
         elif(sentence == ''
             or sentence == '\t'
             or sentence == ' '
-            or sentence == u'\u3000' ):
+            or sentence == '\u3000' ):
             continue
         else:
             display_comment = sentence

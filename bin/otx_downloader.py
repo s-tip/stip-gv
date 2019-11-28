@@ -43,10 +43,10 @@ if __name__ == '__main__':
                 fp.write(stix.to_xml())
             count += 1
         n = datetime.datetime.now().replace(tzinfo=pytz.utc)
-        print n.strftime('%Y%m%d%H%M%S')
+        print(n.strftime('%Y%m%d%H%M%S'))
     except Exception as e:
-        print traceback.format_exc()
-        print e.message
+        print(traceback.format_exc())
+        print(e.message)
         ret = 1
 
     exit(ret)

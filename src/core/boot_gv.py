@@ -11,17 +11,17 @@ class StipGvBoot(AppConfig):
 
         is_skip_sequnece = is_skip_sequence()
         if is_skip_sequnece == False:
-            print '>>> Start Auto Deploy'
-            print '>>> Start collcect static --noinput'
+            print('>>> Start Auto Deploy')
+            print('>>> Start collcect static --noinput')
             #collectstatic
             call_command('collectstatic','--noinput')
             
             #loaddata (gv_system)
             config_count = Config.objects.count()
-            print '>>> gv_system record count: ' + str(config_count)
+            print('>>> gv_system record count: ' + str(config_count))
             if config_count == 0:
-                print '>>> Start loaddata gv_system'
+                print('>>> Start loaddata gv_system')
                 call_command('loaddata','gv_system')
-                print '>>> users record count: ' + str(Config.objects.count())
+                print('>>> users record count: ' + str(Config.objects.count()))
             else:
-                print '>>> Skip loaddata gv_system'
+                print('>>> Skip loaddata gv_system')
