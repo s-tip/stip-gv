@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import json
 import stix.extensions.marking.ais #@UnusedImport
 from stix.core.stix_package import STIXPackage

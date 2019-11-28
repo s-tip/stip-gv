@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import requests
 from ctirs.models import Config
 

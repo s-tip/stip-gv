@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import io
 from django.shortcuts import render
 from core.common import get_text_field_value, get_common_replace_dict

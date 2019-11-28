@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from django.shortcuts import render
 from core.common import get_common_replace_dict
 from gv.error.views import error_page, error_page_no_view_permission, error_page_inactive

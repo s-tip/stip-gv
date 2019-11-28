@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import re
 from ctirs.models import Config
 

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from ctim.constant import DISPLAY_NODE_THRESHOLD
 from stix.common.structured_text import StructuredText
 

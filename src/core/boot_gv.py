@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from django.apps import AppConfig
 from django.core.management import call_command
 from stip.common.boot import is_skip_sequence

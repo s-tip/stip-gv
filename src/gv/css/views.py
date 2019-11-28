@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from django.shortcuts import redirect
 from core.common import get_text_field_value,get_next_location
 from gv.error.views import error_page,error_page_inactive

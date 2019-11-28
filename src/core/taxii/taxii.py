@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import libtaxii
 import libtaxii.clients as clients
 import libtaxii.messages_11 as tm11

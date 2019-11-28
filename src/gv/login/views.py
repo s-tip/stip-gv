@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import django.contrib.auth
 from django.shortcuts import render
 from core.common import get_text_field_value

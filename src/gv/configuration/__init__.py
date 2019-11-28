@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from gv.error.views import error_page,error_page_no_view_permission, error_page_free_format, error_page_inactive
 
 #configurationの閲覧権限を持っているか?

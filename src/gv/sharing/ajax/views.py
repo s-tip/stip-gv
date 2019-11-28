@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import datetime
 import xmltodict
 import md5
@@ -242,7 +242,7 @@ def save_redacted_stix_file(request):
         #stix_version 取得
         stix_version = get_sharing_ajax_updatefile_stix_version(request)
         #contentイメージ文字列取得
-        content = get_sharing_ajax_updatefile_content(request).encode('utf-8')
+        content = get_sharing_ajax_updatefile_content(request)
         #編集(redactなど)のファイルを作成
         if stix_version.startswith('1.') == True:
             content,filename = update_stix_file_v1(package_id,content)
@@ -315,7 +315,7 @@ def send_taxii(request):
     r = check_allow_sharing_view(request)
     if r is not None:
         return r
-    xml = parseString(get_sharing_ajax_save_send_taxi_xml(request).encode('utf-8')).toprettyxml(encoding='utf-8')
+    xml = parseString(get_sharing_ajax_save_send_taxi_xml(request)).toprettyxml(encoding='utf-8')
     taxii_name = get_sharing_ajax_save_send_taxi_taxii_name(request)
     try:
         taxii = Taxii(taxii_name)

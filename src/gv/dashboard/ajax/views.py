@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import datetime
 from stix.core.stix_package import STIXPackage
 from django.contrib.auth.decorators import login_required

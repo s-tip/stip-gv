@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 import os
 import io
 from django.shortcuts import render
@@ -50,11 +50,11 @@ def write_temp_stix(request):
     stix = stixes[0]
 
     stix_dir = Config.objects.get_config().path_upload_stix_dir
-    stix_file_path = stix_dir + os.sep.decode('utf-8') + stix.name
+    stix_file_path = stix_dir + os.sep + stix.name
 
     stix_file_path_str = stix_file_path
     if os.name =='posix':
-        stix_file_path_str = stix_file_path.encode('utf-8')
+        stix_file_path_str = stix_file_path
     #同名のファイルを削除する
     try:
         os.remove(stix_file_path_str)

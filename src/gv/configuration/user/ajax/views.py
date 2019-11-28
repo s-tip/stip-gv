@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from django.http.response import JsonResponse
 from core.common import get_text_field_value
 from django.views.decorators.csrf import csrf_protect
