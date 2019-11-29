@@ -1,4 +1,3 @@
-
 """
 Django settings for ctim project.
 
@@ -16,26 +15,26 @@ import os
 from unipath import Path
 from decouple import Csv, config, UndefinedValueError
 
-#sample_similarity呼び出すための設定ファイル指定
-#if os.environ['CTIM_GV_CONF_PATH'] != None:
+# sample_similarity呼び出すための設定ファイル指定
+# if os.environ['CTIM_GV_CONF_PATH'] != None:
 #    ini_file_path = os.environ['CTIM_GV_CONF_PATH']
-#else:
+# else:
 #    ini_file_path  = None
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-#LOGIN_URL
-LOGIN_URL='/login?session_invalid=True'
+# LOGIN_URL
+LOGIN_URL = '/login?session_invalid=True'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-#GV
-#SECRET_KEY = '5y%^e#ikpckc$n$m8qjl$#q4*&&3&2$8o*_4)$j(@8c#(46b4q'
-#CTIRS
+# GV
+# SECRET_KEY = '5y%^e#ikpckc$n$m8qjl$#q4*&&3&2$8o*_4)$j(@8c#(46b4q'
+# CTIRS
 SECRET_KEY = 'j%yjl@$v=xi6((y3!=bf3$n5)e)+af)*+syuia#co)1edp=dv-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -67,7 +66,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #for User Model
+    # for User Model
     'core.boot_gv.StipGvBoot',
     'ctim',
     'ctirs',
@@ -91,21 +90,21 @@ ROOT_URLCONF = 'ctim.urls'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC_DIR = BASE_DIR + os.sep
 GV_DIR = SRC_DIR + os.sep + 'gv' + os.sep
-COMMON_PROJECT_DIR='/opt/s-tip/common'
+COMMON_PROJECT_DIR = '/opt/s-tip/common'
 DIRS = [
-    os.path.join(GV_DIR,'templates'),
-    os.path.join(GV_DIR,'dashboard/templates'),
-    os.path.join(GV_DIR,'L1/templates'),
-    os.path.join(GV_DIR,'L2/templates'),
-    os.path.join(GV_DIR,'sharing/templates'),
-    os.path.join(GV_DIR,'error/templates'),
-    os.path.join(GV_DIR,'login/templates'),
-    os.path.join(GV_DIR,'configuration/user/templates'),
-    os.path.join(GV_DIR,'configuration/taxii/templates'),
-    os.path.join(GV_DIR,'configuration/alias/templates'),
-    os.path.join(GV_DIR,'configuration/system/templates'),
-    os.path.join(GV_DIR,'profile/templates'),
-    os.path.join(COMMON_PROJECT_DIR,'src/templates'),
+    os.path.join(GV_DIR, 'templates'),
+    os.path.join(GV_DIR, 'dashboard/templates'),
+    os.path.join(GV_DIR, 'L1/templates'),
+    os.path.join(GV_DIR, 'L2/templates'),
+    os.path.join(GV_DIR, 'sharing/templates'),
+    os.path.join(GV_DIR, 'error/templates'),
+    os.path.join(GV_DIR, 'login/templates'),
+    os.path.join(GV_DIR, 'configuration/user/templates'),
+    os.path.join(GV_DIR, 'configuration/taxii/templates'),
+    os.path.join(GV_DIR, 'configuration/alias/templates'),
+    os.path.join(GV_DIR, 'configuration/system/templates'),
+    os.path.join(GV_DIR, 'profile/templates'),
+    os.path.join(COMMON_PROJECT_DIR, 'src/templates'),
 ]
 
 TEMPLATES = [
@@ -145,7 +144,7 @@ DATABASES = {
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-#LANGUAGE_CODE = 'ja'
+# LANGUAGE_CODE = 'ja'
 
 TIME_ZONE = 'Asia/Tokyo'
 
@@ -163,34 +162,34 @@ STATIC_URL = '/static/'
 PROJECT_DIR = Path(__file__).parent.parent
 STATIC_ROOT = PROJECT_DIR.parent.child('staticfiles')
 STATICFILES_DIRS = (
-    ''.join([BASE_DIR, os.sep,'static']),
-    os.path.join(COMMON_PROJECT_DIR,'src/static'),
+    ''.join([BASE_DIR, os.sep, 'static']),
+    os.path.join(COMMON_PROJECT_DIR, 'src/static'),
 )
 
 AUTH_USER_MODEL = 'ctirs.STIPUser'
 
 SESSION_COOKIE_NAME = 'stip'
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
-#HTTP 上で動作させるかどうかのフラグ
-ENV_DEV_OVER_HTTP_KEY  = 'DEV_OVER_HTTP'
+# HTTP 上で動作させるかどうかのフラグ
+ENV_DEV_OVER_HTTP_KEY = 'DEV_OVER_HTTP'
 dev_over_http = False
-if (ENV_DEV_OVER_HTTP_KEY in os.environ) == True:
+if (ENV_DEV_OVER_HTTP_KEY in os.environ):
     if os.environ[ENV_DEV_OVER_HTTP_KEY] == 'True':
         dev_over_http = True
-#http で動作させないときは SESSION_COOKIE_SECURE を立てる
-if dev_over_http == False:
+# http で動作させないときは SESSION_COOKIE_SECURE を立てる
+if not dev_over_http:
     SESSION_COOKIE_SECURE = True
 
-#GIT_PATH = '/opt/s-tip/ui/src/'
-#GIT_VERTION_COMMAND = 'git -C %s log -1 --date=format:"%%Y/%%m/%%d" --format="%%cd %%h"' % (GIT_PATH)
-#stdout_str = subprocess.Popen(
+# GIT_PATH = '/opt/s-tip/ui/src/'
+# GIT_VERTION_COMMAND = 'git -C %s log -1 --date=format:"%%Y/%%m/%%d" --format="%%cd %%h"' % (GIT_PATH)
+# stdout_str = subprocess.Popen(
 #    (GIT_VERTION_COMMAND),
 #    stdout=subprocess.PIPE,
 #    shell=True).communicate()[0]
-#STIP_VERSION_HASH = stdout_str.split('\n')[0]
+# STIP_VERSION_HASH = stdout_str.split('\n')[0]
 try:
     version_path = '/opt/s-tip/ui/version'
-    fp = open(version_path,'r')
+    fp = open(version_path, 'r')
     STIP_GV_VERSION = fp.readline().strip()
     fp.close()
 except IOError:

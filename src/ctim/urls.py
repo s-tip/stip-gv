@@ -19,9 +19,9 @@ urlpatterns = [
     url(r'^sharing/', include(gv.sharing.urls)),
     url(r'^configuration/', include(gv.configuration.urls)),
     url(r'^$', dashboard.dashboard_view_top),
-    url(r'^login$', login,name='login'),
+    url(r'^login$', login, name='login'),
     url(r'^logout$', logout),
     url(r'^css/', include(gv.css.urls)),
     url(r'^profile/', include(gv.profile.urls)),
-    url(r'^jsi18n/(?P<packages>\S+?)/$',django.views.i18n.javascript_catalog),
+    url(r'^jsi18n/(?P<packages>\S+?)/$', django.views.i18n.javascript_catalog),
 ]

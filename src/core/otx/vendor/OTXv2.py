@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import json
 import logging
 
@@ -30,6 +29,7 @@ class OTXv2(object):
     """
     Main class to interact with the AlienVault OTX API.
     """
+
     def __init__(self, key, server="http://otx.alienvault.com"):
         self.key = key
         self.server = server
