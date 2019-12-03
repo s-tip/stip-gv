@@ -1,6 +1,6 @@
 import datetime
 import xmltodict
-import md5
+from hashlib import md5
 import traceback
 import io
 import json
@@ -416,7 +416,7 @@ def get_package_name_from_stix_package_tag(d):
 
 # vendor_soruceとハッシュ値
 def get_pacakge_name_from_vendor_source_hash(vendor_soruce, content):
-    return '%s_%s' % (vendor_soruce, md5.new(content).hexdigest())
+    return '%s_%s' % (vendor_soruce, md5(content.encode()).hexdigest())
 
 
 @login_required
