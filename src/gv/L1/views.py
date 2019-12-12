@@ -76,7 +76,7 @@ def download_stix(request):
         stix_package = STIXPackage.from_dict(dict_)
         # XML変換した文字列をStringIO化する(その際にUNICODEに変換)
         output = io.StringIO()
-        output.write(str(stix_package.to_xml(), 'utf-8'))
+        output.write(stix_package.to_xml())
         filename = '%s.xml' % (package_id)
         # response作成
         response = HttpResponse(output.getvalue(), content_type='application/xml')

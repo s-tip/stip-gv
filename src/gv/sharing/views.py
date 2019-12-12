@@ -164,9 +164,9 @@ def stix_download(request):
     # XML変換した文字列をStringIO化する
     output = io.StringIO()
     if isinstance(contents, str):
-        output.write(str(contents, 'utf-8'))
-    elif isinstance(contents, str):
         output.write(contents)
+    elif isinstance(contents, bytes):
+        output.write(contents.decode())
     # response作成
     response = HttpResponse(output.getvalue(), content_type='application/xml')
     response['Content-Disposition'] = 'attachment; filename=%s' % (filename)

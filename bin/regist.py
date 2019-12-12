@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 ##############################
 # ctim_gv_regist.py
 # CTIM GraphView bulk upload
@@ -41,7 +41,7 @@ if __name__ == '__main__':
             raise(e)
         upload = StixFileUpload(user=uploader)
         for stix_file_path in glob.glob('%s/*.xml' % (args.stix_dir)):
-            with open(stix_file_path,'r') as fp:
+            with open(stix_file_path,'r', encoding='utf-8') as fp:
                 campaign_name = get_campaign_no_specify_campaign(fp.read(),args.vendor_source)
             upload.upload(stix_file_path,campaign_name,args.vendor_source,input_source=INPUT_SOURCE_SCRIPT)
         ret = 0

@@ -189,7 +189,7 @@ if not dev_over_http:
 # STIP_VERSION_HASH = stdout_str.split('\n')[0]
 try:
     version_path = '/opt/s-tip/ui/version'
-    fp = open(version_path, 'r')
+    fp = open(version_path, 'r', encoding='utf-8')
     STIP_GV_VERSION = fp.readline().strip()
     fp.close()
 except IOError:

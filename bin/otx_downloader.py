@@ -41,7 +41,7 @@ if __name__ == '__main__':
             stix.build()
             filename = '%04d.xml' % (count)
             filepath = os.path.join(args.download_dir, filename)
-            with open(filepath, 'w') as fp:
+            with open(filepath, 'w', encoding='utf-8') as fp:
                 fp.write(stix.to_xml())
             count += 1
         n = datetime.datetime.now().replace(tzinfo=pytz.utc)

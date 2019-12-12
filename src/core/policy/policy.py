@@ -12,7 +12,7 @@ def get_policy_communities():
     comms = ''
     _conf_file_path = Config.objects.get_config().path_sharing_policy_specifications
     try:
-        with open(_conf_file_path, 'r') as fp:
+        with open(_conf_file_path, 'r', encoding='utf-8') as fp:
             for line in fp:
                 if((line is not None) and ('SHARING_COMMUNITY=' in line)):
                     for m in SHARING_COMMUNITY_PATTERN.finditer(line):
@@ -37,7 +37,7 @@ def get_policy(arg_community):
     try:
         _conf_file_path = Config.objects.get_config().path_sharing_policy_specifications
         file_ = ''
-        with open(_conf_file_path, 'r') as fp:
+        with open(_conf_file_path, 'r', encoding='utf-8') as fp:
             for line in fp:
                 line = line.rstrip('\n')
                 if((line != 'SHARING RULE SPECIFICATIONS') and (line != '***************************')):
