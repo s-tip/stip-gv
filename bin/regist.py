@@ -1,16 +1,18 @@
-#!/usr/bin/python
-# coding: UTF-8
-
+#!/usr/bin/python3
 ##############################
-#ctim_gv_regist.py
-#CTIM GraphView bulk upload
+# ctim_gv_regist.py
+# CTIM GraphView bulk upload
 ##############################
-#第1引数：STIXdir
-#第2引数：uploader name
-#第3引数：vendor source
+# 第1引数：STIXdir
+# 第2引数：uploader name
+# 第3引数：vendor source
 ##############################
 
-import sys,traceback,argparse,os,glob
+import argparse
+import glob
+import os
+import traceback
+
 from django.core.wsgi import get_wsgi_application
 
 ########
@@ -30,17 +32,17 @@ if __name__ == '__main__':
     parser.add_argument('uploader',help='Uploder name')
     parser.add_argument('vendor_source',help='Vendor source name')
     args = parser.parse_args()
- 
+
     try:
         try:
-        	uploader = GVAuthUser.objects.get(username=args.uploader)
+            uploader = GVAuthUser.objects.get(username=args.uploader)
         except Exception as e:
-        	print 'Invalid uploader(%s).' % (args.uploader)
-        	raise(e)
+            print 'Invalid uploader(%s).' % (args.uploader)
+            raise(e)
         upload = StixFileUpload(user=uploader)
         for stix_file_path in glob.glob('%s/*.xml' % (args.stix_dir)):
-            with open(stix_file_path,'r') as fp:
-	            campaign_name = get_campaign_no_specify_campaign(fp.read(),args.vendor_source)
+            with open(stix_file_path,'r', encoding='utf-8') as fp:
+                campaign_name = get_campaign_no_specify_campaign(fp.read(),args.vendor_source)
             upload.upload(stix_file_path,campaign_name,args.vendor_source,input_source=INPUT_SOURCE_SCRIPT)
         ret = 0
     except Exception as e:
