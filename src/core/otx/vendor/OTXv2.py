@@ -1,15 +1,9 @@
-#!/usr/bin/env python
-
+#!/usr/bin/env python3
 import json
 import logging
 
-try:
-    # For Python2
-    from urllib2 import URLError, build_opener
-except ImportError:
-    # For Python3
-    from urllib.error import URLError
-    from urllib.request import build_opener
+from urllib.error import URLError
+from urllib.request import build_opener
 
 
 logger = logging.getLogger("OTXv2")
@@ -35,6 +29,7 @@ class OTXv2(object):
     """
     Main class to interact with the AlienVault OTX API.
     """
+
     def __init__(self, key, server="http://otx.alienvault.com"):
         self.key = key
         self.server = server
@@ -50,7 +45,7 @@ class OTXv2(object):
                 raise InvalidAPIKey("Invalid API Key")
             elif e.code == 400:
                 raise BadRequest("Bad Request")
-        data = response.read().decode('utf-8')
+        data = response.read()
         json_data = json.loads(data)
         return json_data
 
