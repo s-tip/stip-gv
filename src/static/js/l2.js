@@ -521,16 +521,16 @@ $(function(){
         		//ipv4 と domain の similarity の合算を表示
         		var similar = simlar_info['ipv4']  + simlar_info['domain'];
         		tr = $('<tr></tr>')
-                		.append($('<td></td>')
+                		.append($('<td class="center-justified"></td>')
                         .append($('<input type="checkbox">').attr('value',package_id).attr('class','related-package-similar-checkbox')))
                         .append($('<td></td>').text(package_name))
                         .append($('<td class="right-justified"></td>').text(exact))
                         .append($('<td class="right-justified"></td>').text(similar))
-                table.row.add(tr);
+                //table.row.add(tr);
         	}
         	else{
         		tr = $('<tr></tr>')
-    				.append($('<td></td>')
+    				.append($('<td class="center-justified"></td>')
     				.append($('<input type="checkbox">').attr('value',package_id).attr('class','related-package-checkbox')))
     				.append($('<td></td>').text(package_name))
     				.append($('<td  class="right-justified"></td>').text(exact));
