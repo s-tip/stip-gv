@@ -11,16 +11,10 @@ from core.common import get_text_field_value, stix2_str_to_datetime
 # L1 Viewの閲覧権限を持っているか?
 def check_allow_l1_view(request):
     stip_user = request.user
-    user = stip_user.gv_auth_user
     # activeユーザー以外はエラー
     if not stip_user.is_active:
         r = {'status': 'NG',
              'message': 'You account is inactive.'}
-        return JsonResponse(r, safe=False)
-    # L1ビュー閲覧許可がない場合はエラー
-    if not user.is_l1_view:
-        r = {'status': 'NG',
-             'message': 'No permission.'}
         return JsonResponse(r, safe=False)
     return None
 

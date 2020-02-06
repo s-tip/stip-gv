@@ -9,7 +9,7 @@ from core.policy.policy import get_policy_communities
 from core.common import get_text_field_value, get_common_replace_dict, get_package_l1_info
 from core.api.rs import Ctirs
 from gv.sharing.ajax.views import save_redacted_stix_file
-from gv.error.views import error_page, error_page_no_view_permission, error_page_inactive, error_page_free_format
+from gv.error.views import error_page, error_page_no_view_not_admin, error_page_inactive, error_page_free_format
 from ctirs.models import Taxii, Config
 from ctim.constant import SESSION_EXPIRY
 from stip.common.const import LANGUAGES
@@ -76,13 +76,12 @@ def write_temp_stix(request):
 # Sharing Viewの閲覧権限を持っているか?
 def check_allow_sharing_view(request):
     stip_user = request.user
-    user = stip_user.gv_auth_user
     # activeユーザー以外はエラー
     if not stip_user.is_active:
         return error_page_inactive(request)
-    # sharingビュー閲覧許可がない場合はエラー
-    if not user.is_sharing_view:
-        return error_page_no_view_permission(request)
+    # adminユーザ以外はエラー
+    if not stip_user.is_admin:
+        return error_page_no_view_not_admin(request)
     return None
 
 
