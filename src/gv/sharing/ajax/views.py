@@ -75,7 +75,7 @@ def check_allow_sharing_view(request):
     # adminユーザ以外はエラー
     if not stip_user.is_admin:
         r = {'status': 'NG',
-             'message': 'Your account is not admin.'}
+             'message': 'You have no permission.'}
         return JsonResponse(r, safe=False)
     return None
 

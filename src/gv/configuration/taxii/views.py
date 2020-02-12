@@ -56,7 +56,7 @@ def taxii_view_top(request):
         return HttpResponseForbidden('Your account is inactivate.')
     # adminユーザ以外はエラー
     if not stip_user.is_admin:
-        return HttpResponseForbidden('Your account is not admin.')
+        return HttpResponseForbidden('You have no permission.')
     error_ = check_allow_configuration_view(request)
     if error_ is not None:
         return error_
@@ -82,7 +82,7 @@ def create_taxii(request):
         return HttpResponseForbidden('Your account is inactivate.')
     # adminユーザ以外はエラー
     if not stip_user.is_admin:
-        return HttpResponseForbidden('Your account is not admin.')
+        return HttpResponseForbidden('You have no permission.')
     error_ = check_allow_configuration_view(request)
     if error_ is not None:
         return error_
@@ -160,7 +160,7 @@ def delete_taxii(request):
         return HttpResponseForbidden('Your account is inactivate.')
     # adminユーザ以外はエラー
     if not stip_user.is_admin:
-        return HttpResponseForbidden('Your account is not admin.')
+        return HttpResponseForbidden('You have no permission.')
     error_ = check_allow_configuration_view(request)
     if error_ is not None:
         return error_
