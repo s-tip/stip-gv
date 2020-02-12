@@ -67,16 +67,15 @@ def get_sharing_ajax_change_stix_comment_stix_comment(request):
 # Sharing Viewの閲覧権限を持っているか?
 def check_allow_sharing_view(request):
     stip_user = request.user
-    user = stip_user.gv_auth_user
     # activeユーザー以外はエラー
     if not stip_user.is_active:
         r = {'status': 'NG',
              'message': 'You account is inactive.'}
         return JsonResponse(r, safe=False)
-    # sharingビュー閲覧許可がない場合はエラー
-    if not user.is_sharing_view:
+    # adminユーザ以外はエラー
+    if not stip_user.is_admin:
         r = {'status': 'NG',
-             'message': 'No permission.'}
+             'message': 'You have no permission.'}
         return JsonResponse(r, safe=False)
     return None
 
