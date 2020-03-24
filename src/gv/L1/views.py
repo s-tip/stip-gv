@@ -1,7 +1,7 @@
 import io
 from django.shortcuts import render
 from core.common import get_text_field_value, get_common_replace_dict
-from gv.error.views import error_page, error_page_no_view_permission, error_page_inactive
+from gv.error.views import error_page, error_page_inactive
 from django.contrib.auth.decorators import login_required
 from ctim.constant import SESSION_EXPIRY
 from core.api.rs import Ctirs
@@ -28,13 +28,9 @@ def get_l1_package_id(request):
 # L1の閲覧権限を持っているか?
 def check_allow_l1_view(request):
     stip_user = request.user
-    user = stip_user.gv_auth_user
     # activeユーザー以外はエラー
     if not stip_user.is_active:
         return error_page_inactive(request)
-    # L1ビュー閲覧許可がない場合はエラー
-    if not user.is_l1_view:
-        return error_page_no_view_permission(request)
     return None
 
 

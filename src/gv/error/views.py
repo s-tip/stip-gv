@@ -31,6 +31,12 @@ def error_page_no_view_permission(request):
     return error_page_free_format(request, 'You have no permission to view this page.')
 
 
+# エラーページレンダリング/adminユーザーではない
+def error_page_no_view_not_admin(request):
+    request.session.set_expiry(SESSION_EXPIRY)
+    return error_page_free_format(request, 'You have no permission.')
+
+
 # エラーページレンダリング/activeユーザーではない
 def error_page_inactive(request):
     request.session.set_expiry(SESSION_EXPIRY)
