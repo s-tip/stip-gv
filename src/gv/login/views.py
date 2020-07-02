@@ -1,5 +1,5 @@
 import django.contrib.auth
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from core.common import get_text_field_value
 from ctim.constant import SESSION_EXPIRY
 from gv.dashboard.views import dashboard_view_top
@@ -40,7 +40,7 @@ def login(request):
                 return change_password_top(request, msg='Please Change Your Password!!!')
             else:
                 # 認証成功(初期画面のdashboardへredirect)
-                return dashboard_view_top(request)
+                return redirect('/dashboard')
     else:
         # user/passwordが一致しない
         replace_dict['error_msg'] = 'Your username or password were incorrect.'
