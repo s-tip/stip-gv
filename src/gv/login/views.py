@@ -40,7 +40,7 @@ def login(request):
                 return change_password_top(request, msg='Please Change Your Password!!!')
             else:
                 # 認証成功(初期画面のdashboardへredirect)
-                return redirect('/dashboard')
+                return redirect('dashboard')
     else:
         # user/passwordが一致しない
         replace_dict['error_msg'] = 'Your username or password were incorrect.'

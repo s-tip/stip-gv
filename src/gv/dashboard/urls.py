@@ -5,7 +5,7 @@ import gv.dashboard.ajax.urls
 
 urlpatterns = [
     # dashboard view/top
-    url(r'^$', dashboard.dashboard_view_top),
+    url(r'^$', dashboard.dashboard_view_top, name='dashboard'),
     # dashboard ajax
     url(r'^ajax/', include(gv.dashboard.ajax.urls)),
 ]
