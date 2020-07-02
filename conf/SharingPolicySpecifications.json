@@ -1,0 +1,280 @@
+{
+  "ROOT": [
+    {
+      "GUID": "4b2b6d21-2138-60c1-d668-d7ebf61e7d44",
+      "Metatype": "PolicySet",
+      "Attributes": {
+        "name": "PolicySet_Default",
+        "OutFileName": "SharingPolicySpecifications.json"
+      },
+      "PolicySet": [
+        {
+          "GUID": "433b3d8c-3f46-effc-c615-1b4972b8fc4b",
+          "Metatype": "Policy",
+          "Attributes": {
+            "name": "Policy_PII",
+            "PolicyStatement": ""
+          },
+          "ref": [
+            {
+              "GUID": "3a2eb4ea-ca99-5757-d2b7-a9f0d926a3a3",
+              "Metatype": "SharingCommunityRef",
+              "Attributes": {
+                "name": "INDUSTRY_Community"
+              },
+              "ref": []
+            },
+            {
+              "GUID": "ef234032-90a0-7f60-b384-7972674df9e0",
+              "Metatype": "Rule",
+              "Attributes": {
+                "name": "Rule_PII",
+                "priority": 0,
+                "RuleStatement": "",
+                "Rule_UID": ""
+              },
+              "ref": [
+                {
+                  "GUID": "8123c1fd-1faa-2002-2fc3-67cfe102d6c1",
+                  "Metatype": "Target",
+                  "Attributes": {
+                    "name": "Target_ANY"
+                  },
+                  "ref": [
+                    {
+                      "GUID": "948d2f59-3ccf-efea-c3f1-79e12f5b5f96",
+                      "Metatype": "Action",
+                      "Attributes": {
+                        "regular_expression": [
+                          "((s)d{1,2}[/-]d{1,2}[-/]d{2,4})",
+                          "(\\d{3}-+\\d{2}-+\\d{4})",
+                          "[\\w]{1}[\\w_.-]*@{1}[\\w_.-]{1,}\\.[\\w]{1,}",
+                          "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}"
+                        ],
+                        "name": "REDACT_PII",
+                        "action_type": "redaction"
+                      },
+                      "ref": []
+                    },
+                    {
+                      "GUID": "97e702c8-ae83-d388-ae05-8328cb8252d2",
+                      "Metatype": "campaign-model",
+                      "Attributes": {
+                        "name": "CampaignModel"
+                      },
+                      "ref": []
+                    },
+                    {
+                      "GUID": "8dca63dc-f20a-0e24-2f74-7c0bcef30328",
+                      "Metatype": "indicator-model",
+                      "Attributes": {
+                        "name": "IndicatorModel"
+                      },
+                      "ref": []
+                    },
+                    {
+                      "GUID": "3ea0cce0-ab8e-21a4-106b-a505a0652cfd",
+                      "Metatype": "identity-model",
+                      "Attributes": {
+                        "name": "IdentityModel"
+                      },
+                      "ref": []
+                    },
+                    {
+                      "GUID": "10ae82f9-f9f5-22e6-2004-8dfb166bde36",
+                      "Metatype": "report-model",
+                      "Attributes": {
+                        "name": "ReportModel"
+                      },
+                      "ref": []
+                    },
+                    {
+                      "GUID": "82a7fe72-1d51-88ab-a936-f51bd9652c59",
+                      "Metatype": "attack-pattern-model",
+                      "Attributes": {
+                        "name": "AttackPatternModel"
+                      },
+                      "ref": []
+                    },
+                    {
+                      "GUID": "27f43a3c-7eb4-e52f-9562-1b900a54389f",
+                      "Metatype": "course-of-action-model",
+                      "Attributes": {
+                        "name": "CourseOfActionModel"
+                      },
+                      "ref": []
+                    },
+                    {
+                      "GUID": "d67a0ddb-9aa7-c130-5d16-3029c24b1ba2",
+                      "Metatype": "malware-model",
+                      "Attributes": {
+                        "name": "MalwareModel"
+                      },
+                      "ref": []
+                    },
+                    {
+                      "GUID": "169dc1b3-65c3-ebe3-7ec7-64887a33aca1",
+                      "Metatype": "location-model",
+                      "Attributes": {
+                        "name": "LocationModel"
+                      },
+                      "ref": []
+                    },
+                    {
+                      "GUID": "3315dd40-9920-4220-cf96-0d12db8f3dd7",
+                      "Metatype": "tool-model",
+                      "Attributes": {
+                        "name": "ToolModel"
+                      },
+                      "ref": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "GUID": "af0cf2bd-f862-7eaa-2c2a-3b33b5121411",
+              "Metatype": "SharingCommunityRef",
+              "Attributes": {
+                "name": "GOVERMENT_Community"
+              },
+              "ref": []
+            }
+          ]
+        },
+        {
+          "GUID": "7643d66a-9b98-3a4d-ac3f-9171b07c3fd4",
+          "Metatype": "Policy",
+          "Attributes": {
+            "name": "Policy_Infra",
+            "PolicyStatement": ""
+          },
+          "ref": [
+            {
+              "GUID": "23959c72-e2f5-790b-ff32-d587e7779152",
+              "Metatype": "Rule",
+              "Attributes": {
+                "priority": 1,
+                "name": "Rule_Infra",
+                "RuleStatement": "",
+                "Rule_UID": ""
+              },
+              "ref": [
+                {
+                  "GUID": "1d05e484-76d0-ae1b-3133-ed61e9a1404b",
+                  "Metatype": "Target",
+                  "Attributes": {
+                    "name": "Target_ANY"
+                  },
+                  "ref": [
+                    {
+                      "GUID": "d5b5a3e0-e34b-8fc4-065b-596e07adc21d",
+                      "Metatype": "observed-data-model",
+                      "Attributes": {
+                        "name": "ObservedDataModel"
+                      },
+                      "ref": []
+                    },
+                    {
+                      "GUID": "a966b069-8498-1596-c110-b971ac25e562",
+                      "Metatype": "infrastructure-model",
+                      "Attributes": {
+                        "name": "InfrastructureModel"
+                      },
+                      "ref": []
+                    },
+                    {
+                      "GUID": "85c689c8-e09f-d3bd-70f1-b27234b7ed07",
+                      "Metatype": "intrusion-set-model",
+                      "Attributes": {
+                        "name": "IntrusionSetModel"
+                      },
+                      "ref": []
+                    },
+                    {
+                      "GUID": "2873244a-3230-246d-d0c1-880c3c8b8d16",
+                      "Metatype": "note-model",
+                      "Attributes": {
+                        "name": "NoteModel"
+                      },
+                      "ref": []
+                    },
+                    {
+                      "GUID": "7b7176f8-476e-b2c9-9367-15e9d0c67aae",
+                      "Metatype": "opinion-model",
+                      "Attributes": {
+                        "name": "OpinionModel"
+                      },
+                      "ref": []
+                    },
+                    {
+                      "GUID": "e2eb9f76-26e6-2b62-d1a7-4833b65b2de2",
+                      "Metatype": "vulnerability-model",
+                      "Attributes": {
+                        "name": "VulnerabilityModel"
+                      },
+                      "ref": []
+                    },
+                    {
+                      "GUID": "e1daffc4-ef5e-113b-01c1-665cf7d72604",
+                      "Metatype": "Action",
+                      "Attributes": {
+                        "action_type": "anonymize",
+                        "regular_expression": [
+                          "[\\w]{1}[\\w_.-]*@{1}[\\w_.-]{1,}\\.[\\w]{1,}",
+                          "(?:[0-9]{1,3}\\.){3}[0-9]{1,3}"
+                        ],
+                        "name": "REDACT_INFRA_INFO"
+                      },
+                      "ref": []
+                    },
+                    {
+                      "GUID": "11c99ee1-c17f-7988-6c84-563363c1980f",
+                      "Metatype": "campaign-model",
+                      "Attributes": {
+                        "name": "CampaignModel"
+                      },
+                      "ref": []
+                    },
+                    {
+                      "GUID": "a3bab56f-72cf-3ac7-40aa-6d2ca2aceadc",
+                      "Metatype": "grouping-model",
+                      "Attributes": {
+                        "name": "GroupingModel"
+                      },
+                      "ref": []
+                    },
+                    {
+                      "GUID": "48e021fe-8774-f0a7-796e-e8522cd889d9",
+                      "Metatype": "threat-actor-model",
+                      "Attributes": {
+                        "name": "ThreatActorModel"
+                      },
+                      "ref": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "GUID": "4148dc9d-fe04-fa6e-32e8-022ce90eca60",
+              "Metatype": "SharingCommunityRef",
+              "Attributes": {
+                "name": "GOVERMENT_Community"
+              },
+              "ref": []
+            },
+            {
+              "GUID": "bfba31f0-a84d-7fd0-e103-d86aac056b58",
+              "Metatype": "SharingCommunityRef",
+              "Attributes": {
+                "name": "INDUSTRY_Community"
+              },
+              "ref": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

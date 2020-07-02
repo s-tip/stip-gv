@@ -1,27 +1,33 @@
-import re
+import json
 from ctirs.models import Config
 
-SHARING_COMMUNITY_PATTERN = re.compile('SHARING_COMMUNITY=\"(\\w+)\"')
-STIX_ELEMENT_PATTERN = re.compile('STIX_ELEMENT=\"(\\w+)Model\"')
-ACTION_PATTERN = re.compile('ACTION=\"(.*?)\\:USE_COLOR\\:(.*?)\"')
-REDACTION_PATTERN = re.compile('REDACTION_FORMAT=\"(.*?)\"')
+
+# SharingPolicyのModelの接尾辞
+MODEL_SUFFIX = '-model'
 
 
 # SharingPolicyの見出しの文字列を取得
 def get_policy_communities():
-    comms = ''
+    comms_list = []
     _conf_file_path = Config.objects.get_config().path_sharing_policy_specifications
     try:
         with open(_conf_file_path, 'r', encoding='utf-8') as fp:
-            for line in fp:
-                if((line is not None) and ('SHARING_COMMUNITY=' in line)):
-                    for m in SHARING_COMMUNITY_PATTERN.finditer(line):
-                        s = (m.group(1))
-                        if not (s in comms):
-                            comms += (s + ',')
-        if(len(comms) == 0):
-            return ''
-        comms = comms[:-1] if comms[-1] == ',' else comms + '}'
+            df = json.load(fp)
+            roots = df.get("ROOT", [])
+            for root in roots:
+                policyset = root.get("PolicySet", [])
+                for policy in policyset:
+                    refs = policy.get("ref", [])
+                    for ref in refs:
+                        metatype = ref.get("Metatype")
+                        if metatype == "SharingCommunityRef":
+                            val = ref.get("Attributes", {}).get("name", None)
+                            if val is not None:
+                                comms_list.append(val)
+        # 順序を保持して重複除去
+        comms_list = sorted(set(comms_list), key=comms_list.index)
+        # カンマ区切りの文字列に変換
+        comms = ','.join(comms_list)
         return comms
     except Exception as e:
         print(e)
@@ -33,42 +39,51 @@ def get_policy_communities():
 # */
 def get_policy(arg_community):
     arg_community = str(arg_community)
-    lines = []
     try:
+        rule_list = []
         _conf_file_path = Config.objects.get_config().path_sharing_policy_specifications
-        file_ = ''
         with open(_conf_file_path, 'r', encoding='utf-8') as fp:
-            for line in fp:
-                line = line.rstrip('\n')
-                if((line != 'SHARING RULE SPECIFICATIONS') and (line != '***************************')):
-                    file_ += (line + '\n')
-                    lines.append(line)
-        rules = []
-        policies = file_.split('---POLICY_END---')
+            df = json.load(fp)
+            roots = df.get("ROOT", [])
+            for root in roots:
+                policyset = root.get("PolicySet", [])
+                for policy in policyset:
+                    refs = policy.get("ref", [])
+                    flg_community = False
+                    read_rule = []
+                    for ref in refs:
+                        metatype = ref.get("Metatype")
+                        if metatype == "SharingCommunityRef":
+                            val = ref.get("Attributes", {}).get("name", None)
+                            if val == arg_community:
+                                flg_community = True
+                        if metatype == "Rule":
+                            read_rule.extend(ref.get("ref", []))
+                    if flg_community:
+                        rule_list.extend(read_rule)
 
-        for pol in policies:
-            coms = []
-            for m in SHARING_COMMUNITY_PATTERN.finditer(pol):
-                coms.append(m.group(1))
+        rules = []
+        for rule in rule_list:
             elems = []
-            for m in STIX_ELEMENT_PATTERN.finditer(pol):
-                elems.append(m.group(1))
             color = '#123456'
-            for m in ACTION_PATTERN.finditer(pol):
-                color = m.group(2)
             redacts = []
-            for m in REDACTION_PATTERN.finditer(pol):
-                redacts.append(m.group(1))
-            for com in coms:
-                for elem in elems:
-                    if(com.upper().count(arg_community.upper()) > 0):
-                        for redact in redacts:
-                            d = {}
-                            d['community'] = arg_community
-                            d['type'] = elem
-                            d['color'] = color
-                            d['reg_exp'] = redact
-                            rules.append(d)
+            targets = rule.get("ref", [])
+            for target in targets:
+                metatype = target.get("Metatype")
+                if metatype == "Action":
+                    redacts.extend(target.get("Attributes", {}).get("regular_expression", []))
+
+                if metatype.endswith(MODEL_SUFFIX):
+                    elems.append(metatype[:-len(MODEL_SUFFIX)])
+
+            for elem in elems:
+                for redact in redacts:
+                    d = {}
+                    d['community'] = arg_community
+                    d['type'] = elem
+                    d['color'] = color
+                    d['reg_exp'] = redact
+                    rules.append(d)
         return rules
     except Exception as e:
         print(e)

@@ -25,12 +25,17 @@ $(function(){
         if(data.node.li_attr.class == CLASS_GATE_KEEPER_ON){
             //GateKeeper-Off
             data.node.li_attr.class = CLASS_GATE_KEEPER_OFF;
-            $(this).jstree('set_text',data.node,data.node.original.text);
             $(this).jstree('set_text',data.node,data.node.original.orignal_value);
         }else{
             //GateKeeper-On
             data.node.li_attr.class = CLASS_GATE_KEEPER_ON;
-            $(this).jstree('set_text',data.node,get_redaction_string());
+            var wk_text = data.node.original.orignal_value
+            if (data.node.li_attr.target_field == 'description'){
+            	wk_text = get_redaction_string()
+            }else{
+                wk_text = redact_v2(data.node.original.object_type, wk_text, rules, get_redaction_string())
+            }
+            $(this).jstree('set_text',data.node,wk_text);
         }
     });
     
@@ -330,7 +335,7 @@ $(function(){
 
     //STIX 2.x の jstree 表示
     function stix_2_x_display(j,rules){
-    	var OBJECT_TYPE_IDENTITY = 'Identity';
+    	var OBJECT_TYPE_IDENTITY = 'identity';
     	var root_d = get_node_item('root',true);
     	$('#hidden-tree-display-stix-version').val('2.0');
     	root_d.children = [];
@@ -349,18 +354,7 @@ $(function(){
     		$.each(j.objects,function(index,object_){
     			var object_type = null;
     			if (object_.type){
-    	            if(object_.type == 'observed-data'){
-    	            	object_type = 'Observable';
-    	            }
-    	            else if(object_.type == 'indicator'){
-    	            	object_type = 'Indicator';
-    	            }
-    	            else if(object_.type == 'campaign'){
-    	            	object_type = 'Campaign';
-    	            }
-    	            else{
-    	            	object_type = object_.type;
-    	            }
+                    object_type = object_.type;
     			}
     			var object_node = get_stix2_object_node(object_,object_type);
     			objects_d.children.push(object_node);
@@ -559,23 +553,31 @@ $(function(){
 		};
 		var value_node = get_node_item(String(value),false);
 
+        value_node.li_attr = {
+            'value_type' : typeof(value),
+            'target_field' : parent_node.text,
+            'is_language_content' : is_language_content_field(parent_node),
+            'selector' : parent_node.selector
+        };
+
         //redact対象であったらclassをセットする
         //あと、最初に表示されるtextをxxxxとし、反転文字列はdata.valueとする
         if(is_redact_v2(object_type,String(value),rules) == true){
-        	value_node.li_attr = {'class' : 'GateKeeper-On'};
+        	value_node.li_attr.class = 'GateKeeper-On'
+            value_node.object_type = object_type
             //redactはtrue
         	value_node.redact = true;
             //オリジナル値を設定
-        	value_node.orignal_value = value.data;
-            //表示文字列は指定の文字列
-        	value_node.text = get_redaction_string();
+        	value_node.orignal_value = String(value);
+            if(key == 'description'){
+                // descriptionのときは値全体をredactする
+                value_node.text = get_redaction_string()
+            }else{
+                // その他は正規表現で一致した文字をredactする
+                value_node.text =　redact_v2(object_type, String(value), rules, get_redaction_string())
+            }
         }
-        value_node.li_attr = {
-        		'value_type' : typeof(value),
-        		'target_field' : parent_node.text,
-        		'is_language_content' : is_language_content_field(parent_node),
-        		'selector' : parent_node.selector
-        };
+
 		parent_node.children = [value_node];
         return parent_node;
     };
@@ -649,6 +651,21 @@ $(function(){
         });
         return is_redact;
     };
+
+
+    //redact処理 (STIX 2.x)
+    function redact_v2(object_type, node_value, rules, new_str){
+        //ルールチェック
+        $.each(rules,function(index, rule){
+            //object_typeが一致
+            if(rule['type'] == object_type){
+                var reg = new RegExp(rule['reg_exp'], 'g')
+                node_value = node_value.replace(reg, new_str);
+            }
+        });
+        return node_value;
+    };
+    
 
     //nodeがどのstixオブジェクトに属するか (STIX 1.x)
     function get_stix_node_type_1(node){
