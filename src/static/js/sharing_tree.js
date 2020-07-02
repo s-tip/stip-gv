@@ -776,7 +776,8 @@ $(function(){
     		}
     		//list
     		//子要素の名前が [ で始まっている場合はlist
-    		if(child['children'][0]['text'][0]=='['){
+    		//ただし子要素のchildrenが空のときはlistとして扱わない
+            if(child['children'][0]['text'][0]=='[' && child['children'][0]['children'].length > 0){
     			var l_ret = []
     			$.each(child['children'],function(index,cchild){
     				l_ret.push(object_json_to_stix_v2(cchild))
