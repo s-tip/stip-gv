@@ -106,8 +106,6 @@ def sharing_view_top(request, info_msg=''):
         replace_dict['info_msg'] = info_msg
         # languages
         replace_dict['languages'] = LANGUAGES
-        # languages
-        replace_dict['user'] = request.user
         try:
             # Ctirsクラスのインスタンスを作成
             ctirs = Ctirs(request)
