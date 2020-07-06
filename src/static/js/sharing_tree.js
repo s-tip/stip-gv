@@ -25,17 +25,47 @@ $(function(){
         if(data.node.li_attr.class == CLASS_GATE_KEEPER_ON){
             //GateKeeper-Off
             data.node.li_attr.class = CLASS_GATE_KEEPER_OFF;
+            // 墨消しを戻す
             $(this).jstree('set_text',data.node,data.node.original.orignal_value);
+            if(is_stix_v2() == true){
+                // modifiedの時刻をオリジナルに戻す
+                for(elem_id of data.instance.get_node(data.node.parents[1]).children){
+                    var elem = data.instance.get_node(elem_id)
+                    if(elem.text == "modified"){
+                        modefied = data.instance.get_node(elem.children)
+                        $(this).jstree('set_text',modefied,modefied.original.orignal_value);
+                        break;
+                    }
+                }
+            }
         }else{
             //GateKeeper-On
             data.node.li_attr.class = CLASS_GATE_KEEPER_ON;
-            var wk_text = data.node.original.orignal_value
-            if (data.node.li_attr.target_field == 'description'){
-            	wk_text = get_redaction_string()
-            }else{
-                wk_text = redact_v2(data.node.original.object_type, wk_text, rules, get_redaction_string())
+            if(is_stix_v1() == true){
+                // STIX1.xは値全体を墨消し
+                $(this).jstree('set_text',data.node,get_redaction_string());
+            }            
+            if(is_stix_v2() == true){
+                var wk_text = data.node.original.orignal_value
+                if (data.node.li_attr.target_field == 'description'){
+                    // descriptionのときは値全体を墨消し
+                    wk_text = get_redaction_string()
+                }else{
+                    // その他は一致した値を墨消し
+                    wk_text = redact_v2(data.node.original.object_type, wk_text, rules, get_redaction_string())
+                }
+                $(this).jstree('set_text',data.node,wk_text);
+                // modifiedの時刻を現在時刻にする
+                for(elem_id of data.instance.get_node(data.node.parents[1]).children){
+                    var elem = data.instance.get_node(elem_id)
+                    if(elem.text == "modified"){
+                        modefied = data.instance.get_node(elem.children);
+                        var now = new Date();
+                        $(this).jstree('set_text',modefied,toISOMicroString(now));
+                        break;
+                    }
+                }
             }
-            $(this).jstree('set_text',data.node,wk_text);
         }
     });
     
@@ -460,7 +490,7 @@ $(function(){
     			object_d.children.push(get_terminal_node_v2(object_type,key,value,''));
     		}
     	});
-		return object_d;
+    	return update_modified(object_d);
     };
 
     //elem のノードを取得する
@@ -582,6 +612,61 @@ $(function(){
         return parent_node;
     };
 
+    
+    // toISOStringの機能拡張でマイクロ秒まで出力する関数
+    // Javascriptの仕様でミリ秒までの精度
+    function toISOMicroString(date){
+        function pad(number) {
+            if (number < 10) {
+                return '0' + number;
+            }
+            return number;
+        }
+
+        return date.getUTCFullYear() +
+        '-' + pad(date.getUTCMonth() + 1) +
+        '-' + pad(date.getUTCDate()) +
+        'T' + pad(date.getUTCHours()) +
+        ':' + pad(date.getUTCMinutes()) +
+        ':' + pad(date.getUTCSeconds()) +
+        '.' + (date.getUTCMilliseconds() / 1000).toFixed(6).slice(2, 8) +
+        'Z';
+    }
+
+    // redact=trueのフラグがあった場合、modifiedを現在時刻にする
+    function update_modified(object){
+        if(!object.children){
+            return object
+        }
+        var redact = false
+        // redactがtrueになっている項目を探す
+        search_redact: for(child of object.children){
+            for(grandchild of child.children){
+                if(grandchild.redact == true){
+                    redact = true
+                    break search_redact;
+                }
+            }
+        }
+        // redactがないときはobjectを変えずに返す
+        if(!redact){
+            return object
+        }
+
+        // modifiedを更新する
+        for(child of object.children){
+            if(child.text == "modified"){
+                for(grandchild of child.children){
+                    var now = new Date();
+                    grandchild.orignal_value = grandchild.text
+                    grandchild.text = toISOMicroString(now);
+                    break;
+                }
+            }
+        }
+        return object;
+    }
+
     //state項目作成
     function get_state_item(opened,selected){
         var d = {};
@@ -613,7 +698,15 @@ $(function(){
         if(type == null){
             return false;
         }
-
+        else if(type == 'Observable'){
+            type = 'observed-data';
+        }
+        else if(type == 'Indicator'){
+            type = 'indicator';
+        }
+        else if(type == 'Campaign'){
+            type = 'campaign';
+        }
         var is_redact = false;
         //ルールチェック
         $.each(rules,function(index,rule){
