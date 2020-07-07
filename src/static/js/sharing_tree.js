@@ -698,15 +698,6 @@ $(function(){
         if(type == null){
             return false;
         }
-        else if(type == 'Observable'){
-            type = 'observed-data';
-        }
-        else if(type == 'Indicator'){
-            type = 'indicator';
-        }
-        else if(type == 'Campaign'){
-            type = 'campaign';
-        }
         var is_redact = false;
         //ルールチェック
         $.each(rules,function(index,rule){
