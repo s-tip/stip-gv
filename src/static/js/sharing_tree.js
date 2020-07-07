@@ -766,7 +766,7 @@ $(function(){
                 return 'campaign';
             }
             if(name == 'stix:Exploit_Targets'){
-                return 'targets';
+                return 'vulnerability';
             }
             return null;
         }
