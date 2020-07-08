@@ -29,6 +29,10 @@ $(function(){
             $(this).jstree('set_text',data.node,data.node.original.orignal_value);
             if(is_stix_v2() == true){
                 // modifiedの時刻をオリジナルに戻す
+                if (is_gateleeper_on(data, data.node.parents[1])) {
+                    // 他に墨消し箇所がある場合は戻さない
+                    return;
+                }
                 for(elem_id of data.instance.get_node(data.node.parents[1]).children){
                     var elem = data.instance.get_node(elem_id)
                     if(elem.text == "modified"){
@@ -85,6 +89,23 @@ $(function(){
         return false;
     }
 
+    // 対象ノード配下にCLASS_GATE_KEEPER_ONを持っていたらtrueを返す
+    function is_gateleeper_on(data, id){
+        var child_ids = data.instance.get_node(id).children
+        for (child_id of child_ids){
+            var elem = data.instance.get_node(child_id)
+            // ONだったらtrueを返す
+            if (elem.li_attr.class == CLASS_GATE_KEEPER_ON){
+                return true;
+            }
+            // 子ノードのチェック
+            if (is_gateleeper_on(data, child_id)){
+                return true;
+            }
+        }
+        return false;
+    }
+    
     //Downloadボタン押下時
     $('.stix-download-button').click(function(){
         //tree-viewの現在のdataのjson取得
