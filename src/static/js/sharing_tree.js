@@ -14,7 +14,32 @@ $(function(){
         //getdrawdata呼び出し
         getDrawData(package_id,community);
     });
-	
+
+    //redact-btn押下時
+    $('#redact-btn').click(function(){
+        //一括置換
+        if(is_stix_v1() == true){
+            $.each($('.GateKeeper-On'),function(index, elem){
+                var a_elem = $('#jstree').jstree().get_node(elem.id)
+                $(this).jstree('set_text', a_elem, get_redaction_string());
+            });
+        }
+        if(is_stix_v2() == true){
+            $.each($('.GateKeeper-On'),function(index, elem){
+                var a_elem = $('#jstree').jstree().get_node(elem.id)
+                var wk_text = a_elem.original.orignal_value
+                if (a_elem.li_attr.target_field == 'description'){
+                    // descriptionのときは値全体を墨消し
+                    wk_text = get_redaction_string()
+                }else{
+                    // その他は一致した値を墨消し
+                    wk_text = redact_v2(a_elem.original.object_type, wk_text, rules, get_redaction_string())
+                }
+                $(this).jstree('set_text', a_elem, wk_text);
+            });    
+        }
+    });
+
     //jstreeのnodeクリック時のイベントハンドラ
     $('#jstree').on('changed.jstree', function (e, data) {
         //redact対象外ノードの場合は何もしない
@@ -26,18 +51,18 @@ $(function(){
             //GateKeeper-Off
             data.node.li_attr.class = CLASS_GATE_KEEPER_OFF;
             // 墨消しを戻す
-            $(this).jstree('set_text',data.node,data.node.original.orignal_value);
+            $(this).jstree('set_text', data.node, data.node.original.orignal_value);
             if(is_stix_v2() == true){
                 // modifiedの時刻をオリジナルに戻す
-                if (is_gateleeper_on(data, data.node.parents[1])) {
-                    // 他に墨消し箇所がある場合は戻さない
+                if (is_gatekeeper_on(data, data.node.parents[1])) {
+                    // 他に墨消し箇所がある場合は時刻を戻さない
                     return;
                 }
                 for(elem_id of data.instance.get_node(data.node.parents[1]).children){
                     var elem = data.instance.get_node(elem_id)
                     if(elem.text == "modified"){
                         modefied = data.instance.get_node(elem.children)
-                        $(this).jstree('set_text',modefied,modefied.original.orignal_value);
+                        $(this).jstree('set_text', modefied, modefied.original.orignal_value);
                         break;
                     }
                 }
@@ -47,7 +72,7 @@ $(function(){
             data.node.li_attr.class = CLASS_GATE_KEEPER_ON;
             if(is_stix_v1() == true){
                 // STIX1.xは値全体を墨消し
-                $(this).jstree('set_text',data.node,get_redaction_string());
+                $(this).jstree('set_text', data.node, get_redaction_string());
             }            
             if(is_stix_v2() == true){
                 var wk_text = data.node.original.orignal_value
@@ -58,7 +83,7 @@ $(function(){
                     // その他は一致した値を墨消し
                     wk_text = redact_v2(data.node.original.object_type, wk_text, rules, get_redaction_string())
                 }
-                $(this).jstree('set_text',data.node,wk_text);
+                $(this).jstree('set_text', data.node, wk_text);
                 // modifiedの時刻を現在時刻にする
                 for(elem_id of data.instance.get_node(data.node.parents[1]).children){
                     var elem = data.instance.get_node(elem_id)
@@ -90,7 +115,7 @@ $(function(){
     }
 
     // 対象ノード配下にCLASS_GATE_KEEPER_ONを持っていたらtrueを返す
-    function is_gateleeper_on(data, id){
+    function is_gatekeeper_on(data, id){
         var child_ids = data.instance.get_node(id).children
         for (child_id of child_ids){
             var elem = data.instance.get_node(child_id)
@@ -99,7 +124,7 @@ $(function(){
                 return true;
             }
             // 子ノードのチェック
-            if (is_gateleeper_on(data, child_id)){
+            if (is_gatekeeper_on(data, child_id)){
                 return true;
             }
         }
