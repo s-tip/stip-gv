@@ -328,6 +328,9 @@ def set_alchemy_nodes(aj, content):
         opinions = []
         notes = []
         language_contents = []
+        '''
+        x_stip_snses = []
+        '''
         # 以下は STIX 2.0 に存在しない
         ttps = None
         ets = None
@@ -371,6 +374,14 @@ def set_alchemy_nodes(aj, content):
                 notes.append(o_)
             elif object_type == 'language-content':
                 language_contents.append(o_)
+
+            '''
+            elif object_type == 'x-stip-sns':
+                x_stip_snses.append(o_)
+            '''
+            if object_type == 'x-stip-sns':
+                continue
+
             elif object_type.startswith('x-'):
                 custom_objects.append(o_)
     else:
@@ -601,6 +612,12 @@ def set_alchemy_nodes(aj, content):
     if custom_objects is not None:
         for custom_object in custom_objects:
             set_alchemy_node_custom_object(aj, custom_object, an_package_id)
+
+    '''
+    if x_stip_snses is not None:
+        for x_stip_sns in x_stip_snses:
+            set_alchemy_node_x_stip_sns(aj, x_stip_sns, an_package_id)
+    '''
     return
 
 
@@ -1149,7 +1166,7 @@ def set_alchemy_node_vulnerability(aj, object_, an_package_id):
                         # CVE node 作成
                         cve = external_reference['external_id']
                         cve_node_id = convert_valid_node_id('%s-%s' % (node_id, cve))
-                        cve_an = AlchemyNode(cve_node_id, 'V2_CVE', cve, cve, cluster=an_package_id)
+                        cve_an = AlchemyNode(cve_node_id, 'v2_CVE', cve, cve, cluster=an_package_id)
                         aj.add_json_node(cve_an)
                         index += 1
                         # Vulnerability と CVE を結ぶ
@@ -1243,6 +1260,24 @@ def set_alchemy_node_custom_object(aj, object_, an_package_id):
             ae = AlchemyEdge(convert_valid_node_id(observed_data_ref), node_id, LABEL_V2_OBJECT_REF)
             aj.add_json_edge(ae)
     return
+
+
+'''
+def set_alchemy_node_x_stip_sns(aj, object_, an_package_id):
+    node_id = convert_valid_node_id(object_['id'])
+    title, description = get_common_title_description(object_, default_title=object_['id'], default_description=object_['id'])
+    # Node 作成
+    an = AlchemyNode(node_id, 'v2_x_stip_sns', title, description, cluster=an_package_id)
+    an.set_stix2_object(object_)
+    aj.add_json_node(an)
+    # created_by_ref を結ぶ
+    set_created_by_ref_edge(aj, object_)
+    # object_refs 結ぶ
+    if 'object_refs' in object_:
+        for observed_data_ref in object_['object_refs']:
+            ae = AlchemyEdge(convert_valid_node_id(observed_data_ref), node_id, LABEL_V2_OBJECT_REF)
+            aj.add_json_edge(ae)
+'''
 
 
 # STIX 2.1 lauguage_content の node 追加処理

@@ -4,12 +4,71 @@ var alchemy_config = {
 
     nodeTypes: {"type":["Header","Indicators","Indicator","Campaign","TTPs","TTP","Incidents","Incident","Observables","Observable","Exploit_Targets","Exploit_Target",
     					"v2_identity","v2_indicator","v2_observables-data","v2_Etc_Observable","v2_IPv4_Addr_Observable","v2_File_Observable","v2_Windows_Registry_Key_Observable","v2_Domain_Name_Observable",
-    					"v2_malware","v2_sighting","v2_intrusion_set","v2_Threat_Actor","v2_attack_pattern","v2_Campaign","v2_CoA","v2_Report","v2_Relationship","v2_Tool","v2_Vulerability","v2_Location","v2_Opinion","v2_Note","V2_CVE","v2_CustomObject"]},
+              "v2_malware","v2_sighting","v2_intrusion_set","v2_Threat_Actor","v2_attack_pattern","v2_Campaign","v2_CoA","v2_Report","v2_Relationship","v2_Tool","v2_Vulerability","v2_Location",
+              "v2_Opinion","v2_Note","V2_CVE","v2_CustomObject", "v2_x_stip_sns"]},
     edgeTypes: {"type":["idref","Includes","child","Exact","Like","v2_created_by_ref","v2_where_sighted_ref","v2_observed_data_ref","v2_object_ref"]},
 
 
     nodeStyle: {
         "Header": {
+            "captionSize": 100,
+            "captionColor": "#0000ff",
+            "borderColor": "#155d6F",
+            "color"  : "#2D7AA0",
+            "radius": 65,
+            "borderWidth" : 5,
+            "selected": {
+              "color": function() {
+                return "#FFFFFF";
+              },
+              "borderColor": function() {
+                return "#38DD38";
+              }
+            },
+            "highlighted": {
+              "color": function() {
+                return "#EEEEFF";
+              }
+            },
+            "hidden": {
+              "color": function() {
+                return "none";
+              },
+              "borderColor": function() {
+                return "none";
+              }
+            }
+        },
+        "v2_Report": {
+            "captionSize": 100,
+            "captionColor": "#0000ff",
+            "borderColor": "#155d6F",
+            "color"  : "#2D7AA0",
+            "radius": 65,
+            "borderWidth" : 5,
+            "selected": {
+              "color": function() {
+                return "#FFFFFF";
+              },
+              "borderColor": function() {
+                return "#38DD38";
+              }
+            },
+            "highlighted": {
+              "color": function() {
+                return "#EEEEFF";
+              }
+            },
+            "hidden": {
+              "color": function() {
+                return "none";
+              },
+              "borderColor": function() {
+                return "none";
+              }
+            }
+        },
+        "v2_x_stip_sns": {
             "captionSize": 100,
             "captionColor": "#0000ff",
             "borderColor": "#155d6F",
