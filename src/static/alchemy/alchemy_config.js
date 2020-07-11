@@ -871,6 +871,11 @@ var alchemy_config = {
             "width": 3,
             "opacity": 0.3,
             "color": "#FF0000"
+        },
+        "v2_object_ref": {
+            "width": 1,
+            "opacity": 0.8,
+            "color": "#0000FF"
         }
     },
     clusterColors: ["#2D7AA0","#626262","#A6C3FB", "#AC71D5","#FE8C3F"],
