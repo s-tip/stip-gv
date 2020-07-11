@@ -603,12 +603,7 @@ def set_alchemy_nodes(aj, content):
         for note in notes:
             set_alchemy_node_note(aj, note, an_package_id)
 
-    # Relationships (STIX 2.0 のみ)
-    if relationships is not None:
-        for relationship in relationships:
-            set_alchemy_node_relationship(aj, relationship, an_package_id)
-
-    # Custom Object (STIX 2.0 から)
+   # Custom Object (STIX 2.0 から)
     if custom_objects is not None:
         for custom_object in custom_objects:
             set_alchemy_node_custom_object(aj, custom_object, an_package_id)
@@ -618,6 +613,11 @@ def set_alchemy_nodes(aj, content):
         for x_stip_sns in x_stip_snses:
             set_alchemy_node_x_stip_sns(aj, x_stip_sns, an_package_id)
     '''
+     # Relationships (STIX 2.0 のみ)
+    if relationships is not None:
+        for relationship in relationships:
+            set_alchemy_node_relationship(aj, relationship, an_package_id)
+
     return
 
 
@@ -1294,26 +1294,10 @@ def modify_alchemy_node_language_content(aj, object_):
 
 # STIX 2.0 relation ship の edge 追加処理
 def set_alchemy_node_relationship(aj, object_, an_package_id):
-    # ID 取得
-    node_id = convert_valid_node_id(object_['id'])
     source_ref = object_['source_ref']
     target_ref = object_['target_ref']
     relationship_type = object_['relationship_type']
-
-    title, description = get_common_title_description(object_, default_title=node_id, default_description='')
-    keys = ['relationship_type']
-    for key in keys:
-        if key in object_:
-            description += get_description_string_from_attr(object_, key)
-    # Node 作成
-    an = AlchemyNode(node_id, 'v2_Relationship', title, description, cluster=an_package_id)
-    an.set_stix2_object(object_)
-    aj.add_json_node(an)
-    # source_ref をむすぶ
-    ae = AlchemyEdge(convert_valid_node_id(source_ref), node_id, relationship_type)
-    aj.add_json_edge(ae)
-    # target_ref をむすぶ
-    ae = AlchemyEdge(node_id, convert_valid_node_id(target_ref), relationship_type)
+    ae = AlchemyEdge(source_ref, target_ref, relationship_type)
     aj.add_json_edge(ae)
     return
 
