@@ -43,8 +43,8 @@ var alchemy_config = {
             "captionColor": "#00ff00",
             "borderColor": "#00ff00",
             "color"  : "#2D7AA0",
-            "radius": 65,
-            "borderWidth" : 5,
+            "radius": 15,
+            "borderWidth" : 2,
             "selected": {
               "color": function() {
                 return "#FFFFFF";
