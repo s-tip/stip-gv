@@ -342,6 +342,33 @@ var alchemy_config = {
               }
             }
         },
+        "v2_Threat_Actor": {
+            "borderColor": "#626262",
+            "color"  : "#626262",
+            "radius": 30,
+            "borderWidth" : 2,
+            "selected": {
+              "color": function() {
+                return "#FFFFFF";
+              },
+              "borderColor": function() {
+                return "#38DD38";
+              }
+            },
+            "highlighted": {
+              "color": function() {
+                return "#EEEEFF";
+              }
+            },
+            "hidden": {
+              "color": function() {
+                return "none";
+              },
+              "borderColor": function() {
+                return "none";
+              }
+            }
+        },
         "Campaign": {
             "captionSize": 100,
             "captionColor": "#0000ff",

@@ -1,4 +1,5 @@
 import json
+import re
 import stix.extensions.marking.ais  # @UnusedImport
 from stix.core.stix_package import STIXPackage
 from cybox.objects.file_object import File
@@ -692,6 +693,36 @@ def set_alchemy_node_campaign_v1(aj, campaign, an_campaigns_id, an_package_id):
     return
 
 
+ipv4_pattern = re.compile(r'ipv4-addr:value\s*=\s*\'(\S+)\'')
+domain_name_pattern = re.compile(r'domain-name:value\s*=\s*\'(\S+)\'')
+md5_pattern = re.compile(r'file:hashes\.\'MD5\'\s*=\s*\'(\S+)\'')
+sha1_pattern = re.compile(r'file:hashes\.\'SHA-1\'\s*=\s*\'(\S+)\'')
+sha256_pattern = re.compile(r'file:hashes\.\'SHA-256\'\s*=\s*\'(\S+)\'')
+sha512_pattern = re.compile(r'file:hashes\.\'SHA-512\'\s*=\s*\'(\S+)\'')
+url_pattern = re.compile(r'url:value\s*=\s*\'(\S+)\'')
+email_addr_pattern = re.compile(r'email-addr:value\s*=\s*\'(\S+)\'')
+
+patterns = [
+    (ipv4_pattern, 'v2_IPv4_Addr_Observable'),
+    (domain_name_pattern, 'v2_Domain_Name_Observable'),
+    (md5_pattern, 'v2_File_Observable'),
+    (sha1_pattern, 'v2_File_Observable'),
+    (sha256_pattern, 'v2_File_Observable'),
+    (sha512_pattern, 'v2_File_Observable'),
+    (url_pattern, 'v2_indicator'),
+    (email_addr_pattern, 'v2_indicator'),
+]
+
+
+def _get_indicator_type_value_stix2(pattern_str):
+    for pattern_tup in patterns:
+        pattern, type_ = pattern_tup
+        matches = pattern.findall(pattern_str)
+        if len(matches) == 1:
+            return type_, matches[0]
+    return None, None
+
+
 # STIX 1.x/2.0 indicator の node 追加処理
 # indicators_values を返却
 def set_alchemy_node_indicator(aj, indicator, an_indicators_id=None, is_stix_v2=False, an_package_id=None):
@@ -722,7 +753,13 @@ def set_alchemy_node_indicator(aj, indicator, an_indicators_id=None, is_stix_v2=
 
     if is_stix_v2:
         # STIX 2.0 の場合
-        an.set_value(indicator['pattern'])
+        type_, value = _get_indicator_type_value_stix2(indicator['pattern'])
+        if type_:
+            an._set_type(type_)
+            an._set_caption(value)
+            an.set_value(value)
+        else:
+            an.set_value(indicator['pattern'])
     else:
         # STIX 1.x の場合
         if indicator.observable is not None:
