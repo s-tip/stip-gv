@@ -6,7 +6,7 @@ var alchemy_config = {
     					"v2_identity","v2_indicator","v2_observables-data","v2_Etc_Observable","v2_IPv4_Addr_Observable","v2_File_Observable","v2_Windows_Registry_Key_Observable","v2_Domain_Name_Observable",
               "v2_malware","v2_sighting","v2_intrusion_set","v2_Threat_Actor","v2_attack_pattern","v2_Campaign","v2_CoA","v2_Report","v2_Relationship","v2_Tool","v2_Vulerability","v2_Location",
               "v2_Opinion","v2_Note","V2_CVE","v2_CustomObject", "v2_x_stip_sns"]},
-    edgeTypes: {"type":["idref","Includes","child","Exact","Like","v2_created_by_ref","v2_where_sighted_ref","v2_observed_data_ref","v2_object_ref"]},
+    edgeTypes: {"type":["idref","Includes","child","Exact","Like","created_by_ref","v2_where_sighted_ref","v2_observed_data_ref","object_ref"]},
 
 
     nodeStyle: {
@@ -894,9 +894,9 @@ var alchemy_config = {
             "color": "#00FF00"
         },
         "created_by_ref": {
-            "width": 1,
-            "opacity": 0.8,
-            "color": "#0000FF"
+            "width": 4,
+            "opacity": 0.2,
+            "color": "#cccccc"
         },
         "Exact": {
             "width": 5,
@@ -958,7 +958,7 @@ var alchemy_config = {
             "opacity": 0.3,
             "color": "#FF0000"
         },
-        "v2_object_ref": {
+        "object_ref": {
             "width": 1,
             "opacity": 0.8,
             "color": "#0000FF"
