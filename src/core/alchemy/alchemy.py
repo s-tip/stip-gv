@@ -2,7 +2,6 @@ from ctim.constant import DISPLAY_NODE_THRESHOLD
 from stix.common.structured_text import StructuredText
 
 
-# Alchemyのデータ形式(json)を作成するクラス
 class AlchemyJsonData:
     def __init__(self):
         self._json_nodes = {}
@@ -31,49 +30,41 @@ class AlchemyJsonData:
         for node in self._json_nodes.values():
             node.set_user_language(_user_language)
 
-    # json形式に変換して返却
-    # 削除確認設定が有効でかつ末端ノード数が閾値を超えた場合は None を返却する
     def get_alchemy_json(self, too_many_nodes='confirm'):
         is_redact = False
         if self.is_over_unlinked_end_nodes():
             if too_many_nodes == 'confirm':
-                return None  # 削除確認を行うため、ここから先のJson作成を実施しない
+                return None
             elif too_many_nodes == 'redact':
-                is_redact = True  # 間引き指定
+                is_redact = True
             elif too_many_nodes == 'all':
-                is_redact = False  # 全データ返却
+                is_redact = False
             else:
-                return None  # confirmと同様
+                return None
 
         json = {}
 
-        # nodes情報
         json_nodes = []
         json_node_ids = []
         redact_nodes = []
 
         for node in self._json_nodes.values():
-            # ノードを間引くか判定
             if is_redact:
-                if self.is_end_node(node):  # 終端ノードか判定
-                    if not self.is_include_in_link(node):  # リンクに含まれない
+                if self.is_end_node(node):
+                    if not self.is_include_in_link(node):
                         redact_nodes.append(node)
-                        # json_nodesに追加しない
                         continue
             json_nodes.append(node.get_json())
             json_node_ids.append(node._id_)
         json['nodes'] = json_nodes
-        # edges情報
         json_edges = []
         for edge in self._json_edges:
             redact_edge = False
-            # edgeの_source,_targetが間引き対象のノードか判定
             for redact_node in redact_nodes:
                 if edge._source == redact_node._id_ or edge._target == redact_node._id_:
                     redact_edge = True
                     break
             if redact_edge:
-                # json_nodesに追加しない
                 continue
             if edge._source not in json_node_ids:
                 print('no edge. skip (%s)' % (edge._source))
@@ -89,23 +80,19 @@ class AlchemyJsonData:
         count = 0
         for node in self._json_nodes.values():
             if not self.is_end_node(node):
-                continue  # 末端ノードではない為カウントしない
+                continue
             else:
                 if self.is_include_in_link(node):
-                    continue  # 関連しているノードがある為カウントしない
+                    continue
                 else:
-                    count += 1  # 末端ノードとしてカウント
-                    # カウントが超えた段階でTrueを返却
+                    count += 1
                     if count > DISPLAY_NODE_THRESHOLD:
                         return True
         return False
 
-    # 引数のノードがリンク要素に含まれているか判断
     def is_include_in_link(self, node):
-        # Eaxct / similarの場合にTrueが設定されているためそのまま返却
         return node._is_exact
 
-    # 末端ノードか判定する
     def is_end_node(self, node):
         not_end_node_types = [
             'Header',
@@ -132,7 +119,6 @@ class AlchemyJsonBase(object):
         raise NotImplementedError()
 
 
-# AlchemyのEdge(リンク)のデータクラス
 class AlchemyEdge(AlchemyJsonBase):
     _source = -1
     _target = -1
@@ -156,7 +142,6 @@ class AlchemyEdge(AlchemyJsonBase):
             return False
         return ((self._source == obj._source) and (self._target == obj._target))
 
-    # AlchemyのNodeデータを作成する(json)
     def get_json(self):
         r = {}
         r['source'] = str(self._source)
@@ -166,7 +151,6 @@ class AlchemyEdge(AlchemyJsonBase):
         return r
 
 
-# AlchemyのNodesのデータクラス
 class AlchemyNode(AlchemyJsonBase):
     _id_ = -1
     _type = ''
@@ -181,32 +165,24 @@ class AlchemyNode(AlchemyJsonBase):
 
     def __init__(self, id_, type_, caption, description, object_=None, observable_=None, cluster=None):
         super(AlchemyNode, self).__init__()
-        # 1番目の引数がid
         self._id_ = id_
-        # 2番目がタイプ
         self._set_type(type_)
-        # 3番目がキャプション
         self._set_caption(caption)
-        # 4番目がdescription
         if(description is None):
             self._description = ''
         else:
             v = ''
             if isinstance(description, str):
-                # description は str (主にプログラムで決定する場合)
                 v = description
             elif isinstance(description, StructuredText):
-                # description は StructedText (主に STIX から取得する場合)
                 v = description.value
 
             if len(v) == 0:
                 self._description = ''
             else:
                 self._description = v
-        # 5番目がcluster
         self._cluster = cluster
 
-    # id完全一致でequal
     def __eq__(self, obj):
         if(obj is None):
             return False
@@ -237,14 +213,11 @@ class AlchemyNode(AlchemyJsonBase):
     def set_value(self, value):
         self._value = value
 
-    # AlchemyのNodeデータを作成する(json)
     def get_json(self):
         r = {}
         r['id'] = self.sanitize(str(self._id_))
         r['type'] = self.sanitize(str(self._type))
-        # _caption/_descriptionはstr型
         r['caption'] = self.sanitize(self._caption)
-        # description
         description = self.sanitize(self._description)
         r['stix2_object'] = self._stix2_object
         r['language_contents'] = self._language_contents

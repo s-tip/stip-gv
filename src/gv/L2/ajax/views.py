@@ -16,8 +16,8 @@ from core.alchemy.alchemy import AlchemyJsonData, AlchemyNode, AlchemyEdge
 LABEL_EDGE = 'Includes'
 LABEL_IDREF = 'IDref'
 LABEL_UNSPECIFIED = 'Unspecified'
-LABEL_V2_CREATED_BY_REF = 'v2_created_by_ref'
-LABEL_V2_OBJECT_REF = 'v2_object_ref'
+LABEL_V2_CREATED_BY_REF = 'created_by_ref'
+LABEL_V2_OBJECT_REF = 'object_ref'
 
 
 def get_l2_ajax_related_campagins_campaign(request):
@@ -950,7 +950,7 @@ def set_alchemy_node_report(aj, object_, an_package_id):
     set_created_by_ref_edge(aj, object_)
     if 'object_refs' in object_:
         for observed_data_ref in object_['object_refs']:
-            ae = AlchemyEdge(convert_valid_node_id(observed_data_ref), node_id, LABEL_V2_OBJECT_REF)
+            ae = AlchemyEdge(node_id, convert_valid_node_id(observed_data_ref), LABEL_V2_OBJECT_REF)
             aj.add_json_edge(ae)
     return
 
@@ -1010,7 +1010,7 @@ def set_alchemy_node_opinion(aj, object_, an_package_id):
     set_created_by_ref_edge(aj, object_)
     if 'object_refs' in object_:
         for observed_data_ref in object_['object_refs']:
-            ae = AlchemyEdge(convert_valid_node_id(observed_data_ref), node_id, LABEL_V2_OBJECT_REF)
+            ae = AlchemyEdge(node_id, convert_valid_node_id(observed_data_ref), LABEL_V2_OBJECT_REF)
             aj.add_json_edge(ae)
     return
 
@@ -1028,7 +1028,7 @@ def set_alchemy_node_note(aj, object_, an_package_id):
     set_created_by_ref_edge(aj, object_)
     if 'object_refs' in object_:
         for observed_data_ref in object_['object_refs']:
-            ae = AlchemyEdge(convert_valid_node_id(observed_data_ref), node_id, LABEL_V2_OBJECT_REF)
+            ae = AlchemyEdge(node_id, convert_valid_node_id(observed_data_ref), LABEL_V2_OBJECT_REF)
             aj.add_json_edge(ae)
     return
 
@@ -1042,7 +1042,7 @@ def set_alchemy_node_custom_object(aj, object_, an_package_id):
     set_created_by_ref_edge(aj, object_)
     if 'object_refs' in object_:
         for observed_data_ref in object_['object_refs']:
-            ae = AlchemyEdge(convert_valid_node_id(observed_data_ref), node_id, LABEL_V2_OBJECT_REF)
+            ae = AlchemyEdge(node_id, convert_valid_node_id(observed_data_ref), LABEL_V2_OBJECT_REF)
             aj.add_json_edge(ae)
     return
 
@@ -1057,7 +1057,7 @@ def set_alchemy_node_x_stip_sns(aj, object_, an_package_id):
     set_created_by_ref_edge(aj, object_)
     if 'object_refs' in object_:
         for observed_data_ref in object_['object_refs']:
-            ae = AlchemyEdge(convert_valid_node_id(observed_data_ref), node_id, LABEL_V2_OBJECT_REF)
+            ae = AlchemyEdge(node_id, convert_valid_node_id(observed_data_ref), LABEL_V2_OBJECT_REF)
             aj.add_json_edge(ae)
 '''
 
