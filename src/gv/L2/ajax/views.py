@@ -980,6 +980,19 @@ def set_alchemy_node_vulnerability(aj, object_, an_package_id):
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
+    index = 1
+    if 'external_references' in object_:
+        for external_reference in object_['external_references']:
+            if 'source_name' in external_reference:
+                if external_reference['source_name'] == 'cve':
+                    if 'external_id' in external_reference:
+                        cve = external_reference['external_id']
+                        cve_node_id = convert_valid_node_id('%s-%s' % (node_id, cve))
+                        cve_an = AlchemyNode(cve_node_id, 'v2_CVE', cve, cve, cluster=an_package_id)
+                        aj.add_json_node(cve_an)
+                        index += 1
+                        cve_ae = AlchemyEdge(cve_node_id, node_id, LABEL_V2_OBJECT_REF)
+                        aj.add_json_edge(cve_ae)
     return
 
 
