@@ -201,6 +201,8 @@ def get_draw_data(request):
             # STIX 1.x の場合
             # json から XML イメージを返却
             xml = STIXPackage.from_dict(dict_).to_xml()
+            if isinstance(xml, bytes):
+                xml = xml.decode()
             r['xml'] = xml
             r['stix_version'] = '1.2'
     except Exception as e:
@@ -240,10 +242,13 @@ def get_raw_stix(request):
         else:
             stix_package = STIXPackage.from_dict(j)
             # 返却json
+            xml = stix_package.to_xml()
+            if isinstance(xml, bytes):
+                xml = xml.decode()
             r = {'status': 'OK',
                  'message': 'Success.',
                  'stix_version': '1.2',
-                 'contents': stix_package.to_xml()}
+                 'contents': xml}
     except Exception as e:
         traceback.print_exc()
         r = {'status': 'NG',
@@ -291,8 +296,11 @@ def update_stix_file_v1(pacakge_id, content):
     output = io.StringIO(content)
     # xml整形して再書き込み
     p = STIXPackage.from_xml(output)
+    xml = p.to_xml()
+    if isinstance(xml, bytes):
+        xml = xml.decode()
     # 中身とファイル名を返却
-    return p.to_xml(), file_path
+    return xml, file_path
 
 
 # Download する stix file を作成する (STIX 2.x)
