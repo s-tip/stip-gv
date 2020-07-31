@@ -109,6 +109,10 @@ width: 100%;
     background-color: transparent;
 }
 
+.related-package-th{
+    padding: 3px;
+}
+
 .display-limit .ui-dialog-titlebar {
         display: none;
 }
@@ -148,6 +152,7 @@ width: 100%;
 #related-package-similar-table td,
 #related-package-similar-table th{
     border: solid 1px #999999;
+    padding: 3px;
     width: initial !important;
 }
 

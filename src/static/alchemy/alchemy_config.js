@@ -4,12 +4,71 @@ var alchemy_config = {
 
     nodeTypes: {"type":["Header","Indicators","Indicator","Campaign","TTPs","TTP","Incidents","Incident","Observables","Observable","Exploit_Targets","Exploit_Target",
     					"v2_identity","v2_indicator","v2_observables-data","v2_Etc_Observable","v2_IPv4_Addr_Observable","v2_File_Observable","v2_Windows_Registry_Key_Observable","v2_Domain_Name_Observable",
-    					"v2_malware","v2_sighting","v2_intrusion_set","v2_Threat_Actor","v2_attack_pattern","v2_Campaign","v2_CoA","v2_Report","v2_Relationship","v2_Tool","v2_Vulerability","v2_Location","v2_Opinion","v2_Note","V2_CVE","v2_CustomObject"]},
-    edgeTypes: {"type":["idref","Includes","child","Exact","Like","v2_created_by_ref","v2_where_sighted_ref","v2_observed_data_ref","v2_object_ref"]},
+              "v2_malware","v2_sighting","v2_intrusion_set","v2_Threat_Actor","v2_attack_pattern","v2_Campaign","v2_CoA","v2_Report","v2_Relationship","v2_Tool","v2_Vulerability","v2_Location",
+              "v2_Opinion","v2_Note","V2_CVE","v2_CustomObject", "v2_x_stip_sns"]},
+    edgeTypes: {"type":["idref","Includes","child","Exact","Like","created_by_ref","v2_where_sighted_ref","v2_observed_data_ref","object_ref"]},
 
 
     nodeStyle: {
         "Header": {
+            "captionSize": 100,
+            "captionColor": "#0000ff",
+            "borderColor": "#155d6F",
+            "color"  : "#2D7AA0",
+            "radius": 65,
+            "borderWidth" : 5,
+            "selected": {
+              "color": function() {
+                return "#FFFFFF";
+              },
+              "borderColor": function() {
+                return "#38DD38";
+              }
+            },
+            "highlighted": {
+              "color": function() {
+                return "#EEEEFF";
+              }
+            },
+            "hidden": {
+              "color": function() {
+                return "none";
+              },
+              "borderColor": function() {
+                return "none";
+              }
+            }
+        },
+        "v2_Report": {
+            "captionSize": 100,
+            "captionColor": "#0000ff",
+            "borderColor": "#155d6F",
+            "color"  : "#2D7AA0",
+            "radius": 65,
+            "borderWidth" : 5,
+            "selected": {
+              "color": function() {
+                return "#FFFFFF";
+              },
+              "borderColor": function() {
+                return "#38DD38";
+              }
+            },
+            "highlighted": {
+              "color": function() {
+                return "#EEEEFF";
+              }
+            },
+            "hidden": {
+              "color": function() {
+                return "none";
+              },
+              "borderColor": function() {
+                return "none";
+              }
+            }
+        },
+        "v2_x_stip_sns": {
             "captionSize": 100,
             "captionColor": "#0000ff",
             "borderColor": "#155d6F",
@@ -43,8 +102,8 @@ var alchemy_config = {
             "captionColor": "#00ff00",
             "borderColor": "#00ff00",
             "color"  : "#2D7AA0",
-            "radius": 65,
-            "borderWidth" : 5,
+            "radius": 15,
+            "borderWidth" : 2,
             "selected": {
               "color": function() {
                 return "#FFFFFF";
@@ -257,6 +316,33 @@ var alchemy_config = {
             }
         },
         "Threat_Actors": {
+            "borderColor": "#626262",
+            "color"  : "#626262",
+            "radius": 30,
+            "borderWidth" : 2,
+            "selected": {
+              "color": function() {
+                return "#FFFFFF";
+              },
+              "borderColor": function() {
+                return "#38DD38";
+              }
+            },
+            "highlighted": {
+              "color": function() {
+                return "#EEEEFF";
+              }
+            },
+            "hidden": {
+              "color": function() {
+                return "none";
+              },
+              "borderColor": function() {
+                return "none";
+              }
+            }
+        },
+        "v2_Threat_Actor": {
             "borderColor": "#626262",
             "color"  : "#626262",
             "radius": 30,
@@ -808,9 +894,9 @@ var alchemy_config = {
             "color": "#00FF00"
         },
         "created_by_ref": {
-            "width": 1,
-            "opacity": 0.8,
-            "color": "#0000FF"
+            "width": 4,
+            "opacity": 0.2,
+            "color": "#cccccc"
         },
         "Exact": {
             "width": 5,
@@ -871,6 +957,11 @@ var alchemy_config = {
             "width": 3,
             "opacity": 0.3,
             "color": "#FF0000"
+        },
+        "object_ref": {
+            "width": 1,
+            "opacity": 0.8,
+            "color": "#0000FF"
         }
     },
     clusterColors: ["#2D7AA0","#626262","#A6C3FB", "#AC71D5","#FE8C3F"],
@@ -914,7 +1005,6 @@ function get_default_language(user_language,language_contents){
 	var langs = [];
 	var DEFAULT_LANG = "en";
 
-	//languages_contents が user 情報と一緒なら採用する
 	for (language_content in language_contents){
 		langs.push(language_content);
 		if (language_content == user_language){
@@ -922,12 +1012,10 @@ function get_default_language(user_language,language_contents){
 		}
 	}
 	
-	//Englishがあれば採用する
 	if(langs.indexOf(DEFAULT_LANG) >= 0){
 		return DEFAULT_LANG;
 	}
 	
-	//alphabet 最初のものを採用
 	langs.sort()
 	return langs[0];
 };
@@ -966,14 +1054,10 @@ function onNodeClickFunction(node){
     var user_language = node._properties.user_language;
   	var language_contents = node._properties.language_contents;
     if (stix2_object == null){
-    	//STIX 1.x
-    	//language-content 消す
     	$("#l2-language-options").css("display","none");
     }else{
-    	//STIX 2.x
     	var description_text = '';
     	var title_text = null;
-    	//表示する言語コードを決定
     	var display_language = get_default_language(user_language,language_contents);
     	var display_language_content = null;
     	var original_language = 'no lang_property';
@@ -981,7 +1065,6 @@ function onNodeClickFunction(node){
     		display_language_content = language_contents[display_language];
     	}
     	$.each(stix2_object,function(key,index){
-    		//key が name
     		if (key == "name"){
     			title_text = stix2_object[key] ;
     		}
@@ -999,27 +1082,21 @@ function onNodeClickFunction(node){
     		if (display_language_content != null){
     			if (display_language_content[key]){
     				if (Array.isArray(display_language_content[key])== true){
-    					//list
     					transalated_list = new Array(stix2_object[key].length);
     					$.each(display_language_content[key],function(dlc_index,list_display_value){
     						if(list_display_value.length != 0){
-    							//翻訳する
     							transalated_list[dlc_index] = list_display_value
     						}else{
-    							//翻訳しない
     							transalated_list[dlc_index] = stix2_object[key][dlc_index]
     						}
     					});
     					v = JSON.stringify(transalated_list);
     				}else if(typeof(display_language_content[key])== 'object'){
-    					//dict
     					var transalated_dict = {};
     					$.each(stix2_object[key],function(dlc_key,dict_display_value){
     						if(display_language_content[key][dlc_key]){
-    							//翻訳する
     							transalated_dict[dlc_key] = display_language_content[key][dlc_key];
     						}else{
-    							//翻訳しない
     							transalated_dict[dlc_key] = dict_display_value;
     						}
     					});
@@ -1039,15 +1116,11 @@ function onNodeClickFunction(node){
     		l2_title.innerHTML = 'A title is undefined....';
     	}
     	
-    	// language-contents があれば
     	if (language_contents == null){
-            //language-content 消す
             $("#l2-language-options").css("display","none");
     	}
     	else{
-    		//language-contents 用のリンクを作成する
     		var language_options = 'Language-Options: ';
-    		// Original への link
             language_options += '<a class="content-language-href" data-language= "original_content">' + original_language + ' (original)</a>, ';
             $.each(language_contents,function(language,index){
             	var content_dict = language_contents[language];
@@ -1079,13 +1152,10 @@ function onNodeClickFunction(node){
     var modal = document.getElementById("l2-description-modal");
     modal.style.display = "block";
 
-    //get height(id=l2-modal-content)
     var before_modal_content_height = parseInt($("#l2-modal-content").css("height"));
-    //get height(id=alchemy)
     var alchemy_height = parseInt($("#alchemy").css("height"));
 
     if (before_modal_content_height > (alchemy_height / 3)){
-        //set new height
         $("#l2-modal-content").css("height",(alchemy_height / 3) + "px");
         $("#l2-modal-content").css("overflow","scroll");
     }
