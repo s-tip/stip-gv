@@ -1,9 +1,10 @@
 from django.shortcuts import render
-from core.common import get_text_field_value, get_common_replace_dict
-from gv.error.views import error_page, error_page_inactive
 from django.contrib.auth.decorators import login_required
-from ctim.constant import SESSION_EXPIRY
+from stip.common import get_text_field_value
 from ctirs.models import STIPUser
+from core.common import get_common_replace_dict
+from gv.error.views import error_page, error_page_inactive
+from ctim.constant import SESSION_EXPIRY
 
 
 def get_profile_change_password_old_password(request):

@@ -1,11 +1,12 @@
 from django.shortcuts import render
-from core.common import get_text_field_value, get_common_replace_dict
-from gv.error.views import error_page, error_page_free_format
+from django.http.response import HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
+from stip.common import get_text_field_value
+from core.common import get_common_replace_dict
+from gv.error.views import error_page, error_page_free_format
 from ctirs.models import Config, Taxii
 from ctim.constant import SESSION_EXPIRY
 from gv.configuration import check_allow_configuration_view
-from django.http.response import HttpResponseForbidden
 
 
 def get_configuration_system_default_taxii(request):

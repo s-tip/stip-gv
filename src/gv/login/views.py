@@ -1,10 +1,11 @@
 import django.contrib.auth
 import pyotp
 from django.shortcuts import render, redirect
-from core.common import get_text_field_value
+from stip.common import get_text_field_value
+from ctirs.models import STIPUser
 from ctim.constant import SESSION_EXPIRY
 from gv.profile.views import change_password_top
-from ctirs.models import STIPUser
+
 
 def get_login_username(request):
     return get_text_field_value(request, 'username', default_value='')

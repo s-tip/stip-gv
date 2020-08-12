@@ -1,9 +1,9 @@
 from django.shortcuts import render
-from core.common import get_common_replace_dict
-from gv.error.views import error_page, error_page_inactive
 from django.contrib.auth.decorators import login_required
+from stip.common import get_text_field_value
+from gv.error.views import error_page, error_page_inactive
 from ctim.constant import SESSION_EXPIRY
-from core.common import get_text_field_value
+from core.common import get_common_replace_dict
 from core.api.rs import Ctirs
 
 

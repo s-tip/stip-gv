@@ -1,7 +1,8 @@
 from django.shortcuts import redirect
-from core.common import get_text_field_value, get_next_location
-from gv.error.views import error_page, error_page_inactive
 from django.contrib.auth.decorators import login_required
+from stip.common import get_text_field_value
+from core.common import get_next_location
+from gv.error.views import error_page, error_page_inactive
 from ctim.constant import SESSION_EXPIRY
 
 

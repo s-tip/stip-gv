@@ -7,8 +7,8 @@ from cybox.objects.uri_object import URI
 from cybox.objects.address_object import Address
 from django.views.decorators.csrf import csrf_protect
 from django.http.response import JsonResponse
+from stip.common import get_text_field_value
 from ctim.constant import SESSION_EXPIRY
-from core.common import get_text_field_value
 from core.api.rs import Ctirs
 from core.alchemy.alchemy import AlchemyJsonData, AlchemyNode, AlchemyEdge
 

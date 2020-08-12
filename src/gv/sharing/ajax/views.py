@@ -9,7 +9,7 @@ from stix.core.stix_package import STIXPackage
 from django.http.response import JsonResponse
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required
-from core.common import get_text_field_value
+from stip.common import get_text_field_value
 from core.api.rs import Ctirs
 from core.policy.policy import get_policy, get_policy_communities
 from core.taxii.taxii import Taxii

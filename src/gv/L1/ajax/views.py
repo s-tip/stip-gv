@@ -2,10 +2,11 @@ import traceback
 import json
 from django.contrib.auth.decorators import login_required
 from django.http.response import JsonResponse, HttpResponseServerError
+from stip.common import get_text_field_value
 from ctim.constant import SESSION_EXPIRY
 from ctirs.models import Aliases
 from core.api.rs import Ctirs
-from core.common import get_text_field_value, stix2_str_to_datetime
+from core.common import stix2_str_to_datetime
 
 
 # L1 Viewの閲覧権限を持っているか?
