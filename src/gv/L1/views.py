@@ -1,12 +1,13 @@
 import io
+from stix.core.stix_package import STIXPackage
 from django.shortcuts import render
-from core.common import get_text_field_value, get_common_replace_dict
-from gv.error.views import error_page, error_page_inactive
+from django.http.response import HttpResponse
 from django.contrib.auth.decorators import login_required
+from stip.common import get_text_field_value
+from core.common import get_common_replace_dict
+from gv.error.views import error_page, error_page_inactive
 from ctim.constant import SESSION_EXPIRY
 from core.api.rs import Ctirs
-from stix.core.stix_package import STIXPackage
-from django.http.response import HttpResponse
 
 
 def get_l1_page(request):

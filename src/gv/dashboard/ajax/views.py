@@ -2,7 +2,8 @@ import datetime
 from stix.core.stix_package import STIXPackage
 from django.contrib.auth.decorators import login_required
 from django.http.response import JsonResponse
-from core.common import get_text_field_value, get_package_l1_info
+from stip.common import get_text_field_value
+from core.common import get_package_l1_info
 from ctim.constant import SESSION_EXPIRY
 from core.api.rs import Ctirs
 
