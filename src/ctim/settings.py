@@ -32,10 +32,10 @@ LOGIN_URL = '/login?session_invalid=True'
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# GV
-# SECRET_KEY = '5y%^e#ikpckc$n$m8qjl$#q4*&&3&2$8o*_4)$j(@8c#(46b4q'
-# CTIRS
-SECRET_KEY = 'j%yjl@$v=xi6((y3!=bf3$n5)e)+af)*+syuia#co)1edp=dv-'
+# If you will use S-TIP in production mode, please change SECRET_KEY in .env file.
+# Please keep same SECRET_KEY among S-TIP apps (for Single Sign On).
+DEFAULT_SECRET_KEY = 'j%yjl@$v=xi6((y3!=bf3$n5)e)+af)*+syuia#co)1edp=dv-'
+SECRET_KEY = config('SECRET_KEY', default=DEFAULT_SECRET_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
