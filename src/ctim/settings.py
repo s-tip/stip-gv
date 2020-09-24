@@ -57,6 +57,11 @@ try:
 except UndefinedValueError:
     mysql_port = '3306'
 
+try:
+    TIME_ZONE = config('TIME_ZONE')
+except UndefinedValueError:
+    TIME_ZONE = 'UTC'
+
 # Application definition
 
 INSTALLED_APPS = (
@@ -145,8 +150,6 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 # LANGUAGE_CODE = 'ja'
-
-TIME_ZONE = 'Asia/Tokyo'
 
 USE_I18N = True
 
