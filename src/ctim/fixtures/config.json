@@ -5,7 +5,7 @@
       "default_taxii_id": "dummy",
       "ctirs_host": "https://localhost:10001/",
       "path_upload_stix_dir": "/home/terra/ctim/gv/stix",
-      "path_sharing_policy_specifications": "/opt/s-tip/ui/conf/SharingPolicySpecifications.txt",
+      "path_sharing_policy_specifications": "/opt/s-tip/ui/conf/SharingPolicySpecifications.json",
       "path_bootstrap_css_dir": "/opt/s-tip/ui/src/static/bootstrap/css"
     }
   }

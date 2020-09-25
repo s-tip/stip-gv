@@ -5,14 +5,17 @@ from django.views.decorators.csrf import csrf_protect
 from django.utils.datastructures import MultiValueDictKeyError
 from django.http.response import HttpResponse
 from django.contrib.auth.decorators import login_required
+from stip.common import get_text_field_value
+from stip.common.const import LANGUAGES
 from core.policy.policy import get_policy_communities
-from core.common import get_text_field_value, get_common_replace_dict, get_package_l1_info
+from core.common import get_common_replace_dict, get_package_l1_info
 from core.api.rs import Ctirs
 from gv.sharing.ajax.views import save_redacted_stix_file
 from gv.error.views import error_page, error_page_no_view_not_admin, error_page_inactive, error_page_free_format
+
+
 from ctirs.models import Taxii, Config
 from ctim.constant import SESSION_EXPIRY
-from stip.common.const import LANGUAGES
 
 
 # filefieldからitem_name指定の値を取得。未定義時はNone
@@ -106,8 +109,6 @@ def sharing_view_top(request, info_msg=''):
         replace_dict['info_msg'] = info_msg
         # languages
         replace_dict['languages'] = LANGUAGES
-        # languages
-        replace_dict['user'] = request.user
         try:
             # Ctirsクラスのインスタンスを作成
             ctirs = Ctirs(request)

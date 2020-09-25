@@ -46,15 +46,6 @@ $(function(){
     //redacton-stringのtext fieldにデフォルト値設定
     $('#redacton-string').val(DEFAULT_REDACTION_STRING);
 
-    //redact-btn押下時
-    $('#redact-btn').click(function(){
-        //一括置換
-        $.each($('.GateKeeper-On'),function(index,elem){
-            var a_elem = $(this).find('a')[0]
-            a_elem.text = get_redaction_string();
-        });
-    });
-
     //stixファイル選択ボタンにてファイル選択後
     $('#stix-file-file').change(function(){
         $('#stix-file-text').val(get_selected_fileform_value(this));

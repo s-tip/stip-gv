@@ -6,7 +6,7 @@ urlpatterns = [
     # profile change_password/top
     url(r'^$', profile.change_password_top),
     # profile change_password
-    url(r'^change_password$', profile.change_password),
+    url(r'^change_password$', profile.change_password, name='password_modified'),
     # profile change_screen_name
     url(r'^change_screen_name$', profile.change_screen_name),
 ]

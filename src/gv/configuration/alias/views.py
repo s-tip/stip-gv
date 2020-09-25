@@ -1,9 +1,10 @@
 from django.shortcuts import render
-from core.common import get_text_field_value, get_common_replace_dict
-from gv.error.views import error_page, error_page_free_format, error_page_inactive
 from django.contrib.auth.decorators import login_required
+from stip.common import get_text_field_value
+from core.common import get_common_replace_dict
 from ctirs.models import Aliases
 from ctim.constant import SESSION_EXPIRY
+from gv.error.views import error_page, error_page_free_format, error_page_inactive
 
 
 def get_configuration_alias_create_alias(request):
