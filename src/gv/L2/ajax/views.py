@@ -9,6 +9,7 @@ from cybox.objects.address_object import Address
 from django.views.decorators.csrf import csrf_protect
 from django.http.response import JsonResponse
 from stip.common import get_text_field_value
+from stip.common.label import sanitize_id
 from ctim.constant import SESSION_EXPIRY
 from core.api.rs import Ctirs
 from core.alchemy.alchemy import AlchemyJsonData, AlchemyNode, AlchemyEdge
@@ -18,6 +19,7 @@ LABEL_IDREF = 'IDref'
 LABEL_UNSPECIFIED = 'Unspecified'
 LABEL_V2_CREATED_BY_REF = 'created_by_ref'
 LABEL_V2_OBJECT_REF = 'object_ref'
+LABEL_V2_LABEL_REF = 'v2_label_ref'
 
 
 def get_l2_ajax_related_campagins_campaign(request):
@@ -951,6 +953,13 @@ def set_alchemy_node_report(aj, object_, an_package_id):
     if 'object_refs' in object_:
         for observed_data_ref in object_['object_refs']:
             ae = AlchemyEdge(node_id, convert_valid_node_id(observed_data_ref), LABEL_V2_OBJECT_REF)
+            aj.add_json_edge(ae)
+    if 'labels' in object_:
+        for label in object_['labels']:
+            label_node_id = sanitize_id(label) + '--' + node_id
+            an = AlchemyNode(label_node_id, 'v2_label', label, label, cluster=an_package_id)
+            aj.add_json_node(an)
+            ae = AlchemyEdge(node_id, label_node_id, LABEL_V2_LABEL_REF)
             aj.add_json_edge(ae)
     return
 

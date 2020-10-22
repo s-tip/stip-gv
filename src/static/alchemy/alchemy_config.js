@@ -5,8 +5,8 @@ var alchemy_config = {
     nodeTypes: {"type":["Header","Indicators","Indicator","Campaign","TTPs","TTP","Incidents","Incident","Observables","Observable","Exploit_Targets","Exploit_Target",
     					"v2_identity","v2_indicator","v2_observables-data","v2_Etc_Observable","v2_IPv4_Addr_Observable","v2_File_Observable","v2_Windows_Registry_Key_Observable","v2_Domain_Name_Observable",
               "v2_malware","v2_sighting","v2_intrusion_set","v2_Threat_Actor","v2_attack_pattern","v2_Campaign","v2_CoA","v2_Report","v2_Relationship","v2_Tool","v2_Vulerability","v2_Location",
-              "v2_Opinion","v2_Note","V2_CVE","v2_CustomObject", "v2_x_stip_sns"]},
-    edgeTypes: {"type":["idref","Includes","child","Exact","Like","created_by_ref","v2_where_sighted_ref","v2_observed_data_ref","object_ref"]},
+              "v2_Opinion","v2_Note","V2_CVE","v2_CustomObject", "v2_x_stip_sns", "v2_label"]},
+    edgeTypes: {"type":["idref","Includes","child","Exact","Like","created_by_ref","v2_where_sighted_ref","v2_observed_data_ref","object_ref", "v2_label_ref"]},
 
 
     nodeStyle: {
@@ -75,6 +75,35 @@ var alchemy_config = {
             "color"  : "#2D7AA0",
             "radius": 65,
             "borderWidth" : 5,
+            "selected": {
+              "color": function() {
+                return "#FFFFFF";
+              },
+              "borderColor": function() {
+                return "#38DD38";
+              }
+            },
+            "highlighted": {
+              "color": function() {
+                return "#EEEEFF";
+              }
+            },
+            "hidden": {
+              "color": function() {
+                return "none";
+              },
+              "borderColor": function() {
+                return "none";
+              }
+            }
+        },
+        "v2_label": {
+            "captionSize": 100,
+            "captionColor": "#0000ff",
+            "borderColor": "#ff0000",
+            "color"  : "#2D7AA0",
+            "radius": 8,
+            "borderWidth" : 3,
             "selected": {
               "color": function() {
                 return "#FFFFFF";
@@ -962,6 +991,12 @@ var alchemy_config = {
             "width": 1,
             "opacity": 0.8,
             "color": "#0000FF"
+        },
+        "v2_label_ref": {
+            "width": 1,
+            "opacity": 0.3,
+            //"color": "#0000FF"
+            "color": "#FF0000"
         }
     },
     clusterColors: ["#2D7AA0","#626262","#A6C3FB", "#AC71D5","#FE8C3F"],
