@@ -995,7 +995,6 @@ var alchemy_config = {
         "v2_label_ref": {
             "width": 1,
             "opacity": 0.3,
-            //"color": "#0000FF"
             "color": "#FF0000"
         }
     },
