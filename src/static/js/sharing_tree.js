@@ -1,6 +1,4 @@
 $(function () {
-    $.getScript('sharing.js');
-
     var STIX_VERSION_1 = 'STIX_VERSION_1;'
     var STIX_VERSION_2 = 'STIX_VERSION_2;'
 
