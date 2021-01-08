@@ -61,6 +61,10 @@ try:
     TIME_ZONE = config('TIME_ZONE')
 except UndefinedValueError:
     TIME_ZONE = 'UTC'
+try:
+    cookie_domain_name = config('COOKIE_DOMAIN_NAME')
+except UndefinedValueError:
+    cookie_domain_name = None
 
 # Application definition
 
@@ -182,6 +186,7 @@ if (ENV_DEV_OVER_HTTP_KEY in os.environ):
 # http で動作させないときは SESSION_COOKIE_SECURE を立てる
 if not dev_over_http:
     SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_DOMAIN = cookie_domain_name
 
 # GIT_PATH = '/opt/s-tip/ui/src/'
 # GIT_VERTION_COMMAND = 'git -C %s log -1 --date=format:"%%Y/%%m/%%d" --format="%%cd %%h"' % (GIT_PATH)
