@@ -11,6 +11,10 @@ def get_l2_view_top_package_id(request):
     return get_text_field_value(request, 'package_id', default_value='')
 
 
+def get_l2_view_top_object_id(request):
+    return get_text_field_value(request, 'object_id', default_value='')
+
+
 def get_l2_view_top_ipv4_similarity(request):
     return get_text_field_value(request, 'similarity_ipv4', default_value='')
 
@@ -19,10 +23,8 @@ def get_l2_view_top_domain_similarity(request):
     return get_text_field_value(request, 'similarity_domain', default_value='')
 
 
-# L2の閲覧権限を持っているか?
 def check_allow_l2_view(request):
     stip_user = request.user
-    # activeユーザー以外はエラー
     if not stip_user.is_active:
         return error_page_inactive(request)
     return None
@@ -35,23 +37,26 @@ def l2_view_top(request):
     if error_ is not None:
         return error_
     try:
-        # パラメタが指定されている場合は取得
         package_id = get_l2_view_top_package_id(request)
         ipv4 = get_l2_view_top_ipv4_similarity(request)
         domain = get_l2_view_top_domain_similarity(request)
         replace_dict = get_common_replace_dict(request)
-        try:
-            # Ctirsクラスのインスタンスを作成
-            ctirs = Ctirs(request)
-            # ajax呼び出し
-            packages = ctirs.get_package_list()
-            replace_dict['packages'] = packages
-            replace_dict['package_id'] = package_id
-            replace_dict['ipv4'] = ipv4
-            replace_dict['domain'] = domain
-            return render(request, 'l2.html', replace_dict)
-        except Exception:
-            # レンダリング
-            return render(request, 'l2.html', replace_dict)
+        object_id = get_l2_view_top_object_id(request)
+
+        ctirs = Ctirs(request)
+        if len(package_id) == 0 and len(object_id) != 0:
+            try:
+                bundles = ctirs.get_bundle_from_object_id(object_id)['package_id_list']
+                package_id = bundles[0]
+            except Exception:
+                package_id = ''
+        packages = ctirs.get_package_list()
+        replace_dict['packages'] = packages
+        replace_dict['package_id'] = package_id
+        replace_dict['ipv4'] = ipv4
+        replace_dict['domain'] = domain
+        return render(request, 'l2.html', replace_dict)
     except Exception:
+        import traceback
+        traceback.print_exc()
         return error_page(request)

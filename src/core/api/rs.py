@@ -218,6 +218,13 @@ class Ctirs(object):
         # ajax呼び出し
         return self._call_post_ctirs_api(url, params, json=j)
 
+    def get_bundle_from_object_id(self, object_id):
+        params = {
+            'match[object_id]': object_id
+        }
+        url = '/api/v1/stix_files_v2/search_bundle'
+        return self._call_get_ctirs_api(url, params)
+
     # ajax呼び出し(get)
     def _call_get_ctirs_api(self, url_suffix, params):
         # 共通呼び出し
