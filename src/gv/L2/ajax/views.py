@@ -1274,6 +1274,13 @@ def set_alchemy_node_sco(aj, object_, an_package_id):
 
 
 def set_alchemy_node_custom_object(aj, object_, an_package_id):
+    if 'x_stip_value' in object_:
+        return _set_alchemy_node_stip_custom_object(aj, object_, an_package_id)
+    else:
+        return _set_alchemy_node_custom_object(aj, object_, an_package_id)
+
+
+def _set_alchemy_node_custom_object(aj, object_, an_package_id):
     node_id = convert_valid_node_id(object_['id'])
     node_type = 'v2_CustomObject_' + object_['type']
     title, description = get_common_title_description(object_, default_title=object_['id'], default_description=object_['id'])
@@ -1287,6 +1294,24 @@ def set_alchemy_node_custom_object(aj, object_, an_package_id):
             aj.add_json_edge(ae)
     _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
+
+
+def _set_alchemy_node_stip_custom_object(aj, object_, an_package_id):
+    node_id_base = convert_valid_node_id(object_['id'])
+    for prop in object_['x_stip_value'].keys():
+        node_id = '%s-%s' % (node_id_base, prop)
+        title, description = get_common_title_description(object_, default_title=object_['id'], default_description=object_['id'])
+        an = AlchemyNode(node_id, 'v2_CustomObject', title, description, cluster=an_package_id)
+        an.set_stix2_object(object_)
+        aj.add_json_node(an)
+        ae = AlchemyEdge(convert_valid_node_id(object_['created_by_ref']), node_id, LABEL_V2_CREATED_BY_REF)
+        aj.add_json_edge(ae)
+        if 'object_refs' in object_:
+            for observed_data_ref in object_['object_refs']:
+                ae = AlchemyEdge(node_id, convert_valid_node_id(observed_data_ref), LABEL_V2_OBJECT_REF)
+                aj.add_json_edge(ae)
+    return
+
 
 
 '''
