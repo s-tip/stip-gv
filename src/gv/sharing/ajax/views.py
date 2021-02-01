@@ -497,6 +497,7 @@ def get_package_table(request):
         for item in data['data']:
             package_id = item['package_id']
             package_name = item['package_name']
+            version = item['version']
             l = []
             l.append('<input type="checkbox" package_id="%s" class="delete-checkbox"/>' % (package_id))
             l.append('<a package_id="%s" screen_user="%s" class="stix-comment-dialog">%s</a>' % (package_id, request.user, create_display_comment(item['comment'])))
@@ -505,7 +506,10 @@ def get_package_table(request):
             l.append(item['input_community'])
             communities = get_policy_communities().split(',')
             for community in communities:
-                html = '<a href="#" class="review-link" package_id="%s" community="%s"><label>[Click to Review]</label></a>' % (package_id, community)
+                if version.startswith('2.'):
+                    html = 'STIX 1.x only'
+                else:
+                    html = '<a href="#" class="review-link" package_id="%s" community="%s"><label>[Click to Review]</label></a>' % (package_id, community)
                 l.append(html)
             aaData.append(l)
 
