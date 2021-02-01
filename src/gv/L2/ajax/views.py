@@ -869,6 +869,7 @@ def set_alchemy_node_identity(aj, object_, an_package_id):
     an = AlchemyNode(node_id, 'v2_identity', title, description, cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
+    set_created_by_ref_edge(aj, object_)
     return
 
 
