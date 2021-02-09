@@ -14,12 +14,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 from unipath import Path
 from decouple import Csv, config, UndefinedValueError
-
-# sample_similarity呼び出すための設定ファイル指定
-# if os.environ['CTIM_GV_CONF_PATH'] != None:
-#    ini_file_path = os.environ['CTIM_GV_CONF_PATH']
-# else:
-#    ini_file_path  = None
+from stip.common.stix_customizer import StixCustomizer
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -66,6 +61,11 @@ try:
 except UndefinedValueError:
     cookie_domain_name = None
 
+stix_customizer = StixCustomizer.get_instance()
+try:
+    stix_customizer.init_customizer_conf(config('STIX_CUSTOMIZER_CONF_PATH'))
+except UndefinedValueError:
+    pass
 # Application definition
 
 INSTALLED_APPS = (
