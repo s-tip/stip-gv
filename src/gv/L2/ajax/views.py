@@ -1299,16 +1299,28 @@ def _set_alchemy_node_custom_object(aj, object_, an_package_id):
         custom_properties_list = []
     else:
         custom_properties_list = stix_customizer.get_custom_object_dict()[object_['type']]
-
     for prop in object_:
-        if prop not in custom_properties_list:
-            continue
-        prop_node_id = '%s-%s' % (node_id, prop)
-        an = AlchemyNode(prop_node_id, 'v2_CustomObject', object_[prop], object_[prop], cluster=an_package_id)
-        an.set_stix2_object(object_)
-        aj.add_json_node(an)
-        ae = AlchemyEdge(convert_valid_node_id(node_id), prop_node_id, LABEL_V2_CUSTOM_PROPERTY_REF)
-        aj.add_json_edge(ae)
+        custom_properties = []
+        for item in custom_properties_list:
+            if '/' in item:
+                c_prop, c_key = item.split('/')
+                if prop == c_prop:
+                    if c_key in object_[prop]:
+                        v = object_[prop][c_key]
+                        match_prop = '%s/%s' % (c_prop, c_key)
+                        custom_properties.append((match_prop, v))
+            else:
+                if prop == item:
+                    v = object_[prop]
+                    custom_properties.append((prop, v))
+
+        for custom_prop in custom_properties:
+            match_prop, v = custom_prop
+            prop_node_id = '%s-%s' % (node_id, match_prop)
+            an = AlchemyNode(prop_node_id, 'v2_CustomObject', match_prop, v, cluster=an_package_id)
+            aj.add_json_node(an)
+            ae = AlchemyEdge(convert_valid_node_id(node_id), prop_node_id, LABEL_V2_CUSTOM_PROPERTY_REF)
+            aj.add_json_edge(ae)
     return
 
 
