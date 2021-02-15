@@ -1210,7 +1210,7 @@ def _set_alchemy_node_custom_object(aj, object_, an_package_id):
                 if prop == c_prop:
                     if c_key in object_[prop]:
                         v = object_[prop][c_key]
-                        match_prop = '%s/%s' % (c_prop, c_key)
+                        match_prop = '%s--%s' % (c_prop, c_key)
                         custom_properties.append((match_prop, v))
             else:
                 if prop == item:
