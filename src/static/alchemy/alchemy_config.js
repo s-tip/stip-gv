@@ -1241,7 +1241,6 @@ function onNodeClickFunction(node){
     	var display_language = get_default_language(user_language,language_contents);
     	var display_language_content = null;
       var original_language = 'no lang_property';
-      console.log(stix2_object)
     	if(language_contents != null){
     		display_language_content = language_contents[display_language];
     	}
