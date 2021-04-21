@@ -1030,6 +1030,8 @@ function sunitaize_encode(str){
 		str = str.join(',');
 	}else if(typeof(str) == 'object'){
 		str = JSON.stringify(str);
+	}else if(typeof(str) == 'boolean'){
+		str = str.toString();
 	}
 	return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 };
