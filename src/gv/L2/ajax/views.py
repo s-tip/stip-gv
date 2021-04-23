@@ -34,6 +34,10 @@ def get_l2_ajax_related_campagins_similar_domain(request):
     return str2boolean(get_text_field_value(request, 'similar_domain', default_value=False))
 
 
+def get_l2_ajax_related_campagins_i18n_info(request):
+    return str2boolean(get_text_field_value(request, 'i18n', default_value=False))
+
+
 def get_l2_ajax_related_campaign_nodes_base_campaign(request):
     return get_text_field_value(request, 'base_campaign', default_value='')
 
@@ -103,6 +107,7 @@ def related_package_nodes(request):
     compared_package_ids = request.POST.getlist('check_packages[]')
     is_ip_similar_check = get_l2_ajax_related_campagins_similar_ip(request)
     is_domain_similar_check = get_l2_ajax_related_campagins_similar_domain(request)
+    i18n = get_l2_ajax_related_campagins_i18n_info(request)
     exact = True
 
     try:
@@ -130,8 +135,10 @@ def related_package_nodes(request):
 
     aj.set_json_node_user_language(request.user.language)
 
-    for object_ref, o_ in aj._json_nodes.items():
-        if o_._stix2_object is not None:
+    if i18n:
+        for object_ref, o_ in aj._json_nodes.items():
+            if o_._stix2_object is None:
+                continue
             modified = o_._stix2_object['modified']
             language_contents = ctirs.get_language_contents(object_ref, modified)
             if len(language_contents) > 0:
@@ -551,7 +558,7 @@ def set_alchemy_nodes(aj, content, too_many_nodes='confirm'):
 
     if relationships is not None:
         for relationship in relationships:
-            set_alchemy_node_relationship(aj, relationship, an_package_id)
+            set_alchemy_node_relationship(aj, relationship)
     return
 
 
@@ -1107,7 +1114,7 @@ def modify_alchemy_node_language_content(aj, object_):
     return
 
 
-def set_alchemy_node_relationship(aj, object_, an_package_id):
+def set_alchemy_node_relationship(aj, object_):
     source_ref = object_['source_ref']
     target_ref = object_['target_ref']
     relationship_type = object_['relationship_type']
