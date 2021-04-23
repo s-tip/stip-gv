@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.http.response import JsonResponse
 from stip.common import get_text_field_value
 from stip.common.label import sanitize_id
-from ctim.constant import SESSION_EXPIRY
+from ctim.constant import SESSION_EXPIRY, DISPLAY_NODE_THRESHOLD
 from core.api.rs import Ctirs
 from core.alchemy.alchemy import AlchemyJsonData, AlchemyNode, AlchemyEdge
 
@@ -85,6 +85,10 @@ def related_packages(request):
         return JsonResponse(r, safe=False)
 
 
+class TooMuchNodes(Exception):
+    pass
+
+
 @csrf_protect
 def related_package_nodes(request):
     request.session.set_expiry(SESSION_EXPIRY)
@@ -117,7 +121,12 @@ def related_package_nodes(request):
 
     aj = AlchemyJsonData()
     for content in ret['contents']:
-        set_alchemy_nodes(aj, content)
+        try:
+            set_alchemy_nodes(aj, content, is_redact_confirm)
+        except TooMuchNodes:
+            ret_json = {'status': 'WARNING',
+                        'message': 'Too many nodes'}
+            return JsonResponse(ret_json, safe=False)
 
     aj.set_json_node_user_language(request.user.language)
 
@@ -251,7 +260,7 @@ def get_observable_value(observable):
     return value_list, type_
 
 
-def set_alchemy_nodes(aj, content):
+def set_alchemy_nodes(aj, content, too_many_nodes='confirm'):
     if content['version'].startswith('2.'):
         is_stix_v2 = True
     else:
@@ -306,6 +315,10 @@ def set_alchemy_nodes(aj, content):
         ttps = None
         ets = None
         incidents = None
+
+        if len(package['objects']) > DISPLAY_NODE_THRESHOLD:
+            if too_many_nodes == 'confirm':
+                raise TooMuchNodes()
 
         for o_ in package['objects']:
             object_type = o_['type']
