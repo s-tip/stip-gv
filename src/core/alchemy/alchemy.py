@@ -14,9 +14,6 @@ class AlchemyJsonData:
         self._json_nodes[id_] = n
 
     def add_json_edge(self, e):
-        if e in self._json_edges:
-            return
-
         self._json_edges.append(e)
 
     def set_json_node_exact(self, id_):
@@ -58,7 +55,7 @@ class AlchemyJsonData:
             json_node_ids.append(node._id_)
         json['nodes'] = json_nodes
         json_edges = []
-        for edge in self._json_edges:
+        for edge in set(self._json_edges):
             redact_edge = False
             for redact_node in redact_nodes:
                 if edge._source == redact_node._id_ or edge._target == redact_node._id_:
@@ -133,6 +130,9 @@ class AlchemyEdge(AlchemyJsonBase):
 
     def __eq__(self, obj):
         return ((self._source == obj._source) and (self._target == obj._target))
+
+    def __hash__(self):
+        return hash((self._source, self._target))
 
     def get_json(self):
         r = {}
