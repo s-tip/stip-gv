@@ -20,6 +20,7 @@ LABEL_UNSPECIFIED = 'Unspecified'
 LABEL_V2_CREATED_BY_REF = 'created_by_ref'
 LABEL_V2_OBJECT_REF = 'object_ref'
 LABEL_V2_LABEL_REF = 'v2_label_ref'
+LABEL_V2_CUSTOM_OBJECT_REF = 'v2_custom_object'
 
 
 def get_l2_ajax_related_campagins_campaign(request):
@@ -1078,8 +1079,9 @@ def set_alchemy_node_note(aj, object_, an_package_id):
 
 def set_alchemy_node_custom_object(aj, object_, an_package_id):
     node_id = convert_valid_node_id(object_['id'])
+    node_type = 'v2_CustomObject_' + object_['type']
     title, description = get_common_title_description(object_, default_title=object_['id'], default_description=object_['id'])
-    an = AlchemyNode(node_id, 'v2_CustomObject', title, description, cluster=an_package_id)
+    an = AlchemyNode(node_id, node_type, title, description, cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
@@ -1118,7 +1120,7 @@ def set_alchemy_node_relationship(aj, object_):
     source_ref = object_['source_ref']
     target_ref = object_['target_ref']
     relationship_type = object_['relationship_type']
-    ae = AlchemyEdge(source_ref, target_ref, relationship_type)
+    ae = AlchemyEdge(source_ref, target_ref, relationship_type, LABEL_V2_CUSTOM_OBJECT_REF)
     aj.add_json_edge(ae)
     return
 

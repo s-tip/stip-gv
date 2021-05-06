@@ -122,11 +122,14 @@ class AlchemyEdge(AlchemyJsonBase):
     _caption = ''
     _type = ''
 
-    def __init__(self, source, target, caption):
+    def __init__(self, source, target, caption, type=None):
         self._source = source
         self._target = target
         self._caption = caption
-        self._type = caption
+        if type is None:
+            self._type = caption
+        else:
+            self._type = type
 
     def __eq__(self, obj):
         return ((self._source == obj._source) and (self._target == obj._target))
