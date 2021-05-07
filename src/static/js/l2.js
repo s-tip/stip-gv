@@ -34,9 +34,6 @@ $(function(){
         var package_list = new Array();
 
         //Pacakge ID list 取得
-//        $.each($('#l2-dropdown-menu-base-package li a'),function(){
-//        	package_list.push($(this).attr('data-value'));
-//        });
         $.each($('#l2-dropdown-menu-base-package-single option'),function(){
             package_list.push($(this).val());
         });
@@ -63,8 +60,6 @@ $(function(){
             if($.inArray(package_id, package_list) >= 0){
                 //テーブル情報の更新&グラフ表示
                 var pacakge_name = getPacakgeNameFromPacakgeID(package_id)
-//                $('#choose_package').text(pacakge_name);
-//                $('#choose_package').append(' <span class="caret"></span>');
                 $("#l2-dropdown-menu-base-package-single").val(package_id);
                 $(':hidden[name="base_package"]').val(package_id);
                 getTableInfo(package_id, updateFlag=false, checkPackages=[]);
@@ -75,14 +70,6 @@ $(function(){
 
     //pacakge_id から pacakge名取得
     function getPacakgeNameFromPacakgeID(pacakge_id){
-//    	var ret = '';
-//        $.each($('#l2-dropdown-menu-base-package li a'),function(){
-//        	if ($(this).attr('data-value') == pacakge_id){
-//        		ret = ($(this).text());
-//        		return false;
-//        	}
-//        });
-//    	return ret;
         var ret = '';
         $.each($('#l2-dropdown-menu-base-package-single'),function(){
             if ($(this).val() == pacakge_id){
@@ -283,6 +270,7 @@ $(function(){
                 'check_packages' : check_packages,
                 'similar_ip' : $('#include-ipv4-similarity').prop('checked'),
                 'similar_domain' : $('#include-domain-similarity').prop('checked'),
+                'i18n' : $('#include-i18n-info').prop('checked'),
                 'too_many_nodes' : too_many_view_type
         };
 
@@ -421,9 +409,6 @@ $(function(){
                 $('#related-package-phrase').text('- (No Related Packages)');
             }
             else{
-                //Related CTIで表示する2種類のtableを作成
-                //createTable('#related-package-similar-table', related_packages,true)
-                //createTable('#related-package-table', related_packages, false)
                 //チェックボックスの状態で、片方のtableを非表示
                 if($('#include-ipv4-similarity').prop('checked') == true || $('#include-domain-similarity').prop('checked') == true){
                 	//Related CTIで表示するtableを作成
@@ -574,10 +559,8 @@ $(function(){
         //base-campaignのドロップダウンメニューで選択されているPackagesでtable更新
         //リストボックスで選択されているキャンペーン名を取得
         var base_package = $(':hidden[name="base_package"]').val();
-        console.log('getTableInfo before')
         //tableを再構築し過去のチェックボックスの情報を引継ぎ
         getTableInfo(base_package, updateFlag=true, checkPackages);
-        console.log('getTableInfo after')
 
         //IPv4カウント表示・Domainカウント表示チェックボックスを確認し表示するtableを選択
         if($('#include-ipv4-similarity').prop('checked') == true || $('#include-domain-similarity').prop('checked') == true){

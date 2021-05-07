@@ -14,9 +14,6 @@ class AlchemyJsonData:
         self._json_nodes[id_] = n
 
     def add_json_edge(self, e):
-        for edge in self._json_edges:
-            if(edge == e):
-                return
         self._json_edges.append(e)
 
     def set_json_node_exact(self, id_):
@@ -58,7 +55,7 @@ class AlchemyJsonData:
             json_node_ids.append(node._id_)
         json['nodes'] = json_nodes
         json_edges = []
-        for edge in self._json_edges:
+        for edge in set(self._json_edges):
             redact_edge = False
             for redact_node in redact_nodes:
                 if edge._source == redact_node._id_ or edge._target == redact_node._id_:
@@ -125,22 +122,20 @@ class AlchemyEdge(AlchemyJsonBase):
     _caption = ''
     _type = ''
 
-    def __init__(self, source, target, caption):
+    def __init__(self, source, target, caption, type=None):
         self._source = source
         self._target = target
         self._caption = caption
-        self._type = caption
+        if type is None:
+            self._type = caption
+        else:
+            self._type = type
 
     def __eq__(self, obj):
-        if(obj is None):
-            return False
-        if not isinstance(obj, AlchemyEdge):
-            return False
-        if(obj._source is None):
-            return False
-        if(obj._target is None):
-            return False
         return ((self._source == obj._source) and (self._target == obj._target))
+
+    def __hash__(self):
+        return hash((self._source, self._target))
 
     def get_json(self):
         r = {}
@@ -184,13 +179,7 @@ class AlchemyNode(AlchemyJsonBase):
         self._cluster = cluster
 
     def __eq__(self, obj):
-        if(obj is None):
-            return False
-        if not isinstance(obj, AlchemyNode):
-            return False
-        if(obj._id_ is not None and obj._id_ == self._id_):
-            return True
-        return False
+        return obj._id_ == self._id_
 
     def _set_caption(self, d):
         if(d is None):

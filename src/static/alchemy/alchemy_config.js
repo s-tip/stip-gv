@@ -5,8 +5,8 @@ var alchemy_config = {
     nodeTypes: {"type":["Header","Indicators","Indicator","Campaign","TTPs","TTP","Incidents","Incident","Observables","Observable","Exploit_Targets","Exploit_Target",
     					"v2_identity","v2_indicator","v2_observables-data","v2_Etc_Observable","v2_IPv4_Addr_Observable","v2_File_Observable","v2_Windows_Registry_Key_Observable","v2_Domain_Name_Observable",
               "v2_malware","v2_sighting","v2_intrusion_set","v2_Threat_Actor","v2_attack_pattern","v2_Campaign","v2_CoA","v2_Report","v2_Relationship","v2_Tool","v2_Vulerability","v2_Location",
-              "v2_Opinion","v2_Note","V2_CVE","v2_CustomObject", "v2_x_stip_sns", "v2_label"]},
-    edgeTypes: {"type":["idref","Includes","child","Exact","Like","created_by_ref","v2_where_sighted_ref","v2_observed_data_ref","object_ref", "v2_label_ref"]},
+              "v2_Opinion","v2_Note","V2_CVE","v2_CustomObject", "v2_x_stip_sns", "v2_label", "v2_CustomObject_x_mitre_tactic"]},
+    edgeTypes: {"type":["idref","Includes","child","Exact","Like","created_by_ref","v2_where_sighted_ref","v2_observed_data_ref","object_ref", "v2_label_ref", "v2_custom_object"]},
 
 
     nodeStyle: {
@@ -915,17 +915,157 @@ var alchemy_config = {
               }
             }
         },
+        "v2_attack_pattern": {
+            "borderColor": "#abab07",
+            "color"  : "#abab07",
+            "radius": 15,
+            "borderWidth" : 1,
+            "selected": {
+              "color": function() {
+                return "#FFFFFF";
+              },
+              "borderColor": function() {
+                return "#38DD38";
+              }
+            },
+            "highlighted": {
+              "color": function() {
+                return "#EEEEFF";
+              }
+            },
+            "hidden": {
+              "color": function() {
+                return "none";
+              },
+              "borderColor": function() {
+                return "none";
+              }
+            }
+        },
+        "v2_intrusion_set": {
+            "borderColor": "#5143d1",
+            "color"  : "#5143d1",
+            "radius": 30,
+            "borderWidth" : 1,
+            "selected": {
+              "color": function() {
+                return "#FFFFFF";
+              },
+              "borderColor": function() {
+                return "#38DD38";
+              }
+            },
+            "highlighted": {
+              "color": function() {
+                return "#EEEEFF";
+              }
+            },
+            "hidden": {
+              "color": function() {
+                return "none";
+              },
+              "borderColor": function() {
+                return "none";
+              }
+            }
+        },
+        "v2_CoA": {
+            "borderColor": "#de1888",
+            "color"  : "#de1888",
+            "radius": 10,
+            "borderWidth" : 1,
+            "selected": {
+              "color": function() {
+                return "#FFFFFF";
+              },
+              "borderColor": function() {
+                return "#38DD38";
+              }
+            },
+            "highlighted": {
+              "color": function() {
+                return "#EEEEFF";
+              }
+            },
+            "hidden": {
+              "color": function() {
+                return "none";
+              },
+              "borderColor": function() {
+                return "none";
+              }
+            }
+        },
+        "v2_Tool": {
+            "borderColor": "#d9871c",
+            "color"  : "#d9871c",
+            "radius": 10,
+            "borderWidth" : 1,
+            "selected": {
+              "color": function() {
+                return "#FFFFFF";
+              },
+              "borderColor": function() {
+                return "#38DD38";
+              }
+            },
+            "highlighted": {
+              "color": function() {
+                return "#EEEEFF";
+              }
+            },
+            "hidden": {
+              "color": function() {
+                return "none";
+              },
+              "borderColor": function() {
+                return "none";
+              }
+            },
+        },
+        "v2_CustomObject_x-mitre-tactic": {
+            "borderColor": "#91150f",
+            "color"  : "#91150f",
+            "radius": 40,
+            "borderWidth" : 1,
+            "selected": {
+              "color": function() {
+                return "#FFFFFF";
+              },
+              "borderColor": function() {
+                return "#38DD38";
+              }
+            },
+            "highlighted": {
+              "color": function() {
+                return "#EEEEFF";
+              }
+            },
+            "hidden": {
+              "color": function() {
+                return "none";
+              },
+              "borderColor": function() {
+                return "none";
+              }
+            }
+        }
     },
     edgeStyle: {
         "idref": {
             "width": 1,
-            "opacity": 0.8,
-            "color": "#00FF00"
+            "opacity": 1.0,
+            "color": "#777777"
         },
         "created_by_ref": {
-            "width": 4,
-            "opacity": 0.2,
-            "color": "#cccccc"
+            "width": 1,
+            "opacity": 1.0,
+            "color": "#777777"
+        },
+        "v2_custom_object": {
+            "width": 1,
+            "opacity": 1.0,
+            "color": "#777777"
         },
         "Exact": {
             "width": 5,
@@ -989,8 +1129,8 @@ var alchemy_config = {
         },
         "object_ref": {
             "width": 1,
-            "opacity": 0.8,
-            "color": "#0000FF"
+            "opacity": 1,
+            "color": "#FFFFFF"
         },
         "v2_label_ref": {
             "width": 1,
@@ -1030,6 +1170,8 @@ function sunitaize_encode(str){
 		str = str.join(',');
 	}else if(typeof(str) == 'object'){
 		str = JSON.stringify(str);
+	}else if(typeof(str) == 'boolean'){
+		str = str.toString();
 	}
 	return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 };
