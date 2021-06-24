@@ -9,7 +9,7 @@ import gv.sharing.urls
 import gv.configuration.urls
 import gv.css.urls
 import gv.profile.urls
-import django.views.i18n
+from django.views.i18n import JavaScriptCatalog
 
 
 urlpatterns = [
@@ -24,5 +24,5 @@ urlpatterns = [
     url(r'^logout$', logout),
     url(r'^css/', include(gv.css.urls)),
     url(r'^profile/', include(gv.profile.urls)),
-    url(r'^jsi18n/(?P<packages>\S+?)/$', django.views.i18n.javascript_catalog),
+    url(r'^jsi18n/(?P<packages>\S+?)/$', JavaScriptCatalog.as_view()),
 ]

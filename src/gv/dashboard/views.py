@@ -11,7 +11,7 @@ LATEST_CTI_TABLE_NUM = 10
 def dashboard_view_top(request):
     request.session.set_expiry(SESSION_EXPIRY)
     # 認証されていない場合はログインページヘ
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return render(request, 'cover.html')
 
     stip_user = request.user
