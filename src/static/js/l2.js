@@ -217,7 +217,7 @@ $(function(){
     }
 
     function _get_vis_nodes(dataSource){
-      var nodes = new vis.DataSet([]);
+      var nodes = new vis.DataSet([])
       nodes_meta = {}
       $.each(dataSource.nodes,function(key,index){
         var node = dataSource.nodes[key]
@@ -492,7 +492,7 @@ $(function(){
     }
 
     function _get_vis_edges(dataSource){
-      var edges = new vis.DataSet([]);
+      var edges = new vis.DataSet([])
       $.each(dataSource.edges,function(key,index){
         var edge = dataSource.edges[key]
         var d = {
@@ -606,8 +606,8 @@ $(function(){
     }
  
     function _start_network(nodes, edges, config_dom){
-      var navbar = document.getElementById('navbar');
-      var container = document.getElementById('visjs-network');
+      var navbar = document.getElementById('navbar')
+      var container = document.getElementById('visjs-network')
       container.style.height = (window.innerHeight - navbar.clientHeight).toString() + 'px'
       var data = {
         nodes: nodes,
@@ -619,7 +619,7 @@ $(function(){
           improvedLayout: false
         },
         nodes: {
-          shape: "dot",
+          shape: 'dot',
         },
         physics: {
           enabled: false,
@@ -632,12 +632,13 @@ $(function(){
         }
       }
       network = new vis.Network(container, data, options)
-      network.on("click", function (params) {
+      network.on('click', function (params) {
         if (params.nodes.length != 1){
           return
         }
        onNodeClickFunction(params.nodes[0])
-      });
+       network.unselectAll()
+      })
     }
 
     function onNodeClickFunction(node_id){
@@ -675,7 +676,6 @@ $(function(){
       var stix2_object = node.stix2_object;
       var user_language = node.user_language;
       var language_contents = node.language_contents;
-      console.log(language_contents)
       if (stix2_object == null){
         $("#l2-language-options").css("display","none");
       }else{
@@ -702,7 +702,6 @@ $(function(){
             v = JSON.stringify(v);
           }
           var original_v = v;
-          console.log(display_language_content)
           if (display_language_content != null){
             if (display_language_content[key]){
               if (Array.isArray(display_language_content[key])== true){
