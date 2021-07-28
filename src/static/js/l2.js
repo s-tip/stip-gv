@@ -24,7 +24,6 @@ $(function(){
         minWidth: 250,
     });
 
-    var alchemy = new Alchemy(alchemy_config);
 
     //URLパラメタ指定がある場合
     function getURLParameter(){
@@ -184,55 +183,651 @@ $(function(){
         $('#drawer-option').toggle();
     });
 
-    //設定変更してグラフ描画
+
+    $('#enable-visjs-config').on('click', function(){
+      updateGraph()
+    })
+
+    var nodes_meta = {}
+    var network = null
+    var dataSource = null
+    var config_window = null
+
     function updateGraph(){
-        //成功
-        //グラフ描画領域divを表示
-        $('#graph').css('display','inline');
+      if (dataSource == null){
+        return
+      }
+      var show_config = $('#enable-visjs-config').prop('checked')
+      var nodes = _get_vis_nodes(dataSource)
+      var edges = _get_vis_edges(dataSource)
+      $('#visjs-network').css('background-color', $('#alchemy-background-color-text').val())
 
-        //viewモード取得
-        var view_mode_val = $(':hidden[name="view_mode"]').val();
-        if(view_mode_val == 'cluster'){
-            alchemy_config['cluster'] = true;
-            alchemy_config['clusterKey'] = 'cluster';
-        }else{
-            alchemy_config['cluster'] = false;
-            alchemy_config['clusterKey'] = '';
-        }
-
-        //animationモード取得
-        if($('#enable-animation-checkbox').prop('checked') == true){
-            alchemy_config['forceLocked'] = false;
-        }
-        else{
-            alchemy_config['forceLocked'] = true;
-        }
-
-        //ラベル表示
-        if($('#enable-label-show').prop('checked') == true){
-            alchemy_config['nodeCaption'] = nodeCaptionWithLabelFunction;
-        }
-        else{
-            alchemy_config['nodeCaption'] = nodeCaptionWithoutLabelFunction;
-        }
-
-        //背景色
-        alchemy_config['backgroundColour'] = $('#alchemy-background-color-text').val();
-
-        //グラフ表示
-        try{
-            alchemy = new Alchemy(alchemy_config);
-        }catch(e){
-            var msg = 'Error Draw Nodes. Please Reload. : ' + e;
-            alert(msg);
-            console.log(e);
-        }
+      if (show_config == true){
+        $('#drawer-nav').css('width', '600px')
+        $('#drawer-hamburger').css('left', '600px')
+        $('#visjs-config').css('display', 'block')
+        _start_network(nodes, edges, document.getElementById('visjs-config'))
+      }else{
+        $('#drawer-nav').css('width', '300px')
+        $('#drawer-hamburger').css('left', '300px')
+        $('#visjs-config').css('display', 'none')
+        _start_network(nodes, edges, null)
+      }
+      return
     }
+
+    function _get_vis_nodes(dataSource){
+      var nodes = new vis.DataSet([]);
+      nodes_meta = {}
+      $.each(dataSource.nodes,function(key,index){
+        var node = dataSource.nodes[key]
+        nodes_meta[node.id] = node
+        var d = {
+          id: node.id,
+          type: node.type,
+          label: node.caption,
+        }
+        var node_styles = {
+          "Header": {
+            "captionSize": 100,
+            "captionColor": "#0000ff",
+            "borderColor": "#155d6F",
+            "color"  : "#2D7AA0",
+            "radius": 65,
+            "borderWidth" : 5
+          },
+          "v2_Report": {
+            "captionSize": 100,
+            "captionColor": "#0000ff",
+            "borderColor": "#155d6F",
+            "color"  : "#2D7AA0",
+            "radius": 65,
+            "borderWidth" : 5
+          },
+          "v2_x_stip_sns": {
+            "captionSize": 100,
+            "captionColor": "#0000ff",
+            "borderColor": "#155d6F",
+            "color"  : "#2D7AA0",
+            "radius": 65,
+            "borderWidth" : 5
+          },
+          "v2_label": {
+            "captionSize": 100,
+            "captionColor": "#0000ff",
+            "borderColor": "#ff0000",
+            "color"  : "#2D7AA0",
+            "radius": 8,
+            "borderWidth" : 3
+          },
+          "v2_identity": {
+            "captionSize": 100,
+            "captionColor": "#00ff00",
+            "borderColor": "#00ff00",
+            "color"  : "#2D7AA0",
+            "radius": 15,
+            "borderWidth" : 2
+          },
+          "Observables": {
+            "borderColor": "#A6C3FB",
+            "color"  : "#A6C3FB",
+            "radius": 30,
+            "borderWidth" : 2
+          },
+          "v2_observables-data": {
+            "borderColor": "#A6C3FB",
+            "color"  : "#A6C3FB",
+            "radius": 30,
+            "borderWidth" : 2
+          },
+          "Indicators": {
+            "borderColor": "#A6C3FB",
+            "color"  : "#A6C3FB",
+            "radius": 30,
+            "borderWidth" : 2
+          },
+          "TTPs": {
+            "borderColor": "#AC71D5",
+            "color"  : "#AC71D5",
+            "radius": 30,
+            "borderWidth" : 2
+          },
+          "Incidents": {
+            "borderColor": "#FE8C3F",
+            "color"  : "#FE8C3F",
+            "radius": 30,
+            "borderWidth" : 2
+          },
+          "Exploit_Targets": {
+            "borderColor": "#626262",
+            "color"  : "#626262",
+            "radius": 30,
+            "borderWidth" : 2
+          },
+          "Campaigns": {
+            "borderColor": "#626262",
+            "color"  : "#626262",
+            "radius": 30,
+            "borderWidth" : 2
+          },
+          "Threat_Actors": {
+            "borderColor": "#626262",
+            "color"  : "#626262",
+            "radius": 30,
+            "borderWidth" : 2
+          },
+          "v2_Threat_Actor": {
+            "borderColor": "#626262",
+            "color"  : "#626262",
+            "radius": 30,
+            "borderWidth" : 2
+          },
+          "Campaign": {
+            "captionSize": 100,
+            "captionColor": "#0000ff",
+            "borderColor": "#A6C3FB",
+            "color"  : "#2D7AA0",
+            "radius": 10,
+            "borderWidth" : 2
+          },
+          "v2_Campaign": {
+            "captionSize": 100,
+            "captionColor": "#0000ff",
+            "borderColor": "#A6C3FB",
+            "color"  : "#2D7AA0",
+            "radius": 10,
+            "borderWidth" : 2
+          },
+          "Courses_Of_Action": {
+            "borderColor": "#626262",
+            "color"  : "#626262",
+            "radius": 30,
+            "borderWidth" : 2
+          },
+          "Observable": {
+            "borderColor": "#A6C3FB",
+            "color"  : "#A6C3FB",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "Observable_ip": {
+            "borderColor": "#67FF56",
+            "color"  : "#67FF56",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "v2_IPv4_Addr_Observable": {
+            "borderColor": "#67FF56",
+            "color"  : "#67FF56",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "Observable_domain": {
+            "borderColor": "#ff6384",
+            "color"  : "#ff6384",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "v2_Domain_Name_Observable": {
+            "borderColor": "#ff6384",
+            "color"  : "#ff6384",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "Observable_hash": {
+            "borderColor": "#ffce56",
+            "color"  : "#ffce56",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "v2_File_Observable": {
+            "borderColor": "#ffce56",
+            "color"  : "#ffce56",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "Indicator": {
+            "borderColor": "#A6C3FB",
+            "color"  : "#A6C3FB",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "v2_indicator": {
+            "borderColor": "#67FF56",
+            "color"  : "#67FF56",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "Indicator_ip": {
+            "borderColor": "#67FF56",
+            "color"  : "#67FF56",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "Indicator_domain": {
+            "borderColor": "#ff6384",
+            "color"  : "#ff6384",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "Indicator_hash": {
+            "borderColor": "#ffce56",
+            "color"  : "#ffce56",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "TTP": {
+            "borderColor": "#AC71D5",
+            "color"  : "#AC71D5",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "Incident": {
+            "borderColor": "#FE8C3F",
+            "color"  : "#FE8C3F",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "Exploit_Target": {
+            "borderColor": "#626262",
+            "color"  : "#626262",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "v2_Relationship": {
+            "borderColor": "#626262",
+            "color"  : "#626262",
+            "radius": 5,
+            "borderWidth" : 1
+          },
+          "v2_attack_pattern": {
+            "borderColor": "#abab07",
+            "color"  : "#abab07",
+            "radius": 15,
+            "borderWidth" : 1
+          },
+          "v2_intrusion_set": {
+            "borderColor": "#5143d1",
+            "color"  : "#5143d1",
+            "radius": 30,
+            "borderWidth" : 1
+          },
+          "v2_CoA": {
+            "borderColor": "#de1888",
+            "color"  : "#de1888",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "v2_Tool": {
+            "borderColor": "#d9871c",
+            "color"  : "#d9871c",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "v2_CustomObject_x-mitre-tactic": {
+            "borderColor": "#91150f",
+            "color"  : "#91150f",
+            "radius": 40,
+            "borderWidth" : 1
+          }
+        }
+
+        if (node_styles[node.type]){
+          const node_style = node_styles[node.type]
+          d.value = node_style.radius * 10
+          d.color= node_style.color
+        }else{
+          d.value = 10
+        }
+ 
+        var avoid_redcation_node_type = ['Header','Campaign','Observables','TTPs','Incidents','Exploit_Targets']
+        if($.inArray(node.type,avoid_redcation_node_type) < 0){
+          if(d.label.length <= 10){
+            d.label = d.label.substring(0,10) + '...'
+          }
+        }
+        nodes.add(d)
+      })
+      return nodes
+    }
+
+    function _get_vis_edges(dataSource){
+      var edges = new vis.DataSet([]);
+      $.each(dataSource.edges,function(key,index){
+        var edge = dataSource.edges[key]
+        var d = {
+          from: edge.source,
+          to: edge.target,
+          label: edge.caption,
+          type: edge.type
+        }
+
+        var edge_styles = {
+          "idref": {
+            "width": 1,
+            "opacity": 1.0,
+            "color": "#777777"
+          },
+          "created_by_ref": {
+            "width": 1,
+            "opacity": 1.0,
+            "color": "#777777"
+          },
+          "v2_custom_object": {
+            "width": 1,
+            "opacity": 1.0,
+            "color": "#777777"
+          },
+          "Exact": {
+            "width": 5,
+            "opacity": 0.8,
+            "color": "#FF0000"
+          },
+          "Similarity: 1": {
+            "width": 5,
+            "opacity": 0.8,
+            "color": "#008000"
+          },
+          "Similarity: 2": {
+            "width": 4,
+            "opacity": 0.7,
+            "color": "#008000"
+          },
+          "Similarity: 3": {
+            "width": 3,
+            "opacity": 0.6,
+            "color": "#008000"
+          },
+          "Similarity: 4": {
+            "width": 2,
+            "opacity": 0.5,
+            "color": "#008000"
+          },
+          "Similarity: 5": {
+            "width": 1,
+            "opacity": 0.4,
+            "color": "#008000"
+          },
+          "Similarity: 6": {
+            "width": 1,
+            "opacity": 0.3,
+            "color": "#008000"
+          },
+          "Similarity: 7": {
+            "width": 1,
+            "opacity": 0.2,
+            "color": "#008000"
+          },
+          "Similarity: 8": {
+            "width": 1,
+            "opacity": 0.1,
+            "color": "#008000"
+          },
+          "child": {
+            "width": 1,
+            "opacity": 0.8,
+            "color": "#0000FF"
+          },
+          "Includes": {
+            "width": 1,
+            "opacity": 0.8,
+            "color": "#0000FF"
+          },
+          "Like": {
+            "width": 3,
+            "opacity": 0.3,
+            "color": "#FF0000"
+          },
+          "object_ref": {
+            "width": 1,
+            "opacity": 1,
+            "color": "#FFFFFF"
+          },
+          "v2_label_ref": {
+            "width": 1,
+            "opacity": 0.3,
+            "color": "#FF0000"
+          }
+        }
+
+        if (edge_styles[edge.type]){
+          const edge_style = edge_styles[edge.type]
+          d.color ={
+            color: edge_style.color,
+            opacity: edge_style.opacity,
+          }
+          d.width = edge_style.width
+        }
+        d.smooth = false
+        edges.add(d)
+      })
+      return edges
+    }
+ 
+    function _start_network(nodes, edges, config_dom){
+      var navbar = document.getElementById('navbar');
+      var container = document.getElementById('visjs-network');
+      container.style.height = (window.innerHeight - navbar.clientHeight).toString() + 'px'
+      var data = {
+        nodes: nodes,
+        edges: edges
+      }
+      var options = {
+        autoResize: false,
+        layout: {
+          improvedLayout: false
+        },
+        nodes: {
+          shape: "dot",
+        },
+        physics: {
+          enabled: false,
+        },
+      }
+      if (config_dom != null){
+        options.configure = {
+          enabled: true,
+          container: config_dom
+        }
+      }
+      network = new vis.Network(container, data, options)
+      network.on("click", function (params) {
+        if (params.nodes.length != 1){
+          return
+        }
+       onNodeClickFunction(params.nodes[0])
+      });
+    }
+
+    function onNodeClickFunction(node_id){
+      var node = nodes_meta[node_id]
+
+      var l2_value = document.getElementById("l2-value");
+      var l2_description = document.getElementById("l2-description");
+      var l2_title = document.getElementById("l2-title");
+      var title_text = node.caption;
+      var description_text = node.description;
+      var value_text = node.value;
+      var node_type = node.type;
+      var value_node = ["Observables","Observable","Observable_ip","Observable_domain","Observable_hash","Observable_file_name","Observable_uri","Indicators","Indicator","Indicator_ip","Indicator_domain","Indicator_hash","Indicator_uri"];
+
+      if(title_text == null || title_text.length == 0){
+        title_text = "No title";
+      }
+
+      if(description_text == null || description_text.length == 0){
+        description_text = "";
+      }
+
+      if($.inArray(node_type, value_node) >= 0){
+        if(value_text == null || value_text.length == 0){
+          value_text = "No value";
+        }
+        l2_value.innerHTML = "Value: " + value_text;
+      }else{
+        l2_value.innerHTML = "";
+      }
+
+      l2_title.innerHTML = title_text;
+      l2_description.innerHTML = description_text;
+    
+      var stix2_object = node.stix2_object;
+      var user_language = node.user_language;
+      var language_contents = node.language_contents;
+      console.log(language_contents)
+      if (stix2_object == null){
+        $("#l2-language-options").css("display","none");
+      }else{
+        var description_text = '';
+        var title_text = null;
+        var display_language = get_default_language(user_language,language_contents);
+        var display_language_content = null;
+        var original_language = 'no lang_property';
+        if(language_contents != null){
+          display_language_content = language_contents[display_language];
+        }
+        $.each(stix2_object,function(key,index){
+          if (key == "name"){
+            title_text = stix2_object[key] ;
+          }
+          if (key == "lang"){
+            original_language = stix2_object[key] ;
+          }
+          var span_key = '<span class="l2_stix2_span_key">'+ key + ':</span> ';
+          var v = stix2_object[key];
+          if(Array.isArray(v)== true){
+            v = JSON.stringify(v);
+          }else if(typeof(v) == 'object'){
+            v = JSON.stringify(v);
+          }
+          var original_v = v;
+          console.log(display_language_content)
+          if (display_language_content != null){
+            if (display_language_content[key]){
+              if (Array.isArray(display_language_content[key])== true){
+                transalated_list = new Array(stix2_object[key].length);
+                $.each(display_language_content[key],function(dlc_index,list_display_value){
+                  if(list_display_value.length != 0){
+                    transalated_list[dlc_index] = list_display_value
+                  }else{
+                    transalated_list[dlc_index] = stix2_object[key][dlc_index]
+                  }
+                });
+                v = JSON.stringify(transalated_list);
+              }else if(typeof(display_language_content[key])== 'object'){
+                var transalated_dict = {};
+                $.each(stix2_object[key],function(dlc_key,dict_display_value){
+                  if(display_language_content[key][dlc_key]){
+                    transalated_dict[dlc_key] = display_language_content[key][dlc_key];
+                  }else{
+                    transalated_dict[dlc_key] = dict_display_value;
+                  }
+                });
+                v = JSON.stringify(transalated_dict);
+              }else{
+                v = display_language_content[key];
+              }
+            }
+          }
+          var span_value = '<span class="stix2-description" id="stix2-' + sunitaize_encode(key) + '" data-original="' + sunitaize_encode(original_v) + '">' + v + '</span><br/>\n';
+          description_text += (span_key + span_value);
+        });
+        l2_description.innerHTML = description_text;
+        if (title_text != null){
+          l2_title.innerHTML = title_text;
+        }else{
+          l2_title.innerHTML = 'A title is undefined....';
+        }
+        if (language_contents == null){
+          $("#l2-language-options").css("display","none");
+        }
+        else{
+          var language_options = 'Language-Options: ';
+          language_options += '<a class="content-language-href" data-language= "original_content">' + original_language + ' (original)</a>, ';
+          $.each(language_contents,function(language,index){
+            var content_dict = language_contents[language];
+            var anchor = '<a class="content-language-href';
+            if (display_language == language){
+              anchor += ' display-content-language-href';
+            }else{
+              anchor += ' ';
+            }
+            anchor += '" data-language="' + language + '" ';
+            $.each(content_dict,function(key,value){
+              var attr = '';
+              if(typeof(value) == 'string'){
+                attr = 'data-' + sunitaize_encode(key) + '="' + sunitaize_encode(value) + '" ';
+              }else{
+                attr = 'data-' + sunitaize_encode(key) + '="' + sunitaize_encode(JSON.stringify(value)) + '" ';
+              }
+              anchor += attr;
+            });
+            anchor += ('>' + language + '</a>,\n');
+            language_options += anchor;
+          });
+          language_options = language_options.slice(0,-2);
+          $("#l2-language-options").html(language_options);
+          $("#l2-language-options").css("display","inline");
+        }
+      }
+
+      var modal = document.getElementById("l2-description-modal");
+      modal.style.display = "block";
+
+      var before_modal_content_height = parseInt($("#l2-modal-content").css("height"));
+
+      var vjsjs_height = parseInt($("#visjs-network").css("height"));
+      if (before_modal_content_height > (vjsjs_height / 3)){
+        $("#l2-modal-content").css("height",(vjsjs_height / 3) + "px");
+        $("#l2-modal-content").css("overflow","scroll");
+      }
+    }
+
+    window.onclick = function(event) {
+      var modal = document.getElementById("l2-description-modal");
+      if (event.target == modal) {
+        $("#l2-modal-content").css("height","");
+        $("#l2-description").css("overflow","auto");
+        modal.style.display = "none";
+      }
+    };
+
+    function sunitaize_encode(v){
+      if (Array.isArray(v) == true){
+        str = v.join(',');
+      }else if(typeof(v) == 'object'){
+        str = JSON.stringify(str);
+      }else if(typeof(v) == 'number'){
+        str = String(v)
+      }else if(typeof(v) == 'boolean'){
+        str = String(v)
+      }else{
+        str = v
+      }
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    };
+
+    function get_default_language(user_language,language_contents){
+      var lang = null;
+      var langs = [];
+      var DEFAULT_LANG = "en";
+
+      for (language_content in language_contents){
+        langs.push(language_content);
+        if (language_content == user_language){
+          return language_content;
+        }
+      }
+      if(langs.indexOf(DEFAULT_LANG) >= 0){
+        return DEFAULT_LANG;
+      }
+      langs.sort()
+      return langs[0];
+    };
 
     //alchemy描画の遅延実行
     function alchemyDrawCallback(alchemy_data){
-        //表示データ変更
-        alchemy_config['dataSource'] = alchemy_data;
+        dataSource = alchemy_data;
         //再描画
         progress_label.text('Now Drawing....');
         updateGraph();
@@ -326,25 +921,6 @@ $(function(){
         getDrawGraph(too_many_view_type,true);
     });
 
-    //Animationモードのチェックボックスのステータス変更時
-    $('#enable-animation-checkbox').click(function(){
-        //再描画/データは変わらない
-        updateGraph();
-    });
-
-    //ラベル表示切替のチェックボックスのステータス変更時
-    $('#enable-label-show').click(function(){
-        //再描画/データは変わらない
-        updateGraph();
-    });
-
-    //view-modeのドロップダウンメニュー
-    $('#l2-dropdown-choose-view-mode li a').click(function(){
-        $(this).parents('.dropdown').find('.dropdown-toggle').html($(this).text() + ' <span class="caret"></span>');
-        $(this).parents('.dropdown').find('input[name="view_mode"]').val($(this).attr('data-value'));
-        //再描画/データは変わらない
-        updateGraph();
-    });
 
     //select2連携
     $(document).ready(function() {

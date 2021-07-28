@@ -563,6 +563,16 @@ def set_alchemy_nodes(aj, content, too_many_nodes='confirm'):
     return
 
 
+def _set_label_alchemy_node(aj, object_, node_id, an_package_id):
+    if 'labels' in object_:
+        for label in object_['labels']:
+            label_node_id = sanitize_id(label) + '--' + node_id
+            an = AlchemyNode(label_node_id, 'v2_label', label, label, cluster=an_package_id)
+            aj.add_json_node(an)
+            ae = AlchemyEdge(node_id, label_node_id, LABEL_V2_LABEL_REF)
+            aj.add_json_edge(ae)
+
+
 def set_alchemy_node_campaign(aj, campaign, an_campaigns_id=None, is_stix_v2=False, an_package_id=None):
     if is_stix_v2:
         set_alchemy_node_campaign_v2(aj, campaign, an_package_id)
@@ -581,6 +591,7 @@ def set_alchemy_node_campaign_v2(aj, object_, an_package_id):
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
+    _set_label_alchemy_node(aj, object_, an_campaign_id, an_package_id)
     return
 
 
@@ -687,6 +698,7 @@ def set_alchemy_node_indicator(aj, indicator, an_indicators_id=None, is_stix_v2=
 
     if is_stix_v2:
         set_created_by_ref_edge(aj, indicator)
+        _set_label_alchemy_node(aj, indicator, an_indicator_id, an_package_id)
     else:
         ae = AlchemyEdge(an_indicators_id, an_indicator_id, LABEL_EDGE)
         aj.add_json_edge(ae)
@@ -784,6 +796,7 @@ def set_alchemy_node_observable_v2(aj, object_, an_package_id):
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return value_list
 
 
@@ -819,6 +832,7 @@ def set_alchemy_node_threat_actor_v2(aj, object_, an_package_id):
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -859,6 +873,7 @@ def set_alchemy_node_ttp(aj, ttp, an_ttps_id, an_package_id):
     aj.add_json_node(an)
     ae = AlchemyEdge(an_ttps_id, node_id, LABEL_EDGE)
     aj.add_json_edge(ae)
+    _set_label_alchemy_node(aj, ttp, node_id, an_package_id)
     return
 
 
@@ -868,6 +883,7 @@ def set_alchemy_node_et(aj, et, an_ets_id, an_package_id):
     aj.add_json_node(an)
     ae = AlchemyEdge(an_ets_id, node_id, LABEL_EDGE)
     aj.add_json_edge(ae)
+    _set_label_alchemy_node(aj, et, node_id, an_package_id)
     return
 
 
@@ -891,6 +907,7 @@ def set_alchemy_node_identity(aj, object_, an_package_id):
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -905,6 +922,7 @@ def set_alchemy_node_malware(aj, object_, an_package_id):
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -930,6 +948,7 @@ def set_alchemy_node_sighting(aj, object_, an_package_id):
         for observed_data_ref in object_['observed_data_refs']:
             ae = AlchemyEdge(convert_valid_node_id(observed_data_ref), node_id, LABEL_V2_OBSERVED_DATA_REF)
             aj.add_json_edge(ae)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -944,6 +963,7 @@ def set_alchemy_node_intrusion_set(aj, object_, an_package_id):
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -958,6 +978,7 @@ def set_alchemy_node_attack_pattern(aj, object_, an_package_id):
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -976,13 +997,7 @@ def set_alchemy_node_report(aj, object_, an_package_id):
         for observed_data_ref in object_['object_refs']:
             ae = AlchemyEdge(node_id, convert_valid_node_id(observed_data_ref), LABEL_V2_OBJECT_REF)
             aj.add_json_edge(ae)
-    if 'labels' in object_:
-        for label in object_['labels']:
-            label_node_id = sanitize_id(label) + '--' + node_id
-            an = AlchemyNode(label_node_id, 'v2_label', label, label, cluster=an_package_id)
-            aj.add_json_node(an)
-            ae = AlchemyEdge(node_id, label_node_id, LABEL_V2_LABEL_REF)
-            aj.add_json_edge(ae)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -997,6 +1012,7 @@ def set_alchemy_node_tool(aj, object_, an_package_id):
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -1024,6 +1040,7 @@ def set_alchemy_node_vulnerability(aj, object_, an_package_id):
                         index += 1
                         cve_ae = AlchemyEdge(cve_node_id, node_id, LABEL_V2_OBJECT_REF)
                         aj.add_json_edge(cve_ae)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -1038,6 +1055,7 @@ def set_alchemy_node_location(aj, object_, an_package_id):
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -1056,6 +1074,7 @@ def set_alchemy_node_opinion(aj, object_, an_package_id):
         for observed_data_ref in object_['object_refs']:
             ae = AlchemyEdge(node_id, convert_valid_node_id(observed_data_ref), LABEL_V2_OBJECT_REF)
             aj.add_json_edge(ae)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -1074,6 +1093,7 @@ def set_alchemy_node_note(aj, object_, an_package_id):
         for observed_data_ref in object_['object_refs']:
             ae = AlchemyEdge(node_id, convert_valid_node_id(observed_data_ref), LABEL_V2_OBJECT_REF)
             aj.add_json_edge(ae)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -1089,6 +1109,7 @@ def set_alchemy_node_custom_object(aj, object_, an_package_id):
         for observed_data_ref in object_['object_refs']:
             ae = AlchemyEdge(node_id, convert_valid_node_id(observed_data_ref), LABEL_V2_OBJECT_REF)
             aj.add_json_edge(ae)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -1168,6 +1189,13 @@ def get_description_string_from_attr(dict_, key_, title=None):
 
 
 def set_created_by_ref_edge(aj, dict_):
+    if 'created_by_ref' in dict_:
+        ae = AlchemyEdge(convert_valid_node_id(dict_['created_by_ref']), convert_valid_node_id(dict_['id']), LABEL_V2_CREATED_BY_REF)
+        aj.add_json_edge(ae)
+    return
+
+
+def _set_created_by_ref_edge_stip_custom_object(aj, dict_):
     if 'created_by_ref' in dict_:
         ae = AlchemyEdge(convert_valid_node_id(dict_['created_by_ref']), convert_valid_node_id(dict_['id']), LABEL_V2_CREATED_BY_REF)
         aj.add_json_edge(ae)
