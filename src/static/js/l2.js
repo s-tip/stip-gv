@@ -599,6 +599,7 @@ $(function(){
           d.width = edge_style.width
         }
         d.smooth = false
+        d.chosen = false
         edges.add(d)
       })
       return edges
