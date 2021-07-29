@@ -627,16 +627,25 @@ $(function(){
         nodes: nodes,
         edges: edges
       }
+
+      var improved_layout = true
+      if (nodes.length > 150){
+        alert('Too much nodes. Disable an improved layout option.')
+        improved_layout = false
+      }
       var default_options = {
         autoResize: false,
         layout: {
-          improvedLayout: false
+          improvedLayout: improved_layout,
         },
         nodes: {
           shape: 'dot',
         },
         physics: {
           enabled: false,
+          stabilization: {
+            enabled: true
+          }
         },
       }
       var options = default_options
