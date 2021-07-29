@@ -690,13 +690,11 @@ $(function(){
                 return false
               }
             }
-            if(path[0] === 'layout' ||
-               path[0] === 'manipulation' ||
+            if(path[0] === 'manipulation' ||
                path[0] === 'interaction') {
               return false
             }
-            if(option === 'layout' ||
-               option === 'manipulation' ||
+            if(option === 'manipulation' ||
                option === 'interaction') {
               return false
             }
