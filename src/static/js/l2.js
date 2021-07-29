@@ -180,6 +180,7 @@ $(function(){
     getURLParameter();
 
     //toggle switch有効化
+    $('#toggle-switch-drawer-option').prop('checked', false);
     $('#toggle-switch-drawer-option').bootstrapSwitch();
 
     //option div表示/非表示切り替え
@@ -188,14 +189,25 @@ $(function(){
     });
 
 
-    $('#enable-visjs-config').on('click', function(){
-      updateGraph()
-    })
-
     var nodes_meta = {}
     var network = null
     var dataSource = null
     var config_window = null
+    var CONFIG_EXPAND_WIDTH = '600px'
+    var CONFIG_CLOSED_WIDTH = '300px'
+
+    $('#enable-visjs-config').prop('checked', false)
+
+    $('#enable-visjs-config').on('click', function(){
+      if ($(this).prop('checked') == false){
+        $('#drawer-nav').css('width', CONFIG_CLOSED_WIDTH)
+        $('#drawer-hamburger').css('left', CONFIG_CLOSED_WIDTH)
+        $('#visjs-config').css('display', 'none')
+        return
+      }
+      updateGraph()
+    })
+
 
     function updateGraph(){
       if (dataSource == null){
@@ -207,14 +219,12 @@ $(function(){
       $('#visjs-network').css('background-color', $('#alchemy-background-color-text').val())
 
       if (show_config == true){
-        $('#drawer-nav').css('width', '600px')
-        $('#drawer-hamburger').css('left', '600px')
+        $('#drawer-nav').css('width', CONFIG_EXPAND_WIDTH)
+        $('#drawer-hamburger').css('left', CONFIG_EXPAND_WIDTH)
         $('#visjs-config').css('display', 'block')
+        $('#visjs-config').css('width', CONFIG_EXPAND_WIDTH)
         _start_network(nodes, edges, document.getElementById('visjs-config'))
       }else{
-        $('#drawer-nav').css('width', '300px')
-        $('#drawer-hamburger').css('left', '300px')
-        $('#visjs-config').css('display', 'none')
         _start_network(nodes, edges, null)
       }
       return
@@ -617,7 +627,7 @@ $(function(){
         nodes: nodes,
         edges: edges
       }
-      var options = {
+      var default_options = {
         autoResize: false,
         layout: {
           improvedLayout: false
@@ -629,9 +639,60 @@ $(function(){
           enabled: false,
         },
       }
+      var options = default_options
+
       if (config_dom != null){
         options.configure = {
           enabled: true,
+          filter: function(option, path){
+            if(path[0] === 'nodes'){
+              if(option === 'color' || 
+                 option === 'fixed' ||
+                 option === 'scaling' ||
+                 option === 'shapeProperties' ||
+                 option === 'size' ||
+                 option === 'physics'){
+                return false
+              }
+              if(path[1] === 'color' || 
+                 path[1] === 'fixed' ||
+                 path[1] === 'scaling' ||
+                 path[1] === 'shapeProperties'){
+                return false
+              }
+            }
+            if(path[0] === 'edges'){
+              if(option === 'color' ||
+                 option === 'physics' ||
+                 option === 'scaling' ||
+                 option === 'smooth' ||
+                 option === 'hoverWidth' ||
+                 option === 'labelHighlightBold' ||
+                 option === 'selectionWidth' ||
+                 option === 'selfReferenceSize' ||
+                 option === 'width' ||
+                 option === 'shadow'){
+                return false
+              }
+              if(path[1] === 'color' ||
+                 path[1] === 'scaling' ||
+                 path[1] === 'smooth' ||
+                 path[1] === 'shadow'){
+                return false
+              }
+            }
+            if(path[0] === 'layout' ||
+               path[0] === 'manipulation' ||
+               path[0] === 'interaction') {
+              return false
+            }
+            if(option === 'layout' ||
+               option === 'manipulation' ||
+               option === 'interaction') {
+              return false
+            }
+            return true;
+          },
           container: config_dom
         }
       }

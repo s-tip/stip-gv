@@ -163,3 +163,7 @@ table.dataTable thead .sorting_asc_disabled:after,
 table.dataTable thead .sorting_desc_disabled:after {
     bottom: 0;
 }
+
+div.vis-configuration.vis-config-item{
+    display: inline-flex;
+}
