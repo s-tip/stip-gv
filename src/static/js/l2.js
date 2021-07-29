@@ -14,7 +14,11 @@ $(function(){
     $('.drawer-nav').css('width',slide_menu_width_px);
 
     //for Drawer
-    $('.drawer').drawer();
+    $('.drawer').drawer({
+      iscroll: {
+          mouseWheel: false,
+          preventDefault: false
+      }});
     //初期状態でメニューオープン
     $('.drawer').drawer('open');
 
