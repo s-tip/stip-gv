@@ -595,7 +595,7 @@ $(function(){
           "object_ref": {
             "width": 1,
             "opacity": 1,
-            "color": "#FFFFFF"
+            "color": "#777777"
           },
           "v2_label_ref": {
             "width": 1,
