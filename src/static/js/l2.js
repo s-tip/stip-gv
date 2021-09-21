@@ -231,6 +231,10 @@ $(function(){
     }
 
     function _get_vis_nodes(dataSource){
+      const STIX2_NODE_SHAPE = 'image'
+      const STIX2_IMAGE_DIR = '/static/image/stix2.noback-dark/'
+      const STIX2_FILE_SUFFIX= '-noback-dark-300-dpi.png'
+
       var nodes = new vis.DataSet([])
       nodes_meta = {}
       $.each(dataSource.nodes,function(key,index){
@@ -250,7 +254,10 @@ $(function(){
             "radius": 65,
             "borderWidth" : 5
           },
-          "v2_Report": {
+          "v2_report": {
+            "shape" : STIX2_NODE_SHAPE,
+            "image" : STIX2_IMAGE_DIR + 'report' + STIX2_FILE_SUFFIX,
+            "label" : "Report",
             "captionSize": 100,
             "captionColor": "#0000ff",
             "borderColor": "#155d6F",
@@ -275,6 +282,9 @@ $(function(){
             "borderWidth" : 3
           },
           "v2_identity": {
+            "shape" : STIX2_NODE_SHAPE,
+            "image" : STIX2_IMAGE_DIR + 'identity' + STIX2_FILE_SUFFIX,
+            "label" : "Identity",
             "captionSize": 100,
             "captionColor": "#00ff00",
             "borderColor": "#00ff00",
@@ -330,7 +340,10 @@ $(function(){
             "radius": 30,
             "borderWidth" : 2
           },
-          "v2_Threat_Actor": {
+          "v2_threat_actor": {
+            "shape" : STIX2_NODE_SHAPE,
+            "image" : STIX2_IMAGE_DIR + 'threat-actor' + STIX2_FILE_SUFFIX,
+            "label" : "Threat Actor",
             "borderColor": "#626262",
             "color"  : "#626262",
             "radius": 30,
@@ -344,7 +357,10 @@ $(function(){
             "radius": 10,
             "borderWidth" : 2
           },
-          "v2_Campaign": {
+          "v2_campaign": {
+            "shape" : STIX2_NODE_SHAPE,
+            "image" : STIX2_IMAGE_DIR + 'campaign' + STIX2_FILE_SUFFIX,
+            "label" : "Campaign",
             "captionSize": 100,
             "captionColor": "#0000ff",
             "borderColor": "#A6C3FB",
@@ -370,7 +386,10 @@ $(function(){
             "radius": 10,
             "borderWidth" : 1
           },
-          "v2_IPv4_Addr_Observable": {
+          "v2_ipv4_addr_observable": {
+            "shape" : STIX2_NODE_SHAPE,
+            "image" : STIX2_IMAGE_DIR + 'ipv4-addr' + STIX2_FILE_SUFFIX,
+            "label" : "IP_v4_address",
             "borderColor": "#67FF56",
             "color"  : "#67FF56",
             "radius": 10,
@@ -382,7 +401,10 @@ $(function(){
             "radius": 10,
             "borderWidth" : 1
           },
-          "v2_Domain_Name_Observable": {
+          "v2_domain_name_observable": {
+            "shape" : STIX2_NODE_SHAPE,
+            "image" : STIX2_IMAGE_DIR + 'domain-name' + STIX2_FILE_SUFFIX,
+            "label" : "Domain_name",
             "borderColor": "#ff6384",
             "color"  : "#ff6384",
             "radius": 10,
@@ -394,7 +416,10 @@ $(function(){
             "radius": 10,
             "borderWidth" : 1
           },
-          "v2_File_Observable": {
+          "v2_file_observable": {
+            "shape" :  STIX2_NODE_SHAPE,
+            "image" : STIX2_IMAGE_DIR + 'ipv4-addr' + STIX2_FILE_SUFFIX,
+            "label" : "File",
             "borderColor": "#ffce56",
             "color"  : "#ffce56",
             "radius": 10,
@@ -407,6 +432,9 @@ $(function(){
             "borderWidth" : 1
           },
           "v2_indicator": {
+            "shape" : STIX2_NODE_SHAPE,
+            "image" : STIX2_IMAGE_DIR + 'indicator' + STIX2_FILE_SUFFIX,
+            "label" : "Indicator",
             "borderColor": "#67FF56",
             "color"  : "#67FF56",
             "radius": 10,
@@ -448,31 +476,124 @@ $(function(){
             "radius": 10,
             "borderWidth" : 1
           },
-          "v2_Relationship": {
+          "v2_relationship": {
             "borderColor": "#626262",
             "color"  : "#626262",
             "radius": 5,
             "borderWidth" : 1
           },
           "v2_attack_pattern": {
+            "shape" : STIX2_NODE_SHAPE,
+            "image" : STIX2_IMAGE_DIR + 'attack-pattern' + STIX2_FILE_SUFFIX,
+            "label" : "Attack_Pattern",
             "borderColor": "#abab07",
             "color"  : "#abab07",
             "radius": 15,
             "borderWidth" : 1
           },
           "v2_intrusion_set": {
+            "shape" : STIX2_NODE_SHAPE,
+            "image" : STIX2_IMAGE_DIR + 'intrusion-set' + STIX2_FILE_SUFFIX,
+            "label" : "Intrusion Set",
             "borderColor": "#5143d1",
             "color"  : "#5143d1",
             "radius": 30,
             "borderWidth" : 1
           },
-          "v2_CoA": {
+          "v2_vulerability": {
+            "shape" : STIX2_NODE_SHAPE,
+            "image" : STIX2_IMAGE_DIR + 'vulnerability' + STIX2_FILE_SUFFIX,
+            "label" : "Vulnerability",
+            "borderColor": "#5143d1",
+            "color"  : "#5143d1",
+            "radius": 30,
+            "borderWidth" : 1
+          },
+          "v2_cve": {
+            "shape" : STIX2_NODE_SHAPE,
+            "image" : STIX2_IMAGE_DIR + 'vulnerability' + STIX2_FILE_SUFFIX,
+            "label" : "CVE",
+            "borderColor": "#5143d1",
+            "color"  : "#5143d1",
+            "radius": 30,
+            "borderWidth" : 1
+          },
+          "v2_coa": {
+            "shape" : STIX2_NODE_SHAPE,
+            "image" : STIX2_IMAGE_DIR + 'coa' + STIX2_FILE_SUFFIX,
+            "label" : "Course_of_Action",
             "borderColor": "#de1888",
             "color"  : "#de1888",
             "radius": 10,
             "borderWidth" : 1
           },
-          "v2_Tool": {
+          "v2_tool": {
+            "shape" : STIX2_NODE_SHAPE,
+            "image" : STIX2_IMAGE_DIR + 'tool' + STIX2_FILE_SUFFIX,
+            "label" : "Tool",
+            "borderColor": "#d9871c",
+            "color"  : "#d9871c",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "v2_grouping": {
+            "shape" : STIX2_NODE_SHAPE,
+            "image" : STIX2_IMAGE_DIR + 'grouping' + STIX2_FILE_SUFFIX,
+            "label" : "Grouping",
+            "borderColor": "#d9871c",
+            "color"  : "#d9871c",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "v2_location": {
+            "shape" : STIX2_NODE_SHAPE,
+            "image" : STIX2_IMAGE_DIR + 'location' + STIX2_FILE_SUFFIX,
+            "label" : "Location",
+            "borderColor": "#d9871c",
+            "color"  : "#d9871c",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "v2_note": {
+            "shape" : STIX2_NODE_SHAPE,
+            "image" : STIX2_IMAGE_DIR + 'note' + STIX2_FILE_SUFFIX,
+            "label" : "Note",
+            "borderColor": "#d9871c",
+            "color"  : "#d9871c",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "v2_opinion": {
+            "shape" : STIX2_NODE_SHAPE,
+            "image" : STIX2_IMAGE_DIR + 'opinion' + STIX2_FILE_SUFFIX,
+            "label" : "Opinion",
+            "borderColor": "#d9871c",
+            "color"  : "#d9871c",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "v2_infrastructure": {
+            "shape" : STIX2_NODE_SHAPE,
+            "image" : STIX2_IMAGE_DIR + 'infrastructure' + STIX2_FILE_SUFFIX,
+            "label" : "Infrastructure",
+            "borderColor": "#d9871c",
+            "color"  : "#d9871c",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "v2_malware": {
+            "shape" : STIX2_NODE_SHAPE,
+            "image" : STIX2_IMAGE_DIR + 'malware' + STIX2_FILE_SUFFIX,
+            "label" : "Malware",
+            "borderColor": "#d9871c",
+            "color"  : "#d9871c",
+            "radius": 10,
+            "borderWidth" : 1
+          },
+          "v2_malware_analysis": {
+            "shape" : STIX2_NODE_SHAPE,
+            "image" : STIX2_IMAGE_DIR + 'malware-analysis' + STIX2_FILE_SUFFIX,
+            "label" : "Malware",
             "borderColor": "#d9871c",
             "color"  : "#d9871c",
             "radius": 10,
@@ -488,15 +609,24 @@ $(function(){
 
         if (node_styles[node.type]){
           const node_style = node_styles[node.type]
-          d.value = node_style.radius * 10
-          d.color= node_style.color
+          d.color = node_style.color
+          if(node_style['shape']){
+            d.shape = node_style.shape
+          }
+          if(node_style['image']){
+            d.image = node_style.image
+          }
+          if(node_style['label']){
+            d.label = node_style.label
+          }
         }else{
           d.value = 10
         }
+        d.label = node.caption
  
-        var avoid_redcation_node_type = ['Header','Campaign','Observables','TTPs','Incidents','Exploit_Targets']
+        var avoid_redcation_node_type = ['Header','Campaign','Observables','TTPs','Incidents','Exploit_Targets', 'v2_report']
         if($.inArray(node.type,avoid_redcation_node_type) < 0){
-          if(d.label.length <= 10){
+          if(d.label.length >= 10){
             d.label = d.label.substring(0,10) + '...'
           }
         }
