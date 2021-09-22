@@ -4,14 +4,9 @@
 <link href="/static/drawer/css/drawer.min.css" rel="stylesheet">
 <script type="text/javascript" src="/static/drawer/js/drawer.js"></script>
 <script type="text/javascript" src="/static/iScroll/js/iscroll.js"></script>
-<!--  for alchemy -->
-<link type="text/css" rel="stylesheet" href="/static/alchemy/alchemy.min.css">
-<link type="text/css" rel="stylesheet" href="/static/alchemy/alchemy.css">
-<script type="text/javascript" src="/static/alchemy/underscore-min.js"></script>
-<script type="text/javascript" src="/static/alchemy/lodash.min.js"></script>
-<script type="text/javascript" src="/static/alchemy/d3.v3.min.js"></script>
-<script type="text/javascript" src="/static/alchemy/alchemy.js"></script>
-<script type="text/javascript" src="/static/alchemy/alchemy_config.js"></script>
+<!--  for vis -->
+<link  type="text/css" rel="stylesheet" href="/static/visjs/vis.min.css"/>
+<script type="text/javascript" src="/static/visjs/vis.min.js"></script>
 <!--  for resize box -->
 <script type="text/javascript" src="/static/js/resize-box.js"></script>
 <!--  for DataTable -->
@@ -36,10 +31,8 @@
 <main role="main">
 <form name="l2" id="l2" action="/L2" method="get">{% csrf_token %}
 <div class="container-fluid" id='l2-container'style="width:100%;">
+    <div id="visjs-network"></div>
     <div class="col-lg-12" id="left-column-div">
-        <div class="col-xl-12 col-lg-12 col-md-12  col-sm-12 col-xs-12" id="graph">
-            <div id="alchemy" class="alchemy"></div>
-        </div> <!--  <div class="col-lg-12" id="graph"> -->
         <div class="col-lg-12">
             <div id="l2-description-modal" class="modal">
                 <div class="modal-content" id="l2-modal-content">
@@ -110,26 +103,9 @@
                 <div style="margin-left:auto;width:14px" data-intro="このヘルプを表示する" data-position="right">
                     <span class="glyphicon glyphicon-question-sign slide-menu-help"></span>
                 </div>
-                <div class="dropdown" data-intro="ノードの色分け基準を指定" data-position="right">
-                    Choose view mode:
-                    <br/>
-                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-                    Normal View
-                    <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" id="l2-dropdown-choose-view-mode">
-                            <li><a href="#" data-value="normal">Normal View</a></li>
-                            <li><a href="#" data-value="cluster">Cluster View</a></li>
-                    </ul>
-                    <input type="hidden" name="view_mode" value="normal"/>
-                </div><!--  <div class="dropdown">-->
-                <br/>
-                <div data-intro="ノードアニメーション演出有効" data-position="right">
-                    <input type="checkbox" id="enable-animation-checkbox"/>Enable Animation
-                </div>
-                <br/>
-                <div data-intro="ノードのラベル表示有効" data-position="right">
-                    <input type="checkbox" id="enable-label-show" checked/>Show Label
+                <div>
+                    <input type="checkbox" id="enable-visjs-config"/>Show vis.js config
+                    <div id='visjs-config'></div>
                 </div>
                 <br/>
                 <div data-intro="描画エリアの背景色" data-position="right">

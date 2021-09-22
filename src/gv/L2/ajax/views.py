@@ -177,9 +177,9 @@ def get_observable_value_string(observable):
 
 def get_v2_observable_value(observable):
     TYPE_V2_ETC_OBSERVABLE = 'v2_Etc_Observable'
-    TYPE_V2_DOMAIN_NAME_OBSERVABLE = 'v2_Domain_Name_Observable'
-    TYPE_V2_IPV4_ADDR_OBSERVABLE = 'v2_IPv4_Addr_Observable'
-    TYPE_V2_FILE_OBSERVABLE = 'v2_File_Observable'
+    TYPE_V2_DOMAIN_NAME_OBSERVABLE = 'v2_domain_name_observable'
+    TYPE_V2_IPV4_ADDR_OBSERVABLE = 'v2_ipv4_addr_observable'
+    TYPE_V2_FILE_OBSERVABLE = 'v2_file_observable'
     TYPE_V2_WINDOWS_REGISTRY_KEY_OBSERVABLE = 'v2_Windows_Registry_Key_Observable'
 
     values = []
@@ -316,6 +316,9 @@ def set_alchemy_nodes(aj, content, too_many_nodes='confirm'):
         opinions = []
         notes = []
         language_contents = []
+        groupings = []
+        infrastructures = []
+        malware_analysises = []
         '''
         x_stip_snses = []
         '''
@@ -366,16 +369,17 @@ def set_alchemy_nodes(aj, content, too_many_nodes='confirm'):
                 notes.append(o_)
             elif object_type == 'language-content':
                 language_contents.append(o_)
-
-            '''
-            elif object_type == 'x-stip-sns':
-                x_stip_snses.append(o_)
-            '''
-            if object_type == 'x-stip-sns':
-                continue
-
+            elif object_type == 'grouping':
+                groupings.append(o_)
+            elif object_type == 'infrastructure':
+                infrastructures.append(o_)
+            elif object_type == 'malware-analysis':
+                malware_analysises.append(o_)
             elif object_type.startswith('x-'):
-                custom_objects.append(o_)
+                if object_type == 'x-stip-sns':
+                    continue
+                else:
+                    custom_objects.append(o_)
     else:
         indicators = package.indicators
         observables = package.observables
@@ -400,6 +404,9 @@ def set_alchemy_nodes(aj, content, too_many_nodes='confirm'):
         notes = None
         language_contents = None
         custom_objects = None
+        groupings = None
+        infrastructures = None
+        malware_analysises = None
 
     if not is_stix_v2:
         an = AlchemyNode(an_header_id, 'Header', package_name, stix_header.description, cluster=an_package_id)
@@ -551,6 +558,18 @@ def set_alchemy_nodes(aj, content, too_many_nodes='confirm'):
         for custom_object in custom_objects:
             set_alchemy_node_custom_object(aj, custom_object, an_package_id)
 
+    if groupings is not None:
+        for grouping in groupings:
+            set_alchemy_node_grouping(aj, grouping, an_package_id)
+
+    if infrastructures is not None:
+        for infrastructure in infrastructures:
+            set_alchemy_node_infrastructure(aj, infrastructure, an_package_id)
+
+    if malware_analysises is not None:
+        for malware_analysis in malware_analysises:
+            set_alchemy_node_malware_analysis(aj, malware_analysis, an_package_id)
+
     '''
     if x_stip_snses is not None:
         for x_stip_sns in x_stip_snses:
@@ -561,6 +580,16 @@ def set_alchemy_nodes(aj, content, too_many_nodes='confirm'):
         for relationship in relationships:
             set_alchemy_node_relationship(aj, relationship)
     return
+
+
+def _set_label_alchemy_node(aj, object_, node_id, an_package_id):
+    if 'labels' in object_:
+        for label in object_['labels']:
+            label_node_id = sanitize_id(label) + '--' + node_id
+            an = AlchemyNode(label_node_id, 'v2_label', label, label, cluster=an_package_id)
+            aj.add_json_node(an)
+            ae = AlchemyEdge(node_id, label_node_id, LABEL_V2_LABEL_REF)
+            aj.add_json_edge(ae)
 
 
 def set_alchemy_node_campaign(aj, campaign, an_campaigns_id=None, is_stix_v2=False, an_package_id=None):
@@ -577,10 +606,11 @@ def set_alchemy_node_campaign_v2(aj, object_, an_package_id):
     for key in keys:
         if key in object_:
             description += get_description_string_from_attr(object_, key)
-    an = AlchemyNode(an_campaign_id, 'v2_Campaign', title, description, cluster=an_package_id)
+    an = AlchemyNode(an_campaign_id, 'v2_campaign', title, description, cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
+    _set_label_alchemy_node(aj, object_, an_campaign_id, an_package_id)
     return
 
 
@@ -630,12 +660,12 @@ url_pattern = re.compile(r'url:value\s*=\s*\'(\S+)\'')
 email_addr_pattern = re.compile(r'email-addr:value\s*=\s*\'(\S+)\'')
 
 patterns = [
-    (ipv4_pattern, 'v2_IPv4_Addr_Observable'),
-    (domain_name_pattern, 'v2_Domain_Name_Observable'),
-    (md5_pattern, 'v2_File_Observable'),
-    (sha1_pattern, 'v2_File_Observable'),
-    (sha256_pattern, 'v2_File_Observable'),
-    (sha512_pattern, 'v2_File_Observable'),
+    (ipv4_pattern, 'v2_ipv4_addr_observable'),
+    (domain_name_pattern, 'v2_domain_name_observable'),
+    (md5_pattern, 'v2_file_observable'),
+    (sha1_pattern, 'v2_file_observable'),
+    (sha256_pattern, 'v2_file_observable'),
+    (sha512_pattern, 'v2_file_observable'),
     (url_pattern, 'v2_indicator'),
     (email_addr_pattern, 'v2_indicator'),
 ]
@@ -687,6 +717,7 @@ def set_alchemy_node_indicator(aj, indicator, an_indicators_id=None, is_stix_v2=
 
     if is_stix_v2:
         set_created_by_ref_edge(aj, indicator)
+        _set_label_alchemy_node(aj, indicator, an_indicator_id, an_package_id)
     else:
         ae = AlchemyEdge(an_indicators_id, an_indicator_id, LABEL_EDGE)
         aj.add_json_edge(ae)
@@ -784,6 +815,7 @@ def set_alchemy_node_observable_v2(aj, object_, an_package_id):
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return value_list
 
 
@@ -815,10 +847,11 @@ def set_alchemy_node_threat_actor_v2(aj, object_, an_package_id):
     for key in keys:
         if key in object_:
             description += get_description_string_from_attr(object_, key)
-    an = AlchemyNode(node_id, 'v2_Threat_Actor', title, description, cluster=an_package_id)
+    an = AlchemyNode(node_id, 'v2_threat_actor', title, description, cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -846,7 +879,7 @@ def set_alchemy_node_coa_v2(aj, object_, an_package_id):
     for key in keys:
         if key in object_:
             description += get_description_string_from_attr(object_, key)
-    an = AlchemyNode(node_id, 'v2_CoA', title, description, cluster=an_package_id)
+    an = AlchemyNode(node_id, 'v2_coa', title, description, cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
@@ -859,6 +892,7 @@ def set_alchemy_node_ttp(aj, ttp, an_ttps_id, an_package_id):
     aj.add_json_node(an)
     ae = AlchemyEdge(an_ttps_id, node_id, LABEL_EDGE)
     aj.add_json_edge(ae)
+    _set_label_alchemy_node(aj, ttp, node_id, an_package_id)
     return
 
 
@@ -868,6 +902,7 @@ def set_alchemy_node_et(aj, et, an_ets_id, an_package_id):
     aj.add_json_node(an)
     ae = AlchemyEdge(an_ets_id, node_id, LABEL_EDGE)
     aj.add_json_edge(ae)
+    _set_label_alchemy_node(aj, et, node_id, an_package_id)
     return
 
 
@@ -891,6 +926,7 @@ def set_alchemy_node_identity(aj, object_, an_package_id):
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -905,6 +941,7 @@ def set_alchemy_node_malware(aj, object_, an_package_id):
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -930,6 +967,7 @@ def set_alchemy_node_sighting(aj, object_, an_package_id):
         for observed_data_ref in object_['observed_data_refs']:
             ae = AlchemyEdge(convert_valid_node_id(observed_data_ref), node_id, LABEL_V2_OBSERVED_DATA_REF)
             aj.add_json_edge(ae)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -944,6 +982,7 @@ def set_alchemy_node_intrusion_set(aj, object_, an_package_id):
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -958,6 +997,7 @@ def set_alchemy_node_attack_pattern(aj, object_, an_package_id):
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -968,7 +1008,7 @@ def set_alchemy_node_report(aj, object_, an_package_id):
     for key in keys:
         if key in object_:
             description += get_description_string_from_attr(object_, key)
-    an = AlchemyNode(node_id, 'v2_Report', title, description, cluster=an_package_id)
+    an = AlchemyNode(node_id, 'v2_report', title, description, cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
@@ -976,13 +1016,7 @@ def set_alchemy_node_report(aj, object_, an_package_id):
         for observed_data_ref in object_['object_refs']:
             ae = AlchemyEdge(node_id, convert_valid_node_id(observed_data_ref), LABEL_V2_OBJECT_REF)
             aj.add_json_edge(ae)
-    if 'labels' in object_:
-        for label in object_['labels']:
-            label_node_id = sanitize_id(label) + '--' + node_id
-            an = AlchemyNode(label_node_id, 'v2_label', label, label, cluster=an_package_id)
-            aj.add_json_node(an)
-            ae = AlchemyEdge(node_id, label_node_id, LABEL_V2_LABEL_REF)
-            aj.add_json_edge(ae)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -993,10 +1027,11 @@ def set_alchemy_node_tool(aj, object_, an_package_id):
     for key in keys:
         if key in object_:
             description += get_description_string_from_attr(object_, key)
-    an = AlchemyNode(node_id, 'v2_Tool', title, description, cluster=an_package_id)
+    an = AlchemyNode(node_id, 'v2_tool', title, description, cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -1007,7 +1042,7 @@ def set_alchemy_node_vulnerability(aj, object_, an_package_id):
     for key in keys:
         if key in object_:
             description += get_description_string_from_attr(object_, key)
-    an = AlchemyNode(node_id, 'v2_Vulerability', title, description, cluster=an_package_id)
+    an = AlchemyNode(node_id, 'v2_vulerability', title, description, cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
@@ -1019,11 +1054,12 @@ def set_alchemy_node_vulnerability(aj, object_, an_package_id):
                     if 'external_id' in external_reference:
                         cve = external_reference['external_id']
                         cve_node_id = convert_valid_node_id('%s-%s' % (node_id, cve))
-                        cve_an = AlchemyNode(cve_node_id, 'v2_CVE', cve, cve, cluster=an_package_id)
+                        cve_an = AlchemyNode(cve_node_id, 'v2_cve', cve, cve, cluster=an_package_id)
                         aj.add_json_node(cve_an)
                         index += 1
                         cve_ae = AlchemyEdge(cve_node_id, node_id, LABEL_V2_OBJECT_REF)
                         aj.add_json_edge(cve_ae)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -1034,10 +1070,11 @@ def set_alchemy_node_location(aj, object_, an_package_id):
     for key in keys:
         if key in object_:
             description += get_description_string_from_attr(object_, key)
-    an = AlchemyNode(node_id, 'v2_Location', title, description, cluster=an_package_id)
+    an = AlchemyNode(node_id, 'v2_location', title, description, cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -1048,7 +1085,7 @@ def set_alchemy_node_opinion(aj, object_, an_package_id):
     for key in keys:
         if key in object_:
             description += get_description_string_from_attr(object_, key)
-    an = AlchemyNode(node_id, 'v2_Opinion', title, description, cluster=an_package_id)
+    an = AlchemyNode(node_id, 'v2_opinion', title, description, cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
@@ -1056,6 +1093,7 @@ def set_alchemy_node_opinion(aj, object_, an_package_id):
         for observed_data_ref in object_['object_refs']:
             ae = AlchemyEdge(node_id, convert_valid_node_id(observed_data_ref), LABEL_V2_OBJECT_REF)
             aj.add_json_edge(ae)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -1066,7 +1104,7 @@ def set_alchemy_node_note(aj, object_, an_package_id):
     for key in keys:
         if key in object_:
             description += get_description_string_from_attr(object_, key)
-    an = AlchemyNode(node_id, 'v2_Note', title, description, cluster=an_package_id)
+    an = AlchemyNode(node_id, 'v2_note', title, description, cluster=an_package_id)
     an.set_stix2_object(object_)
     aj.add_json_node(an)
     set_created_by_ref_edge(aj, object_)
@@ -1074,6 +1112,67 @@ def set_alchemy_node_note(aj, object_, an_package_id):
         for observed_data_ref in object_['object_refs']:
             ae = AlchemyEdge(node_id, convert_valid_node_id(observed_data_ref), LABEL_V2_OBJECT_REF)
             aj.add_json_edge(ae)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
+    return
+
+
+def set_alchemy_node_grouping(aj, object_, an_package_id):
+    node_id = convert_valid_node_id(object_['id'])
+    title, description = get_common_title_description(object_, default_title=object_['id'], default_description=object_['id'])
+    keys = ['context']
+    for key in keys:
+        if key in object_:
+            description += get_description_string_from_attr(object_, key)
+    an = AlchemyNode(node_id, 'v2_grouping', title, description, cluster=an_package_id)
+    an.set_stix2_object(object_)
+    aj.add_json_node(an)
+    set_created_by_ref_edge(aj, object_)
+    if 'object_refs' in object_:
+        for observed_data_ref in object_['object_refs']:
+            ae = AlchemyEdge(node_id, convert_valid_node_id(observed_data_ref), LABEL_V2_OBJECT_REF)
+            aj.add_json_edge(ae)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
+    return
+
+
+def set_alchemy_node_infrastructure(aj, object_, an_package_id):
+    node_id = convert_valid_node_id(object_['id'])
+    title, description = get_common_title_description(object_, default_title=object_['id'], default_description=object_['id'])
+    keys = ['infrastructure_types', 'aliases', 'kill_chain_phases', 'first_seen', 'last_seen']
+    for key in keys:
+        if key in object_:
+            description += get_description_string_from_attr(object_, key)
+    an = AlchemyNode(node_id, 'v2_infrastructure', title, description, cluster=an_package_id)
+    an.set_stix2_object(object_)
+    aj.add_json_node(an)
+    set_created_by_ref_edge(aj, object_)
+    if 'object_refs' in object_:
+        for observed_data_ref in object_['object_refs']:
+            ae = AlchemyEdge(node_id, convert_valid_node_id(observed_data_ref), LABEL_V2_OBJECT_REF)
+            aj.add_json_edge(ae)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
+    return
+
+
+def set_alchemy_node_malware_analysis(aj, object_, an_package_id):
+    node_id = convert_valid_node_id(object_['id'])
+    title, description = get_common_title_description(object_, default_title=object_['id'], default_description=object_['id'])
+    keys = ['product', 'version', 'host_vm_ref', 'operating_system_ref', 'installed_software_refs',
+        'configuration_version', 'modules', 'analysis_engine_version', 'analysis_definition_version',
+        'submitted', 'analysis_started', 'analysis_ended', 'result_name', 'result',
+        'analysis_sco_refs', 'sample_ref']
+    for key in keys:
+        if key in object_:
+            description += get_description_string_from_attr(object_, key)
+    an = AlchemyNode(node_id, 'v2_malware_analysis', title, description, cluster=an_package_id)
+    an.set_stix2_object(object_)
+    aj.add_json_node(an)
+    set_created_by_ref_edge(aj, object_)
+    if 'object_refs' in object_:
+        for observed_data_ref in object_['object_refs']:
+            ae = AlchemyEdge(node_id, convert_valid_node_id(observed_data_ref), LABEL_V2_OBJECT_REF)
+            aj.add_json_edge(ae)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -1089,6 +1188,7 @@ def set_alchemy_node_custom_object(aj, object_, an_package_id):
         for observed_data_ref in object_['object_refs']:
             ae = AlchemyEdge(node_id, convert_valid_node_id(observed_data_ref), LABEL_V2_OBJECT_REF)
             aj.add_json_edge(ae)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
 
@@ -1168,6 +1268,13 @@ def get_description_string_from_attr(dict_, key_, title=None):
 
 
 def set_created_by_ref_edge(aj, dict_):
+    if 'created_by_ref' in dict_:
+        ae = AlchemyEdge(convert_valid_node_id(dict_['created_by_ref']), convert_valid_node_id(dict_['id']), LABEL_V2_CREATED_BY_REF)
+        aj.add_json_edge(ae)
+    return
+
+
+def _set_created_by_ref_edge_stip_custom_object(aj, dict_):
     if 'created_by_ref' in dict_:
         ae = AlchemyEdge(convert_valid_node_id(dict_['created_by_ref']), convert_valid_node_id(dict_['id']), LABEL_V2_CREATED_BY_REF)
         aj.add_json_edge(ae)
