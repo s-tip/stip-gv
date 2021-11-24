@@ -186,6 +186,7 @@ if (ENV_DEV_OVER_HTTP_KEY in os.environ):
 # http で動作させないときは SESSION_COOKIE_SECURE を立てる
 if not dev_over_http:
     SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_DOMAIN = cookie_domain_name
 
 # GIT_PATH = '/opt/s-tip/ui/src/'
