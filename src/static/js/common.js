@@ -15,11 +15,3 @@ function getCookie(name){
     return cookieValue;
 };
 
-//nextのhiddenフォームを取得する
-function getNextElement(){
-    elem = document.createElement('input');
-    elem.type = 'hidden';
-    elem.name = 'next';
-    elem.value = location.pathname;
-    return elem;
-};
