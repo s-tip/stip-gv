@@ -1,4 +1,5 @@
 import traceback
+import html
 import json
 from django.contrib.auth.decorators import login_required
 from django.http.response import JsonResponse, HttpResponseServerError
@@ -159,7 +160,7 @@ def get_l1_info_data_tables(request):
         resp = {}
         resp['iTotalRecords'] = int(data['iTotalRecords'])
         resp['iTotalDisplayRecords'] = int(data['iTotalDisplayRecords'])
-        resp['sEcho'] = sEcho
+        resp['sEcho'] = html(sEcho.escape())
         resp['aaData'] = aaData
         return JsonResponse(resp, safe=False)
     except Exception as e:

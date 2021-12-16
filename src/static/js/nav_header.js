@@ -5,7 +5,6 @@ $(function(){
         $(this).parents('.dropdown').find('input[name="css_thema"]').val($(this).attr('data-value'));
         //呼び出し(nextフォームを付与後)
         var f =  $('#change-css-thema-from');
-        f.append(getNextElement());
         f.submit();
     });
 

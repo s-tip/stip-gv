@@ -22,10 +22,7 @@ def change(request):
         user = stip_user.gv_auth_user
         user.css_thema = get_css_change_css_thema(request)
         user.save()
-        # 前のページにリダイレクト
-        # 次のURLを取得
-        next_ = get_next_location(request)
-        return redirect(next_)
+        return redirect('/')
     except Exception:
         # エラーページ
         return error_page(request)
