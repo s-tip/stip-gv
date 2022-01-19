@@ -160,7 +160,7 @@ def get_l1_info_data_tables(request):
         resp = {}
         resp['iTotalRecords'] = int(data['iTotalRecords'])
         resp['iTotalDisplayRecords'] = int(data['iTotalDisplayRecords'])
-        resp['sEcho'] = html(sEcho.escape())
+        resp['sEcho'] = html.escape(sEcho)
         resp['aaData'] = aaData
         return JsonResponse(resp, safe=False)
     except Exception as e:
