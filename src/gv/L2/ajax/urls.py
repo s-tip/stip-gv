@@ -4,7 +4,11 @@ import gv.L2.ajax.views as ajax
 
 urlpatterns = [
     # related_packages
-    url(r'^related_packages', ajax.related_packages),
+    url(r'^related_packages$', ajax.related_packages),
     # related_package_nodes
-    url(r'^related_package_nodes', ajax.related_package_nodes),
+    url(r'^related_package_nodes$', ajax.related_package_nodes),
+    # create_opinion
+    url(r'^create_opinion$', ajax.create_opinion),
+    # create_note
+    url(r'^create_note$', ajax.create_note),
 ]

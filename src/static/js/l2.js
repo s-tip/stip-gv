@@ -162,6 +162,40 @@ $(function(){
         },
     });
 
+    $('#l2-note-dialog').dialog({
+        width: 800,
+        resizable: true,
+        autoOpen: false,
+        buttons: {
+            Submit: function() {
+                const ret =_note_submit($(this).data('object-id'))
+                if (ret){
+                  $( this ).dialog('close');
+                }
+            },
+            Close: function() {
+                $( this ).dialog('close');
+            },
+        },
+    });
+
+       $('#l2-opinion-dialog').dialog({
+        width: 800,
+        resizable: true,
+        autoOpen: false,
+        buttons: {
+            Submit: function() {
+                const ret =_opinion_submit($(this).data('object-id'))
+                if (ret){
+                  $( this ).dialog('close');
+                }
+            },
+            Close: function() {
+                $( this ).dialog('close');
+            },
+        },
+    });
+
     //modalのクロースボタンクリック時
     $('#l2-description-modal-close').click(function(){
         $('#l2-description-modal').css('display','none');
@@ -854,6 +888,7 @@ $(function(){
       var value_text = node.value;
       var node_type = node.type;
       var value_node = ["Observables","Observable","Observable_ip","Observable_domain","Observable_hash","Observable_file_name","Observable_uri","Indicators","Indicator","Indicator_ip","Indicator_domain","Indicator_hash","Indicator_uri"];
+      var object_id = '';
 
       if(title_text == null || title_text.length == 0){
         title_text = "No title";
@@ -896,6 +931,9 @@ $(function(){
           if (key == "lang"){
             original_language = stix2_object[key] ;
           }
+          if (key == "id"){
+            object_id = stix2_object[key] ;
+          }
           var span_key = '<span class="l2_stix2_span_key">'+ key + ':</span> ';
           var v = stix2_object[key];
           if(Array.isArray(v)== true){
@@ -934,7 +972,11 @@ $(function(){
           var span_value = '<span class="stix2-description" id="stix2-' + sunitaize_encode(key) + '" data-original="' + sunitaize_encode(original_v) + '">' + v + '</span><br/>\n';
           description_text += (span_key + span_value);
         });
-        l2_description.innerHTML = description_text;
+        const opinion_link = '<a class="note-href" data-object-id="' + object_id + '">Note</a>'
+        const note_link = '<a class="opinion-href" data-object-id="' + object_id + '">Opinion</a>'
+        l2_description.innerHTML = opinion_link + '&nbsp;' +
+            note_link + '<br/>' + description_text;
+
         if (title_text != null){
           l2_title.innerHTML = title_text;
         }else{
@@ -1354,6 +1396,102 @@ $(function(){
     function sunitaize_decode(str){
     	return str.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, '\'').replace(/&amp;/g, '&');
     } 
+
+    function _get_oid_from_href(a){
+      return a.data('object-id')
+    }
+
+    $(document).on('click','.note-href',function(){
+      var object_id = _get_oid_from_href($(this))
+      const note_dialog = $('#l2-note-dialog')
+      const title = 'Note for ' + object_id
+      $('#note-abstract').val('')
+      $('#note-content').val('')
+      note_dialog.data('object-id', object_id)
+      note_dialog.dialog('option', 'title', title)
+      note_dialog.dialog('open');
+    })
+
+    $(document).on('click','.opinion-href',function(){
+      var object_id = _get_oid_from_href($(this))
+      const opinion_dialog = $('#l2-opinion-dialog')
+      const title = 'Opinion for ' + object_id
+      $('#opinion-opinion').val('neutral')
+      $('#opinion-explanation').val('')
+      opinion_dialog.data('object-id', object_id)
+      opinion_dialog.dialog('option', 'title', title)
+      opinion_dialog.dialog('open');
+    })
+
+    function _opinion_submit(object_id){
+      const explanation = $('#opinion-explanation').val()
+      const opinion = $('#opinion-opinion').val()
+      d = {
+        'object_id' : object_id,
+        'explanation' : explanation,
+        'opinion' : opinion,
+      }
+      $.ajax({
+        type: 'POST',
+        url: '/L2/ajax/create_opinion',
+        timeout: 60 * 60 * 1000,
+        cache: true,
+        data: d,
+        dataType: 'json',
+        beforeSend: function(xhr, settings){
+          xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+        },
+      }).done(function(ret,textStatus,jqXHR){
+        if(ret.status != 'OK'){
+          alert(ret.message)
+          return false
+        }else{
+          alert('Success!!')
+        }
+      }).fail(function(jqXHR,textStatus,errorThrown){
+        alert(jqXHR.statusText)
+        return false
+      }).always(function(data_or_jqXHR,textStatus,jqHXR_or_errorThrown){
+      });
+      return true
+    }
+
+    function _note_submit(object_id){
+      const abstract = $('#note-abstract').val()
+      const content = $('#note-content').val()
+      if (content.length == 0){
+        alert('Content is required')
+        return false
+      }
+      d = {
+        'object_id' : object_id,
+        'abstract' : abstract,
+        'content' : content,
+      }
+      $.ajax({
+        type: 'POST',
+        url: '/L2/ajax/create_note',
+        timeout: 60 * 60 * 1000,
+        cache: true,
+        data: d,
+        dataType: 'json',
+        beforeSend: function(xhr, settings){
+          xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+        },
+      }).done(function(ret,textStatus,jqXHR){
+        if(ret.status != 'OK'){
+          alert(ret.message)
+          return false
+        }else{
+          alert('Success!!')
+        }
+      }).fail(function(jqXHR,textStatus,errorThrown){
+        alert(jqXHR.statusText)
+        return false
+      }).always(function(data_or_jqXHR,textStatus,jqHXR_or_errorThrown){
+      });
+      return true
+    }
 
     //content-language の言語クリック時
     $(document).on('click','.content-language-href',function(){

@@ -218,12 +218,37 @@ class Ctirs(object):
         # ajax呼び出し
         return self._call_post_ctirs_api(url, params, json=j)
 
+    # get : /api/v1/stix_files_v2/search_bundle
     def get_bundle_from_object_id(self, object_id):
         params = {
             'match[object_id]': object_id
         }
         url = '/api/v1/stix_files_v2/search_bundle'
         return self._call_get_ctirs_api(url, params)
+
+    # post /api/v1/stix_files_v2/note
+    def post_note(self, object_id, content, abstract):
+        params = {
+            'object_id': object_id,
+            'content': content,
+            'abstract': abstract
+        }
+        url = '/api/v1/stix_files_v2/create_note'
+        # ajax呼び出し
+        return self._call_post_ctirs_api(url, params, files=None)
+
+    # post /api/v1/stix_files_v2/opinion
+    def post_opinion(self, object_id, opinion, explanation):
+        params = {
+            'object_id': object_id,
+            'opinion': opinion,
+            'explanation': explanation
+        }
+        url = '/api/v1/stix_files_v2/create_opinion'
+        # ajax呼び出し
+        return self._call_post_ctirs_api(url, params, files=None)
+
+
 
     # ajax呼び出し(get)
     def _call_get_ctirs_api(self, url_suffix, params):

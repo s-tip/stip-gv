@@ -51,6 +51,34 @@ def get_l2_ajax_too_many_nodes(request):
     return get_text_field_value(request, 'too_many_nodes', default_value='confirm')
 
 
+def get_l2_ajax_common_object_id(request):
+    return get_text_field_value(request, 'object_id', default_value=None)
+
+
+def get_l2_ajax_note_object_id(request):
+    return get_l2_ajax_common_object_id(request)
+
+
+def get_l2_ajax_note_abstract(request):
+    return get_text_field_value(request, 'abstract', default_value='')
+
+
+def get_l2_ajax_note_content(request):
+    return get_text_field_value(request, 'content', default_value=None)
+
+
+def get_l2_ajax_opinion_object_id(request):
+    return get_l2_ajax_common_object_id(request)
+
+
+def get_l2_ajax_opinion_opinion(request):
+    return get_text_field_value(request, 'opinion', default_value=None)
+
+
+def get_l2_ajax_opinion_explanation(request):
+    return get_text_field_value(request, 'explanation', default_value=None)
+
+
 def str2boolean(s):
     if s == "true":
         return True
@@ -1283,3 +1311,46 @@ def _set_created_by_ref_edge_stip_custom_object(aj, dict_):
 
 def convert_valid_node_id(id_):
     return id_.replace(':', '--')
+
+
+@csrf_protect
+def create_note(request):
+    request.session.set_expiry(SESSION_EXPIRY)
+    if request.method != 'POST':
+        r = {'status': 'NG',
+             'message': 'Invalid HTTP method'}
+        return JsonResponse(r, safe=False)
+
+    object_id = get_l2_ajax_note_object_id(request)
+    abstract = get_l2_ajax_note_abstract(request)
+    content = get_l2_ajax_note_content(request)
+    try:
+        ctirs = Ctirs(request)
+        ctirs.post_note(object_id, content, abstract)
+        r = {'status': 'OK',
+             'message': ' /api/v1/stix_files_v2/note done successfully.'}
+    except BaseException:
+        r = {'status': 'NG',
+             'message': '/api/v1/gv/contents_and_edges error.'}
+    return JsonResponse(r, safe=False)
+
+
+@csrf_protect
+def create_opinion(request):
+    request.session.set_expiry(SESSION_EXPIRY)
+    if request.method != 'POST':
+        r = {'status': 'NG',
+             'message': 'Invalid HTTP method'}
+        return JsonResponse(r, safe=False)
+    object_id = get_l2_ajax_opinion_object_id(request)
+    opinion = get_l2_ajax_opinion_opinion(request)
+    explanation = get_l2_ajax_opinion_explanation(request)
+    try:
+        ctirs = Ctirs(request)
+        ctirs.post_opinion(object_id, opinion, explanation)
+        r = {'status': 'OK',
+             'message': ' /api/v1/stix_files_v2/note opinion successfully.'}
+    except BaseException:
+        r = {'status': 'NG',
+             'message': ' /api/v1/stix_files_v2/opinion failed.'}
+    return JsonResponse(r, safe=False)

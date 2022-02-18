@@ -1,0 +1,114 @@
+<!-- slider menu -->
+<header role="banner">
+    <button type="button" class="drawer-toggle drawer-hamburger" id="drawer-hamburger">
+        <span class="sr-only">toggle navigation</span>
+        <span class="drawer-hamburger-icon"></span>
+    </button>
+
+    <nav class="drawer-nav" id="drawer-nav" role="navigation">
+        <input id="toggle-switch-drawer-option" type="checkbox" data-label-text="Option"/>
+        <div class="col-lg-12">
+            <div id="drawer-option">
+                <div style="margin-left:auto;width:14px" data-intro="このヘルプを表示する" data-position="right">
+                    <span class="glyphicon glyphicon-question-sign slide-menu-help"></span>
+                </div>
+                <div>
+                    <input type="checkbox" id="enable-visjs-config"/>Show vis.js config
+                    <div id='visjs-config'></div>
+                </div>
+                <br/>
+                <div data-intro="描画エリアの背景色" data-position="right">
+                    Background Color:
+                    <input type="text" id="alchemy-background-color-text" value="#fffff0"/>
+                </div>
+                <br/>
+                <div data-intro="再描画ボタン" data-position="right">
+                    <button class="btn btn-default" type="button" id='l2-redraw-button'>
+                    Redraw
+                    </button>
+                </div>
+                <br/>
+                <br/>
+                <div data-intro="IPv4の類似度のカウント表示有効" data-position="right">
+                    <input type="checkbox" id="include-ipv4-similarity"/>Include IPv4 Similarity
+                </div>
+                <br/>
+                <div data-intro="Domainの類似度のカウント表示有効" data-position="right">
+                 <input type="checkbox" id="include-domain-similarity"/>Include Domain Similarity
+                </div>
+                <br/>
+                <div data-intro="翻訳データ表示有効" data-position="right">
+                 <input type="checkbox" id="include-i18n-info"/>Include i18n Data
+                </div>
+
+                <hr/>
+            </div><!-- <div class="drawer-option"> -->
+            <div style="margin-left:auto;width:14px" data-intro="L2ビューの説明" data-position="right">
+                <span class="glyphicon glyphicon-question-sign l2-turorial-dialog-help" ></span>
+            </div>
+            <div class="dropdown">
+                {% if packages %}
+                    Choose CTI ({{packages|length}})
+
+                <br/>
+                <div data-intro="比較対象パッケージを選択" data-position="right">
+                        <input type="hidden" name="base_package" value=""/>
+                        <select id="l2-dropdown-menu-base-package-single" class="form-control" name="state">
+                            <option value=""></option>
+                            {% for package in packages %}
+                                <option value="{{package.package_id}}">{{package.package_name}}</option>
+                            {% endfor %}
+                        </select>
+
+                {% endif %}
+                </div> <!-- <div data-intro> -->
+            </div><!--  <div class="dropdown">-->
+            <br/>
+            Related CTI:
+            <div data-intro="比較対象キャンペーンと関係性があるキャンペーンの一覧を表示" data-position="right">
+                <table class="row-border" cellspacing="0" id="related-package-table">
+                    <thead>
+                    <tr>
+                        <th class="related-package-th">Show</th>
+                        <th class="related-package-th">Package</th>
+                        <th class="related-package-th">#</th>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th class="related-package-th">Show</th>
+                        <th class="related-package-th">Package</th>
+                        <th class="related-package-th">#</th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    </tbody>
+                </table>
+                <table class="row-border" cellspacing="0" id="related-package-similar-table">
+                    <thead>
+                    <tr>
+                        <th class="related-package-th" rowspan="2">Show</th>
+                        <th class="related-package-th" rowspan="2">Package</th>
+                        <th class="related-package-th" colspan="2">#</th>
+                    </tr>
+                    <tr>
+                        <th class="related-package-th" title="Exact">E</th>
+                        <th class="related-package-th" title="Similar">S</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th class="related-package-th">Show</th>
+                        <th class="related-package-th">Package</th>
+                        <th class="related-package-th" title="Exact">E</th>
+                        <th class="related-package-th" title="Similar">S</th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    </tbody>
+                </table>
+                <br/>
+                <span id="related-package-phrase"></span>
+            <div><!-- <div data-intro> -->
+        </div><!--  <div class="col-lg-12"> -->
+    </nav>
+</header>

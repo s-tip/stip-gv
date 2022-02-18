@@ -167,3 +167,7 @@ table.dataTable thead .sorting_desc_disabled:after {
 div.vis-configuration.vis-config-item{
     display: inline-flex;
 }
+
+.note-href, .opinion-href{
+    font-size: 50%;
+}
