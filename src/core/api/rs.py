@@ -248,7 +248,20 @@ class Ctirs(object):
         # ajax呼び出し
         return self._call_post_ctirs_api(url, params, files=None)
 
+    # post /api/v1/stix_files_v2/revoke
+    def post_revoke(self, object_id):
+        params = {
+            'object_id': object_id,
+        }
+        url = '/api/v1/stix_files_v2/revoke'
+        # ajax呼び出し
+        return self._call_post_ctirs_api(url, params, files=None)
 
+    # post /api/v1/stix_files_v2/update
+    def post_update(self, stix2):
+        url = '/api/v1/stix_files_v2/update'
+        # ajax呼び出し
+        return self._call_post_ctirs_api(url, {}, files=None, json=stix2)
 
     # ajax呼び出し(get)
     def _call_get_ctirs_api(self, url_suffix, params):

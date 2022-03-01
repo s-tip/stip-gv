@@ -167,33 +167,51 @@ $(function(){
         resizable: true,
         autoOpen: false,
         buttons: {
-            Submit: function() {
-                const ret =_note_submit($(this).data('object-id'))
-                if (ret){
-                  $( this ).dialog('close');
-                }
-            },
-            Close: function() {
-                $( this ).dialog('close');
-            },
+          Submit: function() {
+            const ret =_note_submit($(this).data('object-id'))
+            if (ret){
+              $(this).dialog('close');
+            }
+          },
+          Close: function() {
+            $(this).dialog('close');
+          },
         },
     });
 
-       $('#l2-opinion-dialog').dialog({
-        width: 800,
-        resizable: true,
-        autoOpen: false,
-        buttons: {
-            Submit: function() {
-                const ret =_opinion_submit($(this).data('object-id'))
-                if (ret){
-                  $( this ).dialog('close');
-                }
-            },
-            Close: function() {
-                $( this ).dialog('close');
-            },
+    $('#l2-opinion-dialog').dialog({
+      width: 800,
+      resizable: true,
+      autoOpen: false,
+      buttons: {
+        Submit: function() {
+          const ret =_opinion_submit($(this).data('object-id'))
+          if (ret){
+            $(this).dialog('close');
+          }
         },
+        Close: function() {
+          $(this).dialog('close');
+        },
+      },
+    });
+
+
+    $('#l2-modify-dialog').dialog({
+      width: 800,
+      resizable: true,
+      autoOpen: false,
+      buttons: {
+        Submit: function() {
+          const ret =_modify_submit($(this).data('object-id'))
+          if (ret){
+            $(this).dialog('close');
+          }
+        },
+        Close: function() {
+          $(this).dialog('close');
+        },
+      },
     });
 
     //modalのクロースボタンクリック時
@@ -972,10 +990,14 @@ $(function(){
           var span_value = '<span class="stix2-description" id="stix2-' + sunitaize_encode(key) + '" data-original="' + sunitaize_encode(original_v) + '">' + v + '</span><br/>\n';
           description_text += (span_key + span_value);
         });
-        const opinion_link = '<a class="note-href" data-object-id="' + object_id + '">Note</a>'
-        const note_link = '<a class="opinion-href" data-object-id="' + object_id + '">Opinion</a>'
-        l2_description.innerHTML = opinion_link + '&nbsp;' +
-            note_link + '<br/>' + description_text;
+        const opinion_link = '<a class="note-href" data-object-id="' + object_id + '">Note</a>';
+        const note_link = '<a class="opinion-href" data-object-id="' + object_id + '">Opinion</a>';
+        const revoke_link = '<a class="revoke-href" data-object-id="' + object_id + '">Revoke</a>';
+        const update_link = '<a class="update-href" data-object-id="' + object_id + '">Update</a>';
+        l2_description.innerHTML = opinion_link + '&nbsp;' + 
+            note_link + '&nbsp;' +
+            revoke_link + '&nbsp;' +
+            update_link + '<br/>' + description_text;
 
         if (title_text != null){
           l2_title.innerHTML = title_text;
@@ -1409,7 +1431,7 @@ $(function(){
       $('#note-content').val('')
       note_dialog.data('object-id', object_id)
       note_dialog.dialog('option', 'title', title)
-      note_dialog.dialog('open');
+      note_dialog.dialog('open')
     })
 
     $(document).on('click','.opinion-href',function(){
@@ -1420,7 +1442,98 @@ $(function(){
       $('#opinion-explanation').val('')
       opinion_dialog.data('object-id', object_id)
       opinion_dialog.dialog('option', 'title', title)
-      opinion_dialog.dialog('open');
+      opinion_dialog.dialog('open')
+    })
+
+    $(document).on('click','.revoke-href',function(){
+      const object_id = _get_oid_from_href($(this))
+      const s = 'Mark as revoke? (' + object_id + ')?'
+      const ret = confirm(s)
+      if (ret == false) {
+        return
+      }
+      d = {
+        'object_id' : object_id,
+      }
+      $.ajax({
+        type: 'POST',
+        url: '/L2/ajax/mark_revoke',
+        timeout: 60 * 60 * 1000,
+        cache: true,
+        data: d,
+        dataType: 'json',
+        beforeSend: function(xhr, settings){
+          xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+        },
+      }).done(function(ret,textStatus,jqXHR){
+        if(ret.status != 'OK'){
+          alert(ret.message)
+          return false
+        }else{
+          alert('Success!!')
+        }
+      }).fail(function(jqXHR,textStatus,errorThrown){
+        alert(jqXHR.statusText)
+        return false
+      }).always(function(data_or_jqXHR,textStatus,jqHXR_or_errorThrown){
+      });
+      return true
+    })
+      
+    $(document).on('click','.update-href',function(){
+      const DISABLED_FILEDS = [
+        'id', 'type', 'created', 'modified', 'spec_version', 'created_by_ref'
+      ]
+      const object_id = _get_oid_from_href($(this))
+      const node = nodes_meta[object_id]
+      const stix2_object = node.stix2_object
+      const div_modify = $('#div-modify')
+      div_modify.empty()
+      $.each(stix2_object,function(key,index){
+        const val = stix2_object[key]
+
+        const label_div = $('<div>', {
+          "class": "col-sm-2"
+        })
+        const label = $('<label>', {
+        })
+        label.text(key)
+        label_div.append(label)
+
+        const form_div = $('<div>', {
+          "class": "col-sm-10"
+        })
+        const textarea = $('<textarea>', {
+          "class": "textarea-stix2-modify"
+        })
+
+        if (typeof(val) == 'object') {
+          textarea.val(JSON.stringify(val))
+        } else{
+          textarea.val(val)
+        }
+        
+        textarea.data('prop_name', key)
+        textarea.data('value_type', typeof(val))
+        if (DISABLED_FILEDS.includes(key)) {
+          textarea.prop('disabled', true)
+          textarea.addClass('textarea-stix2-modify-disabled')
+        }
+        form_div.append(textarea)
+
+        const row_div = $('<div>', {
+          "class": "row"
+        })
+        row_div.append(label_div)
+        row_div.append(form_div)
+        div_modify.append(row_div)
+      })
+      const modify_dialog = $('#l2-modify-dialog')
+      const title = 'Modification (' + object_id +')'
+      modify_dialog.data('object-id', object_id)
+      modify_dialog.dialog('option', 'title', title)
+      modify_dialog.dialog('open')
+      return
     })
 
     function _opinion_submit(object_id){
@@ -1474,6 +1587,53 @@ $(function(){
         timeout: 60 * 60 * 1000,
         cache: true,
         data: d,
+        dataType: 'json',
+        beforeSend: function(xhr, settings){
+          xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+        },
+      }).done(function(ret,textStatus,jqXHR){
+        if(ret.status != 'OK'){
+          alert(ret.message)
+          return false
+        }else{
+          alert('Success!!')
+        }
+      }).fail(function(jqXHR,textStatus,errorThrown){
+        alert(jqXHR.statusText)
+        return false
+      }).always(function(data_or_jqXHR,textStatus,jqHXR_or_errorThrown){
+      });
+      return true
+    }
+
+    function _modify_submit(object_id){
+      var stix2 = {}
+      $.each($('.textarea-stix2-modify'),function(){
+        const name = $(this).data('prop_name')
+        const type_ = $(this).data('value_type')
+        const val = $(this).val()
+        if (type_ == 'string'){
+          stix2[name] = val
+        } else if (type_ == 'number') {
+          stix2[name] = Number(val)
+        } else if (type_ == 'object') {
+          stix2[name] = JSON.parse(val)
+        } else {
+          alert ('Other type: ' + type_)
+          return
+        }
+      })
+
+      d = {
+        'stix2' : stix2,
+      }
+
+      $.ajax({
+        type: 'POST',
+        url: '/L2/ajax/update',
+        timeout: 60 * 60 * 1000,
+        cache: true,
+        data: JSON.stringify(d),
         dataType: 'json',
         beforeSend: function(xhr, settings){
           xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));

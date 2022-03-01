@@ -1354,3 +1354,41 @@ def create_opinion(request):
         r = {'status': 'NG',
              'message': ' /api/v1/stix_files_v2/opinion failed.'}
     return JsonResponse(r, safe=False)
+
+
+@csrf_protect
+def mark_revoke(request):
+    request.session.set_expiry(SESSION_EXPIRY)
+    if request.method != 'POST':
+        r = {'status': 'NG',
+             'message': 'Invalid HTTP method'}
+        return JsonResponse(r, safe=False)
+    object_id = get_l2_ajax_opinion_object_id(request)
+    try:
+        ctirs = Ctirs(request)
+        ctirs.post_revoke(object_id)
+        r = {'status': 'OK',
+             'message': ' /api/v1/stix_files_v2/mark_revoke successfully.'}
+    except BaseException:
+        r = {'status': 'NG',
+             'message': ' /api/v1/stix_files_v2/mark_revoke failed.'}
+    return JsonResponse(r, safe=False)
+
+
+@csrf_protect
+def update(request):
+    request.session.set_expiry(SESSION_EXPIRY)
+    if request.method != 'POST':
+        r = {'status': 'NG',
+             'message': 'Invalid HTTP method'}
+        return JsonResponse(r, safe=False)
+    stix2 = json.loads(request.body)['stix2']
+    try:
+        ctirs = Ctirs(request)
+        ctirs.post_update(stix2)
+        r = {'status': 'OK',
+             'message': ' /api/v1/stix_files_v2/update successfully.'}
+    except BaseException:
+        r = {'status': 'NG',
+             'message': ' /api/v1/stix_files_v2/update failed.'}
+    return JsonResponse(r, safe=False)

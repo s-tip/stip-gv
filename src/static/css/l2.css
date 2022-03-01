@@ -168,6 +168,15 @@ div.vis-configuration.vis-config-item{
     display: inline-flex;
 }
 
-.note-href, .opinion-href{
+.note-href, .opinion-href, .revoke-href, .update-href{
     font-size: 50%;
+}
+
+.textarea-stix2-modify {
+  resize: none;
+  width: 100%;
+}
+
+.textarea-stix2-modify-disabled{
+  opacity: 0.5;
 }
