@@ -939,18 +939,19 @@ $(function(){
         var display_language = get_default_language(user_language,language_contents);
         var display_language_content = null;
         var original_language = 'no lang_property';
+        var object_id = '';
         if(language_contents != null){
           display_language_content = language_contents[display_language];
         }
         $.each(stix2_object,function(key,index){
           if (key == "name"){
-            title_text = stix2_object[key] ;
+            title_text = stix2_object[key];
           }
           if (key == "lang"){
-            original_language = stix2_object[key] ;
+            original_language = stix2_object[key];
           }
           if (key == "id"){
-            object_id = stix2_object[key] ;
+            object_id = stix2_object[key];
           }
           var span_key = '<span class="l2_stix2_span_key">'+ key + ':</span> ';
           var v = stix2_object[key];
@@ -1002,7 +1003,7 @@ $(function(){
         if (title_text != null){
           l2_title.innerHTML = title_text;
         }else{
-          l2_title.innerHTML = 'A title is undefined....';
+          l2_title.innerHTML = object_id;
         }
         if (language_contents == null){
           $("#l2-language-options").css("display","none");

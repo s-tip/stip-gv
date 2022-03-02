@@ -347,6 +347,7 @@ def set_alchemy_nodes(aj, content, too_many_nodes='confirm'):
         groupings = []
         infrastructures = []
         malware_analysises = []
+        stix_cybox_objects = []
         '''
         x_stip_snses = []
         '''
@@ -403,6 +404,42 @@ def set_alchemy_nodes(aj, content, too_many_nodes='confirm'):
                 infrastructures.append(o_)
             elif object_type == 'malware-analysis':
                 malware_analysises.append(o_)
+            elif object_type == 'artifact':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'autonomous-system':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'directory':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'domain-name':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'email-addr':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'email-message':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'file':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'ipv4-addr':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'ipv6-addr':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'mac-addr':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'mutex':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'network':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'process':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'software':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'url':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'user-account':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'windows-registry-key':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'x509-certificate':
+                stix_cybox_objects.append(o_)
             elif object_type.startswith('x-'):
                 if object_type == 'x-stip-sns':
                     continue
@@ -435,6 +472,7 @@ def set_alchemy_nodes(aj, content, too_many_nodes='confirm'):
         groupings = None
         infrastructures = None
         malware_analysises = None
+        stix_cybox_objects = None
 
     if not is_stix_v2:
         an = AlchemyNode(an_header_id, 'Header', package_name, stix_header.description, cluster=an_package_id)
@@ -597,6 +635,10 @@ def set_alchemy_nodes(aj, content, too_many_nodes='confirm'):
     if malware_analysises is not None:
         for malware_analysis in malware_analysises:
             set_alchemy_node_malware_analysis(aj, malware_analysis, an_package_id)
+
+    if stix_cybox_objects is not None:
+        for sco in stix_cybox_objects:
+            set_alchemy_node_sco(aj, sco, an_package_id)
 
     '''
     if x_stip_snses is not None:
@@ -821,15 +863,21 @@ def set_alchemy_node_observable_v1(aj, observable, an_observables_id, an_package
 def set_alchemy_node_observable_v2(aj, object_, an_package_id):
     value_list = []
     node_id = convert_valid_node_id(object_['id'])
-    for key, observable in object_['objects'].items():
-        values, title, description, type_ = get_v2_observable_value(observable)
-        value_list.extend(values)
-        an_observable_id = '%s_%s' % (node_id, key)
-        an = AlchemyNode(an_observable_id, type_, title, description, cluster=an_package_id)
-        an.set_stix2_object(object_)
-        aj.add_json_node(an)
-        ae = AlchemyEdge(node_id, an_observable_id, LABEL_EDGE)
-        aj.add_json_edge(ae)
+    if 'objects' in object_:
+        for key, observable in object_['objects'].items():
+            values, title, description, type_ = get_v2_observable_value(observable)
+            value_list.extend(values)
+            an_observable_id = '%s_%s' % (node_id, key)
+            an = AlchemyNode(an_observable_id, type_, title, description, cluster=an_package_id)
+            an.set_stix2_object(object_)
+            aj.add_json_node(an)
+            ae = AlchemyEdge(node_id, an_observable_id, LABEL_EDGE)
+            aj.add_json_edge(ae)
+    if 'object_refs' in object_:
+        for ref in object_['object_refs']:
+            ae = AlchemyEdge(node_id, ref, LABEL_V2_OBJECT_REF)
+            aj.add_json_edge(ae)
+
     caption = node_id
     description = '<br/>\n'
     keys = ['first_observed', 'last_observed', 'number_observed']
@@ -1200,6 +1248,15 @@ def set_alchemy_node_malware_analysis(aj, object_, an_package_id):
         for observed_data_ref in object_['object_refs']:
             ae = AlchemyEdge(node_id, convert_valid_node_id(observed_data_ref), LABEL_V2_OBJECT_REF)
             aj.add_json_edge(ae)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
+    return
+
+
+def set_alchemy_node_sco(aj, object_, an_package_id):
+    node_id = convert_valid_node_id(object_['id'])
+    an = AlchemyNode(node_id, 'v2_' + object_['type'], object_['id'], object_['id'], cluster=an_package_id)
+    an.set_stix2_object(object_)
+    aj.add_json_node(an)
     _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
