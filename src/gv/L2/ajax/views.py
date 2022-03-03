@@ -79,6 +79,10 @@ def get_l2_ajax_opinion_explanation(request):
     return get_text_field_value(request, 'explanation', default_value=None)
 
 
+def get_l2_ajax_mark_revoked_object_id(request):
+    return get_l2_ajax_common_object_id(request)
+
+
 def str2boolean(s):
     if s == "true":
         return True
@@ -1420,7 +1424,7 @@ def mark_revoke(request):
         r = {'status': 'NG',
              'message': 'Invalid HTTP method'}
         return JsonResponse(r, safe=False)
-    object_id = get_l2_ajax_opinion_object_id(request)
+    object_id = get_l2_ajax_mark_revoked_object_id(request)
     try:
         ctirs = Ctirs(request)
         ctirs.post_revoke(object_id)

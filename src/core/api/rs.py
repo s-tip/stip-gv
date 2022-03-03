@@ -253,7 +253,7 @@ class Ctirs(object):
         params = {
             'object_id': object_id,
         }
-        url = '/api/v1/stix_files_v2/revoke'
+        url = '/api/v1/stix_files_v2/mark_revoke'
         # ajax呼び出し
         return self._call_post_ctirs_api(url, params, files=None)
 
