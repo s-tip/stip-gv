@@ -168,7 +168,7 @@ div.vis-configuration.vis-config-item{
     display: inline-flex;
 }
 
-.note-href, .opinion-href, .revoke-href, .update-href{
+.note-href, .opinion-href, .revoke-href, .modify-href{
     font-size: 50%;
 }
 

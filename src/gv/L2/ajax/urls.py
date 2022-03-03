@@ -11,8 +11,8 @@ urlpatterns = [
     url(r'^create_opinion$', ajax.create_opinion),
     # create_note
     url(r'^create_note$', ajax.create_note),
-    # mark_revoke
-    url(r'^mark_revoke$', ajax.mark_revoke),
-    # update
-    url(r'^update$', ajax.update),
+    # revoke
+    url(r'^revoke$', ajax.revoke),
+    # modify
+    url(r'^modify$', ajax.modify),
 ]

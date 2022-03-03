@@ -994,11 +994,11 @@ $(function(){
         const opinion_link = '<a class="note-href" data-object-id="' + object_id + '">Note</a>';
         const note_link = '<a class="opinion-href" data-object-id="' + object_id + '">Opinion</a>';
         const revoke_link = '<a class="revoke-href" data-object-id="' + object_id + '">Revoke</a>';
-        const update_link = '<a class="update-href" data-object-id="' + object_id + '">Update</a>';
+        const modify_link = '<a class="modify-href" data-object-id="' + object_id + '">Modify</a>';
         l2_description.innerHTML = opinion_link + '&nbsp;' + 
             note_link + '&nbsp;' +
             revoke_link + '&nbsp;' +
-            update_link + '<br/>' + description_text;
+            modify_link + '<br/>' + description_text;
 
         if (title_text != null){
           l2_title.innerHTML = title_text;
@@ -1458,7 +1458,7 @@ $(function(){
       }
       $.ajax({
         type: 'POST',
-        url: '/L2/ajax/mark_revoke',
+        url: '/L2/ajax/revoke',
         timeout: 60 * 60 * 1000,
         cache: true,
         data: d,
@@ -1481,7 +1481,7 @@ $(function(){
       return true
     })
       
-    $(document).on('click','.update-href',function(){
+    $(document).on('click','.modify-href',function(){
       const DISABLED_FILEDS = [
         'id', 'type', 'created', 'modified', 'spec_version', 'created_by_ref'
       ]
@@ -1631,7 +1631,7 @@ $(function(){
 
       $.ajax({
         type: 'POST',
-        url: '/L2/ajax/update',
+        url: '/L2/ajax/modify',
         timeout: 60 * 60 * 1000,
         cache: true,
         data: JSON.stringify(d),

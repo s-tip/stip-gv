@@ -1418,7 +1418,7 @@ def create_opinion(request):
 
 
 @csrf_protect
-def mark_revoke(request):
+def revoke(request):
     request.session.set_expiry(SESSION_EXPIRY)
     if request.method != 'POST':
         r = {'status': 'NG',
@@ -1429,15 +1429,15 @@ def mark_revoke(request):
         ctirs = Ctirs(request)
         ctirs.post_revoke(object_id)
         r = {'status': 'OK',
-             'message': ' /api/v1/stix_files_v2/mark_revoke successfully.'}
-    except BaseException:
+             'message': ' /api/v1/stix_files_v2/revoke successfully.'}
+    except BaseException as e:
         r = {'status': 'NG',
-             'message': ' /api/v1/stix_files_v2/mark_revoke failed.'}
+             'message': ' /api/v1/stix_files_v2/revoke failed. (%s)' % (e)}
     return JsonResponse(r, safe=False)
 
 
 @csrf_protect
-def update(request):
+def modify(request):
     request.session.set_expiry(SESSION_EXPIRY)
     if request.method != 'POST':
         r = {'status': 'NG',
@@ -1446,10 +1446,10 @@ def update(request):
     stix2 = json.loads(request.body)['stix2']
     try:
         ctirs = Ctirs(request)
-        ctirs.post_update(stix2)
+        ctirs.post_modify(stix2)
         r = {'status': 'OK',
-             'message': ' /api/v1/stix_files_v2/update successfully.'}
-    except BaseException:
+             'message': ' /api/v1/stix_files_v2/modify successfully.'}
+    except BaseException as e:
         r = {'status': 'NG',
-             'message': ' /api/v1/stix_files_v2/update failed.'}
+             'message': ' /api/v1/stix_files_v2/modify failed. (%s)' % (e)}
     return JsonResponse(r, safe=False)
