@@ -242,6 +242,7 @@ $(function(){
 
 
     var nodes_meta = {}
+    var edges_meta = {}
     var network = null
     var dataSource = null
     var config_window = null
@@ -689,9 +690,14 @@ $(function(){
 
     function _get_vis_edges(dataSource){
       var edges = new vis.DataSet([])
+      edges_meta = {}
       $.each(dataSource.edges,function(key,index){
         var edge = dataSource.edges[key]
+        if (edge.id != null) {
+          edges_meta[edge.id] = edge
+        }
         var d = {
+          id: edge.id,
           from: edge.source,
           to: edge.target,
           label: edge.caption,
@@ -887,24 +893,27 @@ $(function(){
       }
       network = new vis.Network(container, data, options)
       network.on('click', function (params) {
-        if (params.nodes.length != 1){
-          return
+        if (params.nodes.length > 0){
+          onClickFunction(nodes_meta[params.nodes[0]])
         }
-       onNodeClickFunction(params.nodes[0])
+        else if (params.edges.length > 0){
+          if (params.edges[0] in edges_meta) {
+            onClickFunction(edges_meta[params.edges[0]])
+          }
+        }
        network.unselectAll()
       })
     }
 
-    function onNodeClickFunction(node_id){
-      var node = nodes_meta[node_id]
+    function onClickFunction (elem) {
 
       var l2_value = document.getElementById("l2-value");
       var l2_description = document.getElementById("l2-description");
       var l2_title = document.getElementById("l2-title");
-      var title_text = node.caption;
-      var description_text = node.description;
-      var value_text = node.value;
-      var node_type = node.type;
+      var title_text = elem.caption;
+      var description_text = elem.description;
+      var value_text = elem.value;
+      var node_type = elem.type;
       var value_node = ["Observables","Observable","Observable_ip","Observable_domain","Observable_hash","Observable_file_name","Observable_uri","Indicators","Indicator","Indicator_ip","Indicator_domain","Indicator_hash","Indicator_uri"];
       var object_id = '';
 
@@ -928,9 +937,9 @@ $(function(){
       l2_title.innerHTML = title_text;
       l2_description.innerHTML = description_text;
     
-      var stix2_object = node.stix2_object;
-      var user_language = node.user_language;
-      var language_contents = node.language_contents;
+      var stix2_object = elem.stix2_object;
+      var user_language = elem.user_language;
+      var language_contents = elem.language_contents;
       if (stix2_object == null){
         $("#l2-language-options").css("display","none");
       }else{
@@ -1448,7 +1457,7 @@ $(function(){
 
     $(document).on('click','.revoke-href',function(){
       const object_id = _get_oid_from_href($(this))
-      const s = 'Mark as revoke? (' + object_id + ')?'
+      const s = 'Mark as revoked? (' + object_id + ')?'
       const ret = confirm(s)
       if (ret == false) {
         return
@@ -1486,15 +1495,20 @@ $(function(){
         'id', 'type', 'created', 'modified', 'spec_version', 'created_by_ref'
       ]
       const object_id = _get_oid_from_href($(this))
-      const node = nodes_meta[object_id]
-      const stix2_object = node.stix2_object
+      var elem = null
+      if (object_id.indexOf('relationship--') == 0) {
+        elem = edges_meta[object_id]
+      } else {
+        elem = nodes_meta[object_id]
+      }
+      const stix2_object = elem.stix2_object
       const div_modify = $('#div-modify')
       div_modify.empty()
       $.each(stix2_object,function(key,index){
         const val = stix2_object[key]
 
         const label_div = $('<div>', {
-          "class": "col-sm-2"
+          "class": "col-sm-3"
         })
         const label = $('<label>', {
         })
@@ -1502,7 +1516,7 @@ $(function(){
         label_div.append(label)
 
         const form_div = $('<div>', {
-          "class": "col-sm-10"
+          "class": "col-sm-9"
         })
         const textarea = $('<textarea>', {
           "class": "textarea-stix2-modify"
@@ -1530,7 +1544,7 @@ $(function(){
         div_modify.append(row_div)
       })
       const modify_dialog = $('#l2-modify-dialog')
-      const title = 'Modification (' + object_id +')'
+      const title = 'Modify (' + object_id +')'
       modify_dialog.data('object-id', object_id)
       modify_dialog.dialog('option', 'title', title)
       modify_dialog.dialog('open')

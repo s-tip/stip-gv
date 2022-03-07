@@ -117,12 +117,17 @@ class AlchemyJsonBase(object):
 
 
 class AlchemyEdge(AlchemyJsonBase):
+    _id_ = None
     _source = -1
     _target = -1
     _caption = ''
     _type = ''
+    _stix2_object = None
 
-    def __init__(self, source, target, caption, type=None):
+    def __init__(self, source, target, caption, type=None, object_=None):
+        if object_ is not None:
+            self._id_ = object_['id']
+            self._stix2_object = object_
         self._source = source
         self._target = target
         self._caption = caption
@@ -139,6 +144,9 @@ class AlchemyEdge(AlchemyJsonBase):
 
     def get_json(self):
         r = {}
+        if self._stix2_object is not None:
+            r['id'] = self._id_
+            r['stix2_object'] = self._stix2_object
         r['source'] = str(self._source)
         r['target'] = str(self._target)
         r['caption'] = str(self._caption)

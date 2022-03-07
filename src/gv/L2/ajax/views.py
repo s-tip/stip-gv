@@ -1309,7 +1309,12 @@ def set_alchemy_node_relationship(aj, object_):
     source_ref = object_['source_ref']
     target_ref = object_['target_ref']
     relationship_type = object_['relationship_type']
-    ae = AlchemyEdge(source_ref, target_ref, relationship_type, LABEL_V2_CUSTOM_OBJECT_REF)
+    ae = AlchemyEdge(
+        source_ref,
+        target_ref,
+        relationship_type,
+        LABEL_V2_CUSTOM_OBJECT_REF,
+        object_=object_)
     aj.add_json_edge(ae)
     return
 
