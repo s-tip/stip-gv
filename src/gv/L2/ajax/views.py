@@ -83,6 +83,14 @@ def get_l2_ajax_mark_revoked_object_id(request):
     return get_l2_ajax_common_object_id(request)
 
 
+def get_l2_ajax_get_stix2_content_object_id(request):
+    return get_l2_ajax_common_object_id(request)
+
+
+def get_l2_ajax_get_stix2_content_version(request):
+    return get_text_field_value(request, 'version', default_value=None)
+
+
 def str2boolean(s):
     if s == "true":
         return True
@@ -185,7 +193,7 @@ def related_package_nodes(request):
         ae = AlchemyEdge(start_node_id, end_node_id, edge['edge_type'])
         aj.add_json_edge(ae)
 
-    ret_json = aj.get_alchemy_json(is_redact_confirm)
+    ret_json = aj.get_alchemy_json(ctirs, is_redact_confirm)
     if ret_json is None:
         ret_json = {'status': 'WARNING',
                     'message': 'Too many nodes'}
@@ -1457,4 +1465,24 @@ def modify(request):
     except BaseException as e:
         r = {'status': 'NG',
              'message': ' /api/v1/stix_files_v2/modify failed. (%s)' % (e)}
+    return JsonResponse(r, safe=False)
+
+
+@csrf_protect
+def get_stix2_content(request):
+    request.session.set_expiry(SESSION_EXPIRY)
+    if request.method != 'POST':
+        r = {'status': 'NG',
+             'message': 'Invalid HTTP method'}
+        return JsonResponse(r, safe=False)
+    object_id = get_l2_ajax_get_stix2_content_object_id(request)
+    version = get_l2_ajax_get_stix2_content_version(request)
+    try:
+        ctirs = Ctirs(request)
+        ret = ctirs.get_stix2_content(object_id, version)
+        r = {'status': 'OK',
+             'data': ret}
+    except BaseException as e:
+        r = {'status': 'NG',
+             'message': ' /api/v1/stix_files_v2/get_stix2_content failed. (%s)' % (e)}
     return JsonResponse(r, safe=False)

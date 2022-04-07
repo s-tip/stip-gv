@@ -15,4 +15,6 @@ urlpatterns = [
     url(r'^revoke$', ajax.revoke),
     # modify
     url(r'^modify$', ajax.modify),
+    # get_stix2_content
+    url(r'^get_stix2_content$', ajax.get_stix2_content),
 ]

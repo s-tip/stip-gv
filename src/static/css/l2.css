@@ -168,7 +168,9 @@ div.vis-configuration.vis-config-item{
     display: inline-flex;
 }
 
-.note-href, .opinion-href, .revoke-href, .modify-href{
+.note-href, .opinion-href,
+.revoke-href, .modify-href,
+.choose-version-label {
     font-size: 50%;
 }
 
@@ -179,4 +181,9 @@ div.vis-configuration.vis-config-item{
 
 .textarea-stix2-modify-disabled{
   opacity: 0.5;
+}
+
+span.sdo-updated {
+  font-style: italic;
+  background-color:gray;
 }

@@ -214,6 +214,17 @@ $(function(){
       },
     });
 
+    $('#l2-version-stix-dialog').dialog({
+      width: 1024,
+      resizable: false,
+      autoOpen: false,
+      buttons: {
+        Close: function() {
+          $(this).dialog('close');
+        },
+      },
+    });
+
     //modalのクロースボタンクリック時
     $('#l2-description-modal-close').click(function(){
         $('#l2-description-modal').css('display','none');
@@ -676,6 +687,9 @@ $(function(){
           d.value = 10
         }
         d.label = node.caption
+        d.revoked = false
+        d.is_latest = false
+        d.versions = node.versions
  
         var avoid_redcation_node_type = ['Header','Campaign','Observables','TTPs','Incidents','Exploit_Targets', 'v2_report']
         if($.inArray(node.type,avoid_redcation_node_type) < 0){
@@ -683,7 +697,24 @@ $(function(){
             d.label = d.label.substring(0,10) + '...'
           }
         }
-        nodes.add(d)
+        if(node.revoked == true) {
+          d.font = {
+            multi: 'html',
+            color: 'rgba(255, 0, 0, 0.2)'
+          }
+          d.label = `<i>${d.label}</i>`
+          d.revoked = true
+        } else{
+          if(node.is_latest == false) {
+            d.font = {
+              multi: 'html',
+              color: 'rgba(255, 0, 0, 0.5)',
+            }
+            d.label = `<i>${d.label}</i>`
+            d.is_latest = true
+          }
+        }
+       nodes.add(d)
       })
       return nodes
     }
@@ -937,7 +968,8 @@ $(function(){
       l2_title.innerHTML = title_text;
       l2_description.innerHTML = description_text;
     
-      var stix2_object = elem.stix2_object;
+      var stix2_object = elem.latest_object;
+      var versions = elem.versions;
       var user_language = elem.user_language;
       var language_contents = elem.language_contents;
       if (stix2_object == null){
@@ -1007,12 +1039,55 @@ $(function(){
         l2_description.innerHTML = opinion_link + '&nbsp;' + 
             note_link + '&nbsp;' +
             revoke_link + '&nbsp;' +
-            modify_link + '<br/>' + description_text;
+            modify_link;
+
+        function _get_versions_select_html (versions) {
+          var html = '&nbsp;';
+          const div_row_start = '<div class="form-group row">';
+          html += div_row_start;
+          const div_col1_start = '<div class="col-sm-2">';
+          html += div_col1_start;
+          const label = '<label for="version-select" class="col-form-label choose-version-label">Choose a Version</label>';
+          html += label;
+          const div_col1_end = '</div>'
+          html += div_col1_end;
+          const div_col2_start = '<div class="col-sm-3">';
+          html += div_col2_start;
+          const select_start = '<select class="form-control form-conrol-sm" id="version-select" data-object-id="' + object_id + '">';
+          html += select_start;
+          $.each(versions,function(index,version){
+            const option = '<option value="' + version + '">' + version + '</option>';
+            html += option;
+          });
+          const select_end = '</select>';
+          html += select_end;
+          const div_col2_end = '</div>'
+          html += div_col2_end;
+          const div_col3_start = '<div class="col-sm-3">';
+          html += div_col3_start;
+          const button = '<button type="button" id="open-version-dialog" class="btn btn-info btn-sm">View Specified Version Content</button>';
+          html += button;
+          const div_col3_end = '</div>'
+          html += div_col3_end;
+          const div_row_end = '</div>';
+          html += div_row_end;
+          return html;
+        }
+        l2_description.innerHTML += _get_versions_select_html(versions);
+
+        l2_description.innerHTML += ('<hr/>' + description_text);
 
         if (title_text != null){
           l2_title.innerHTML = title_text;
         }else{
           l2_title.innerHTML = object_id;
+        }
+        if (elem.revoked == true){
+          l2_title.innerHTML = `<s class='sdo-revoked'>${l2_title.innerHTML}</s> (This object has been revoked)`
+        } else{
+          if (elem.is_latest == false){
+            l2_title.innerHTML = `<span class='sdo-updated'>${l2_title.innerHTML}</span> (This object has been updated)`
+          }
         }
         if (language_contents == null){
           $("#l2-language-options").css("display","none");
@@ -1550,6 +1625,42 @@ $(function(){
       modify_dialog.dialog('open')
       return
     })
+
+    $(document).on('click','#open-version-dialog',function(){
+      const version = $('#version-select').val();
+      var object_id = _get_oid_from_href($('#version-select'))
+      const version_dialog = $('#l2-version-stix-dialog')
+      const title = 'STIX content for ' + object_id + ' (' + version + ')';
+
+      d = {
+        'object_id' : object_id,
+        'version' : version,
+      }
+      $.ajax({
+        type: 'POST',
+        url: '/L2/ajax/get_stix2_content',
+        timeout: 60 * 60 * 1000,
+        cache: true,
+        data: d,
+        dataType: 'json',
+        beforeSend: function(xhr, settings){
+          xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+        },
+      }).done(function(ret,textStatus,jqXHR){
+        if(ret.status != 'OK'){
+          alert(ret.message)
+          return false
+        }else{
+          $('#version-stix-content').val(JSON.stringify(ret.data.object, null, '    '));
+        }
+      }).fail(function(jqXHR,textStatus,errorThrown){
+        alert(jqXHR.statusText)
+        return false
+      }).always(function(data_or_jqXHR,textStatus,jqHXR_or_errorThrown){
+      });
+      version_dialog.dialog('option', 'title', title)
+      version_dialog.dialog('open')
+    });
 
     function _opinion_submit(object_id){
       const explanation = $('#opinion-explanation').val()
