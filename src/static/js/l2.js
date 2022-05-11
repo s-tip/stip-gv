@@ -305,9 +305,13 @@ $(function(){
         var node = dataSource.nodes[key]
         nodes_meta[node.id] = node
         var d = {
-          id: node.id,
           type: node.type,
           label: node.caption,
+        }
+        if (('id' in node) && ('modified' in node)) {
+          d.id = node.id + '--' + node.modified
+        } else {
+          d.id = node.id
         }
         var node_styles = {
           "Header": {
@@ -714,7 +718,11 @@ $(function(){
             d.is_latest = true
           }
         }
-       nodes.add(d)
+        try {
+          nodes.add(d)
+        } catch (error){
+          console.error(error)
+        }
       })
       return nodes
     }
@@ -728,11 +736,15 @@ $(function(){
           edges_meta[edge.id] = edge
         }
         var d = {
-          id: edge.id,
           from: edge.source,
           to: edge.target,
           label: edge.caption,
           type: edge.type
+        }
+        if (('id' in edge) && ('modified' in edge)) {
+          d.id = edge.id + '--' + edge.modified
+        } else {
+          d.id = edge.id
         }
 
         var edge_styles = {
@@ -833,7 +845,11 @@ $(function(){
         }
         d.smooth = false
         d.chosen = false
-        edges.add(d)
+        try {
+          edges.add(d)
+        } catch (error){
+          console.error(error)
+        }
       })
       return edges
     }

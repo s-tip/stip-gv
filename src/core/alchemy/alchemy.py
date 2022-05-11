@@ -152,6 +152,7 @@ class AlchemyEdge(AlchemyJsonBase):
             ret = ctirs.get_latest_object(
                 self._stix2_object['id'],
                 self._stix2_object['modified'])
+            r['modified'] = self._stix2_object['modified']
             r['is_latest'] = ret['is_latest']
             r['latest_object'] = ret['object']
             r['versions'] = ret['versions']
@@ -240,6 +241,7 @@ class AlchemyNode(AlchemyJsonBase):
             ret = ctirs.get_latest_object(
                 self._stix2_object['id'],
                 self._stix2_object['modified'])
+            r['modified'] = self._stix2_object['modified']
             r['is_latest'] = ret['is_latest']
             r['latest_object'] = ret['object']
             r['versions'] = ret['versions']
