@@ -254,6 +254,7 @@ $(function(){
 
     var nodes_meta = {}
     var edges_meta = {}
+    var node_map = {}
     var network = null
     var dataSource = null
     var config_window = null
@@ -301,9 +302,9 @@ $(function(){
 
       var nodes = new vis.DataSet([])
       nodes_meta = {}
+      node_map = {}
       $.each(dataSource.nodes,function(key,index){
         var node = dataSource.nodes[key]
-        nodes_meta[node.id] = node
         var d = {
           type: node.type,
           label: node.caption,
@@ -313,6 +314,8 @@ $(function(){
         } else {
           d.id = node.id
         }
+        nodes_meta[d.id] = node
+        node_map[node.id] = d.id
         var node_styles = {
           "Header": {
             "captionSize": 100,
@@ -736,8 +739,6 @@ $(function(){
           edges_meta[edge.id] = edge
         }
         var d = {
-          from: edge.source,
-          to: edge.target,
           label: edge.caption,
           type: edge.type
         }
@@ -746,6 +747,9 @@ $(function(){
         } else {
           d.id = edge.id
         }
+        edges_meta[edge.id] = edge
+        d.from = node_map[edge.source]
+        d.to = node_map[edge.target]
 
         var edge_styles = {
           "idref": {
