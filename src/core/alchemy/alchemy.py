@@ -238,15 +238,16 @@ class AlchemyNode(AlchemyJsonBase):
         r['revoked'] = False
         r['is_latest'] = False
         if self._stix2_object is not None:
-            ret = ctirs.get_latest_object(
-                self._stix2_object['id'],
-                self._stix2_object['modified'])
-            r['modified'] = self._stix2_object['modified']
-            r['is_latest'] = ret['is_latest']
-            r['latest_object'] = ret['object']
-            r['versions'] = ret['versions']
-            if 'revoked' in ret['object']:
-                r['revoked'] = ret['object']['revoked']
+            if 'modified' in self._stix2_object:
+                ret = ctirs.get_latest_object(
+                    self._stix2_object['id'],
+                    self._stix2_object['modified'])
+                r['modified'] = self._stix2_object['modified']
+                r['is_latest'] = ret['is_latest']
+                r['latest_object'] = ret['object']
+                r['versions'] = ret['versions']
+                if 'revoked' in ret['object']:
+                    r['revoked'] = ret['object']['revoked']
         return r
 
     def sanitize(self, s):
