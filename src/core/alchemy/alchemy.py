@@ -149,15 +149,22 @@ class AlchemyEdge(AlchemyJsonBase):
         if self._stix2_object is not None:
             r['id'] = self._id_
             r['stix2_object'] = self._stix2_object
-            ret = ctirs.get_latest_object(
-                self._stix2_object['id'],
-                self._stix2_object['modified'])
             r['modified'] = self._stix2_object['modified']
-            r['is_latest'] = ret['is_latest']
-            r['latest_object'] = ret['object']
-            r['versions'] = ret['versions']
-            if 'revoked' in ret['object']:
-                r['revoked'] = ret['object']['revoked']
+            try:
+                ret = ctirs.get_latest_object(
+                    self._stix2_object['id'],
+                    self._stix2_object['modified'])
+                r['is_latest'] = ret['is_latest']
+                r['latest_object'] = ret['object']
+                r['versions'] = ret['versions']
+                if 'revoked' in ret['object']:
+                    r['revoked'] = ret['object']['revoked']
+            except Exception:
+                r['is_latest'] = True
+                r['latest_object'] = self._stix2_object
+                r['versions'] = [self._stix2_object['modified']]
+                if 'revoked' in self._stix2_object:
+                    r['revoked'] = self._stix2_object['revoked']
         r['source'] = str(self._source)
         r['target'] = str(self._target)
         r['caption'] = str(self._caption)
@@ -239,15 +246,22 @@ class AlchemyNode(AlchemyJsonBase):
         r['is_latest'] = False
         if self._stix2_object is not None:
             if 'modified' in self._stix2_object:
-                ret = ctirs.get_latest_object(
-                    self._stix2_object['id'],
-                    self._stix2_object['modified'])
                 r['modified'] = self._stix2_object['modified']
-                r['is_latest'] = ret['is_latest']
-                r['latest_object'] = ret['object']
-                r['versions'] = ret['versions']
-                if 'revoked' in ret['object']:
-                    r['revoked'] = ret['object']['revoked']
+                try:
+                    ret = ctirs.get_latest_object(
+                        self._stix2_object['id'],
+                        self._stix2_object['modified'])
+                    r['is_latest'] = ret['is_latest']
+                    r['latest_object'] = ret['object']
+                    r['versions'] = ret['versions']
+                    if 'revoked' in ret['object']:
+                        r['revoked'] = ret['object']['revoked']
+                except Exception:
+                    r['is_latest'] = True
+                    r['latest_object'] = self._stix2_object
+                    r['versions'] = [self._stix2_object['modified']]
+                    if 'revoked' in self._stix2_object:
+                        r['revoked'] = self._stix2_object['revoked']
         return r
 
     def sanitize(self, s):
