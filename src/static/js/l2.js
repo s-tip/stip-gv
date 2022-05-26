@@ -776,7 +776,12 @@ $(function(){
             "opacity": 0.8,
             "color": "#FF0000"
           },
-          "Similarity: 1": {
+          "Fuzzy Matching": {
+            "width": 5,
+            "opacity": 0.8,
+            "color": "#008000"
+          },
+          "similarity: 1": {
             "width": 5,
             "opacity": 0.8,
             "color": "#008000"
@@ -1453,6 +1458,7 @@ $(function(){
         	var package_id = related_info['package_id']
         	var package_name = related_info['package_name'];
         	var exact = related_info['exact'];
+        	var fuzzy = related_info['fuzzy'];
         	var tr = null;
         	if(similarFlag == true){
         		var simlar_info = related_info['similar'];
@@ -1463,19 +1469,19 @@ $(function(){
                         .append($('<input type="checkbox">').attr('value',package_id).attr('class','related-package-similar-checkbox')))
                         .append($('<td></td>').text(package_name))
                         .append($('<td class="right-justified"></td>').text(exact))
+                        .append($('<td class="right-justified"></td>').text(fuzzy))
                         .append($('<td class="right-justified"></td>').text(similar))
-                //table.row.add(tr);
         	}
         	else{
         		tr = $('<tr></tr>')
     				.append($('<td class="center-justified"></td>')
     				.append($('<input type="checkbox">').attr('value',package_id).attr('class','related-package-checkbox')))
-    				.append($('<td></td>').text(package_name))
-    				.append($('<td  class="right-justified"></td>').text(exact));
+            .append($('<td></td>').text(package_name))
+    				.append($('<td  class="right-justified"></td>').text(exact))
+    				.append($('<td  class="right-justified"></td>').text(fuzzy));
         	}
             table.row.add(tr);
         }
-        //progress_label.text(_package + ' is matched.');
         //Table表示
         table.draw();
     }
