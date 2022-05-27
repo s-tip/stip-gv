@@ -153,6 +153,11 @@ def related_package_nodes(request):
         aj.set_json_node_exact(start_node_id)
         aj.set_json_node_exact(end_node_id)
         ae = AlchemyEdge(start_node_id, end_node_id, edge['edge_type'])
+        if 'reason' in edge:
+            reason = edge['reason']
+        else:
+            reason = None
+        ae = AlchemyEdge(start_node_id, end_node_id, edge['edge_type'], reason=reason)
         aj.add_json_edge(ae)
 
     ret_json = aj.get_alchemy_json(is_redact_confirm)
