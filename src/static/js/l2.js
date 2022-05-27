@@ -101,9 +101,23 @@ $(function(){
         open:function(event, ui){ $(".ui-dialog-titlebar-close").hide();}
     });
 
+    var reason_dialog = $('#l2-reason-dialog');
+    reason_dialog.dialog({
+        width: 800,
+        closeOnEscape: false,
+        resizable: false,
+        autoOpen: false,
+        buttons: {
+          close: function() {
+            $( this ).dialog('close');
+          },
+        },
+        modal: true,
+    });
+
     //表示制限ダイアログ
-    var display_limit_dailog = $('#l2-display-limit');
-    display_limit_dailog.dialog({
+    var display_limit_dialog = $('#l2-display-limit');
+    display_limit_dialog.dialog({
         dialogClass: "display-limit",
         height: "auto",
         width: "auto",
@@ -255,6 +269,8 @@ $(function(){
     var nodes_meta = {}
     var edges_meta = {}
     var node_map = {}
+    var vis_edges = []
+    var vis_nodes = []
     var network = null
     var dataSource = null
     var config_window = null
@@ -279,8 +295,8 @@ $(function(){
         return
       }
       var show_config = $('#enable-visjs-config').prop('checked')
-      var nodes = _get_vis_nodes(dataSource)
-      var edges = _get_vis_edges(dataSource)
+      vis_nodes = _get_vis_nodes(dataSource)
+      vis_edges = _get_vis_edges(dataSource)
       $('#visjs-network').css('background-color', $('#alchemy-background-color-text').val())
 
       if (show_config == true){
@@ -288,9 +304,9 @@ $(function(){
         $('#drawer-hamburger').css('left', CONFIG_EXPAND_WIDTH)
         $('#visjs-config').css('display', 'block')
         $('#visjs-config').css('width', CONFIG_EXPAND_WIDTH)
-        _start_network(nodes, edges, document.getElementById('visjs-config'))
+        _start_network(vis_nodes, vis_edges, document.getElementById('visjs-config'))
       }else{
-        _start_network(nodes, edges, null)
+        _start_network(vis_nodes, vis_edges, null)
       }
       return
     }
@@ -755,6 +771,12 @@ $(function(){
         d.from = node_map[edge.source]
         d.to = node_map[edge.target]
 
+        if (edge.reason){
+          d.reason = edge.reason
+        }else {
+          d.reason = null
+        }
+
         var edge_styles = {
           "idref": {
             "width": 1,
@@ -954,18 +976,31 @@ $(function(){
       network = new vis.Network(container, data, options)
       network.on('click', function (params) {
         if (params.nodes.length > 0){
-          onClickFunction(nodes_meta[params.nodes[0]])
+          onNodeClickFunction(params.nodes[0])
+          return
         }
-        else if (params.edges.length > 0){
-          if (params.edges[0] in edges_meta) {
-            onClickFunction(edges_meta[params.edges[0]])
-          }
+        if (params.edges.length > 0){
+          onEdgeClickFunction(params.edges[0])
+          return
         }
        network.unselectAll()
       })
     }
 
-    function onClickFunction (elem) {
+    function onEdgeClickFunction(edge_id){
+      const edge = vis_edges.get(edge_id)
+      if (edge.reason == null){
+        return
+      }
+      reason_dialog.dialog('option', 'title', edge.reason.title)
+      $('#text-reason-val1').val(edge.reason.val_1)
+      $('#text-reason-val2').val(edge.reason.val_2)
+      $('#textarea-reason-rule').val(JSON.stringify(edge.reason.rule, null, 4))
+      reason_dialog.dialog('open')
+    }
+
+    function onNodeClickFunction(node_id){
+      var node = nodes_meta[node_id]
 
       var l2_value = document.getElementById("l2-value");
       var l2_description = document.getElementById("l2-description");
@@ -1266,7 +1301,7 @@ $(function(){
             if('status' in alchemy_data == true){
                 //ノード数が多い時は再問合せ
                 if(too_many_check = true && alchemy_data['status'] == 'WARNING' && alchemy_data['message']=='Too many nodes'){
-                    display_limit_dailog.dialog('open');
+                    display_limit_dialog.dialog('open');
                     progress_dialog.dialog('close');
                     return;
                 }else if(alchemy_data['status'] != 'OK'){
