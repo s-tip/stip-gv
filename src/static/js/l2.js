@@ -620,6 +620,11 @@ $(function(){
             "color"  : "#91150f",
             "radius": 40,
             "borderWidth" : 1
+          },
+          "v2_CustomProperty": {
+            "shape" : "box",
+            "radius": 10,
+            "borderWidth" : 1
           }
         }
 
