@@ -1324,7 +1324,7 @@ def _set_alchemy_node_custom_object(aj, object_, an_package_id):
             prop_node_id = '%s-%s' % (node_id, match_prop)
             an = AlchemyNode(prop_node_id, 'v2_CustomObject', match_prop, v, cluster=an_package_id)
             aj.add_json_node(an)
-            ae = AlchemyEdge(convert_valid_node_id(node_id), prop_node_id, LABEL_V2_CUSTOM_PROPERTY_REF)
+            ae = AlchemyEdge(convert_valid_node_id(node_id), prop_node_id, '')
             aj.add_json_edge(ae)
     _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
