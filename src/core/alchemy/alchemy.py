@@ -262,6 +262,11 @@ class AlchemyNode(AlchemyJsonBase):
                     r['versions'] = [self._stix2_object['modified']]
                     if 'revoked' in self._stix2_object:
                         r['revoked'] = self._stix2_object['revoked']
+            else:
+                r['is_latest'] = True
+                r['latest_object'] = self._stix2_object
+                r['versions'] = []
+                r['revoked'] = False
         return r
 
     def sanitize(self, s):

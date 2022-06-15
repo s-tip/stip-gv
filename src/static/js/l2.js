@@ -678,6 +678,7 @@ $(function(){
           }
         }
 
+        d.sco = false
         if (node_styles[node.type]){
           const node_style = node_styles[node.type]
           d.color = node_style.color
@@ -689,6 +690,9 @@ $(function(){
           }
           if(node_style['label']){
             d.label = node_style.label
+          }
+          if(node_style['sco']){
+            d.sco = node_style.sco
           }
         }else{
           d.value = 10
@@ -1055,11 +1059,11 @@ $(function(){
         const opinion_link = '<a class="note-href" data-object-id="' + object_id + '">Note</a>';
         const note_link = '<a class="opinion-href" data-object-id="' + object_id + '">Opinion</a>';
         const revoke_link = '<a class="revoke-href" data-object-id="' + object_id + '">Revoke</a>';
-        const modify_link = '<a class="modify-href" data-object-id="' + object_id + '">Modify</a>';
-        l2_description.innerHTML = opinion_link + '&nbsp;' + 
-            note_link + '&nbsp;' +
-            revoke_link + '&nbsp;' +
-            modify_link;
+        const modify_link = '<a class="modify-href" data-object-id="' + object_id + '" data-modified="' + elem.modified + '">Modify</a>';
+        l2_description.innerHTML = opinion_link + '&nbsp;' + note_link + '&nbsp;';
+        if ('sco' in elem == false) {
+            l2_description.innerHTML += (revoke_link + '&nbsp;' + modify_link);
+        }
 
         function _get_versions_select_html (versions) {
           var html = '&nbsp;';
@@ -1093,7 +1097,9 @@ $(function(){
           html += div_row_end;
           return html;
         }
-        l2_description.innerHTML += _get_versions_select_html(versions);
+        if (versions.length > 0) {
+          l2_description.innerHTML += _get_versions_select_html(versions);
+        }
 
         l2_description.innerHTML += ('<hr/>' + description_text);
 
@@ -1528,6 +1534,10 @@ $(function(){
       return a.data('object-id')
     }
 
+    function _get_modified_from_href(a){
+      return a.data('modified')
+    }
+
     $(document).on('click','.note-href',function(){
       var object_id = _get_oid_from_href($(this))
       const note_dialog = $('#l2-note-dialog')
@@ -1589,7 +1599,9 @@ $(function(){
       const DISABLED_FILEDS = [
         'id', 'type', 'created', 'modified', 'spec_version', 'created_by_ref'
       ]
-      const object_id = _get_oid_from_href($(this))
+      const oid = _get_oid_from_href($(this))
+      const modified = _get_modified_from_href($(this))
+      const object_id = oid + '--' + modified
       var elem = null
       if (object_id.indexOf('relationship--') == 0) {
         elem = edges_meta[object_id]
