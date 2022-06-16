@@ -1776,6 +1776,8 @@ $(function(){
           stix2[name] = Number(val)
         } else if (type_ == 'object') {
           stix2[name] = JSON.parse(val)
+        } else if (type_ == 'boolean') {
+          stix2[name] = (val.toLowerCase() === 'true')
         } else {
           alert ('Other type: ' + type_)
           return
