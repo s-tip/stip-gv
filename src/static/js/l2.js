@@ -986,7 +986,7 @@ $(function(){
         if (title_text != null){
           l2_title.innerHTML = title_text;
         }else{
-          l2_title.innerHTML = 'A title is undefined....';
+          l2_title.innerHTML = node.id;
         }
         if (language_contents == null){
           $("#l2-language-options").css("display","none");
@@ -1308,6 +1308,7 @@ $(function(){
                     searching: false,
                     paging: false,
                     info: false,
+                    ordering: false,
                     //デフォルトは2番目のカラム(Count)を降順(desc)で
                     order: [[2,'desc']],
                     //0番目(チェックボックス)のカラムはソート不可
@@ -1327,7 +1328,7 @@ $(function(){
         	var package_name = related_info['package_name'];
         	var exact = related_info['exact'];
         	var fuzzy = related_info['fuzzy'];
-        	var tr = null;
+          var tr = null;
         	if(similarFlag == true){
         		var simlar_info = related_info['similar'];
         		//ipv4 と domain の similarity の合算を表示
