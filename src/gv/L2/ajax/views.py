@@ -1307,12 +1307,12 @@ def _set_alchemy_node_custom_object(aj, object_, an_package_id):
     for prop in object_:
         custom_properties = []
         for item in custom_properties_list:
-            if '/' in item:
-                c_prop, c_key = item.split('/')
+            if '.' in item:
+                c_prop, c_key = item.split('.')
                 if prop == c_prop:
                     if c_key in object_[prop]:
                         v = object_[prop][c_key]
-                        match_prop = '%s--%s' % (c_prop, c_key)
+                        match_prop = item
                         custom_properties.append((match_prop, v))
             else:
                 if prop == item:
