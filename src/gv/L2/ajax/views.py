@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.http.response import JsonResponse
 from stip.common import get_text_field_value
 from stip.common.label import sanitize_id
+from stip.common.stix_customizer import StixCustomizer
 from ctim.constant import SESSION_EXPIRY, DISPLAY_NODE_THRESHOLD
 from core.api.rs import Ctirs
 from core.alchemy.alchemy import AlchemyJsonData, AlchemyNode, AlchemyEdge
@@ -21,6 +22,7 @@ LABEL_V2_CREATED_BY_REF = 'created_by_ref'
 LABEL_V2_OBJECT_REF = 'object_ref'
 LABEL_V2_LABEL_REF = 'v2_label_ref'
 LABEL_V2_CUSTOM_OBJECT_REF = 'v2_custom_object'
+LABEL_V2_CUSTOM_PROPERTY_REF = 'custom_property_ref'
 
 
 def get_l2_ajax_related_campagins_campaign(request):
@@ -151,6 +153,11 @@ def related_package_nodes(request):
         aj.set_json_node_exact(start_node_id)
         aj.set_json_node_exact(end_node_id)
         ae = AlchemyEdge(start_node_id, end_node_id, edge['edge_type'])
+        if 'reason' in edge:
+            reason = edge['reason']
+        else:
+            reason = None
+        ae = AlchemyEdge(start_node_id, end_node_id, edge['edge_type'], reason=reason)
         aj.add_json_edge(ae)
 
     ret_json = aj.get_alchemy_json(is_redact_confirm)
@@ -1177,6 +1184,10 @@ def set_alchemy_node_malware_analysis(aj, object_, an_package_id):
 
 
 def set_alchemy_node_custom_object(aj, object_, an_package_id):
+    return _set_alchemy_node_custom_object(aj, object_, an_package_id)
+
+
+def _set_alchemy_node_custom_object(aj, object_, an_package_id):
     node_id = convert_valid_node_id(object_['id'])
     node_type = 'v2_CustomObject_' + object_['type']
     title, description = get_common_title_description(object_, default_title=object_['id'], default_description=object_['id'])
@@ -1190,6 +1201,37 @@ def set_alchemy_node_custom_object(aj, object_, an_package_id):
             aj.add_json_edge(ae)
     _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
+
+    stix_customizer = StixCustomizer.get_instance()
+    if object_['type'] not in stix_customizer.get_custom_object_list():
+        custom_properties_list = []
+    else:
+        custom_properties_list = stix_customizer.get_custom_object_dict()[object_['type']]
+    for prop in object_:
+        custom_properties = []
+        for item in custom_properties_list:
+            if '.' in item:
+                c_prop, c_key = item.split('.')
+                if prop == c_prop:
+                    if c_key in object_[prop]:
+                        v = object_[prop][c_key]
+                        match_prop = item
+                        custom_properties.append((match_prop, v))
+            else:
+                if prop == item:
+                    v = object_[prop]
+                    custom_properties.append((prop, v))
+
+        for custom_prop in custom_properties:
+            match_prop, v = custom_prop
+            prop_node_id = '%s-%s' % (node_id, match_prop)
+            an = AlchemyNode(prop_node_id, 'v2_CustomProperty', match_prop, v, cluster=an_package_id)
+            aj.add_json_node(an)
+            ae = AlchemyEdge(convert_valid_node_id(node_id), prop_node_id, '')
+            aj.add_json_edge(ae)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
+    return
+
 
 
 '''

@@ -121,11 +121,13 @@ class AlchemyEdge(AlchemyJsonBase):
     _target = -1
     _caption = ''
     _type = ''
+    _reason = None
 
-    def __init__(self, source, target, caption, type=None):
+    def __init__(self, source, target, caption, type=None, reason=None):
         self._source = source
         self._target = target
         self._caption = caption
+        self._reason = reason
         if type is None:
             self._type = caption
         else:
@@ -143,6 +145,7 @@ class AlchemyEdge(AlchemyJsonBase):
         r['target'] = str(self._target)
         r['caption'] = str(self._caption)
         r['type'] = str(self._type)
+        r['reason'] = self._reason
         return r
 
 

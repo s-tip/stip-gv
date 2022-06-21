@@ -1165,14 +1165,18 @@ window.onclick = function(event) {
     }
 };
 
-function sunitaize_encode(str){
-	if (Array.isArray(str) == true){
-		str = str.join(',');
-	}else if(typeof(str) == 'object'){
+function sunitaize_encode(v){
+	if (Array.isArray(v) == true){
+		str = v.join(',');
+	}else if(typeof(v) == 'object'){
 		str = JSON.stringify(str);
-	}else if(typeof(str) == 'boolean'){
-		str = str.toString();
-	}
+	}else if(typeof(v) == 'number'){
+		str = String(v)
+	}else if(typeof(v) == 'boolean'){
+		str = String(v)
+	}else{
+    str = v
+  }
 	return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 };
 
@@ -1236,7 +1240,7 @@ function onNodeClickFunction(node){
     	var title_text = null;
     	var display_language = get_default_language(user_language,language_contents);
     	var display_language_content = null;
-    	var original_language = 'no lang_property';
+      var original_language = 'no lang_property';
     	if(language_contents != null){
     		display_language_content = language_contents[display_language];
     	}
