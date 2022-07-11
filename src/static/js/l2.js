@@ -1010,10 +1010,10 @@ $(function(){
       var l2_value = document.getElementById("l2-value");
       var l2_description = document.getElementById("l2-description");
       var l2_title = document.getElementById("l2-title");
-      var title_text = elem.caption;
-      var description_text = elem.description;
-      var value_text = elem.value;
-      var node_type = elem.type;
+      var title_text = node.caption;
+      var description_text = node.description;
+      var value_text = node.value;
+      var node_type = node.type;
       var value_node = ["Observables","Observable","Observable_ip","Observable_domain","Observable_hash","Observable_file_name","Observable_uri","Indicators","Indicator","Indicator_ip","Indicator_domain","Indicator_hash","Indicator_uri"];
       var object_id = '';
 
@@ -1037,10 +1037,10 @@ $(function(){
       l2_title.innerHTML = title_text;
       l2_description.innerHTML = description_text;
     
-      var stix2_object = elem.latest_object;
-      var versions = elem.versions;
-      var user_language = elem.user_language;
-      var language_contents = elem.language_contents;
+      var stix2_object = node.latest_object;
+      var versions = node.versions;
+      var user_language = node.user_language;
+      var language_contents = node.language_contents;
       if (stix2_object == null){
         $("#l2-language-options").css("display","none");
       }else{
@@ -1104,9 +1104,9 @@ $(function(){
         const opinion_link = '<a class="note-href" data-object-id="' + object_id + '">Note</a>';
         const note_link = '<a class="opinion-href" data-object-id="' + object_id + '">Opinion</a>';
         const revoke_link = '<a class="revoke-href" data-object-id="' + object_id + '">Revoke</a>';
-        const modify_link = '<a class="modify-href" data-object-id="' + object_id + '" data-modified="' + elem.modified + '">Modify</a>';
+        const modify_link = '<a class="modify-href" data-object-id="' + object_id + '" data-modified="' + node.modified + '">Modify</a>';
         l2_description.innerHTML = opinion_link + '&nbsp;' + note_link + '&nbsp;';
-        if ('sco' in elem == false) {
+        if ('sco' in node == false) {
             l2_description.innerHTML += (revoke_link + '&nbsp;' + modify_link);
         }
 
@@ -1153,10 +1153,10 @@ $(function(){
         }else{
           l2_title.innerHTML = object_id;
         }
-        if (elem.revoked == true){
+        if (node.revoked == true){
           l2_title.innerHTML = `<s class='sdo-revoked'>${l2_title.innerHTML}</s> (This object has been revoked)`
         } else{
-          if (elem.is_latest == false){
+          if (node.is_latest == false){
             l2_title.innerHTML = `<span class='sdo-updated'>${l2_title.innerHTML}</span> (This object has been updated)`
           }
         }

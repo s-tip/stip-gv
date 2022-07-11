@@ -1297,7 +1297,6 @@ def _set_alchemy_node_custom_object(aj, object_, an_package_id):
             ae = AlchemyEdge(node_id, convert_valid_node_id(observed_data_ref), LABEL_V2_OBJECT_REF)
             aj.add_json_edge(ae)
     _set_label_alchemy_node(aj, object_, node_id, an_package_id)
-    return
 
     stix_customizer = StixCustomizer.get_instance()
     if object_['type'] not in stix_customizer.get_custom_object_list():
