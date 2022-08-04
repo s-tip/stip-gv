@@ -1,8 +1,10 @@
-# URLを正規表現で評価し、マッチングした場合の処理箇所を定義
-from django.conf.urls import url
+try:
+    from django.conf.urls import url as _url
+except ImportError:
+    from django.urls import re_path as _url
 import gv.css.views as css
 
 urlpatterns = [
     # css change
-    url(r'^change$', css.change),
+    _url(r'^change$', css.change),
 ]
