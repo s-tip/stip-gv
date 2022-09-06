@@ -1,0 +1,24 @@
+<main role="main">
+<form name="l2" id="l2" action="/L2" method="get">{% csrf_token %}
+<div class="container-fluid" id='l2-container'style="width:100%;">
+    <div id="visjs-network"></div>
+    <div class="col-lg-12" id="left-column-div">
+        <div class="col-lg-12">
+            <div id="l2-description-modal" class="modal">
+                <div class="modal-content" id="l2-modal-content">
+                    <div class="modal-header">
+                        <span class="close" id="l2-description-modal-close">×</span>
+                        <h2 id="l2-title">title</h2>
+                        <h4 id="l2-language-options">language-options</h4>
+                    </div>
+                    <div id="modal_body" class="modal-body">
+                        <p id="l2-value"></p>
+                        <p id="l2-description"></p>
+                    </div>
+                </div>
+            </div>
+        </div> <!--  <div class="col-lg-12" id="graph"> -->
+    </div><!--  <div class="col-lg-12"> -->
+</div> <!--  <div class="container"> -->
+</form>
+</main>

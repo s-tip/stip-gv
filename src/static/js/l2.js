@@ -176,6 +176,69 @@ $(function(){
         },
     });
 
+    $('#l2-note-dialog').dialog({
+        width: 800,
+        resizable: true,
+        autoOpen: false,
+        buttons: {
+          Submit: function() {
+            const ret =_note_submit($(this).data('object-id'))
+            if (ret){
+              $(this).dialog('close');
+            }
+          },
+          Close: function() {
+            $(this).dialog('close');
+          },
+        },
+    });
+
+    $('#l2-opinion-dialog').dialog({
+      width: 800,
+      resizable: true,
+      autoOpen: false,
+      buttons: {
+        Submit: function() {
+          const ret =_opinion_submit($(this).data('object-id'))
+          if (ret){
+            $(this).dialog('close');
+          }
+        },
+        Close: function() {
+          $(this).dialog('close');
+        },
+      },
+    });
+
+
+    $('#l2-modify-dialog').dialog({
+      width: 800,
+      resizable: true,
+      autoOpen: false,
+      buttons: {
+        Submit: function() {
+          const ret =_modify_submit($(this).data('object-id'))
+          if (ret){
+            $(this).dialog('close');
+          }
+        },
+        Close: function() {
+          $(this).dialog('close');
+        },
+      },
+    });
+
+    $('#l2-version-stix-dialog').dialog({
+      width: 1024,
+      resizable: false,
+      autoOpen: false,
+      buttons: {
+        Close: function() {
+          $(this).dialog('close');
+        },
+      },
+    });
+
     //modalのクロースボタンクリック時
     $('#l2-description-modal-close').click(function(){
         $('#l2-description-modal').css('display','none');
@@ -204,6 +267,8 @@ $(function(){
 
 
     var nodes_meta = {}
+    var edges_meta = {}
+    var node_map = {}
     var vis_edges = []
     var vis_nodes = []
     var network = null
@@ -253,14 +318,20 @@ $(function(){
 
       var nodes = new vis.DataSet([])
       nodes_meta = {}
+      node_map = {}
       $.each(dataSource.nodes,function(key,index){
         var node = dataSource.nodes[key]
-        nodes_meta[node.id] = node
         var d = {
-          id: node.id,
           type: node.type,
           label: node.caption,
         }
+        if (('id' in node) && ('modified' in node)) {
+          d.id = node.id + '--' + node.modified
+        } else {
+          d.id = node.id
+        }
+        nodes_meta[d.id] = node
+        node_map[node.id] = d.id
         var node_styles = {
           "Header": {
             "captionSize": 100,
@@ -628,6 +699,7 @@ $(function(){
           }
         }
 
+        d.sco = false
         if (node_styles[node.type]){
           const node_style = node_styles[node.type]
           d.color = node_style.color
@@ -640,31 +712,74 @@ $(function(){
           if(node_style['label']){
             d.label = node_style.label
           }
+          if(node_style['sco']){
+            d.sco = node_style.sco
+          }
         }else{
           d.value = 10
         }
         d.label = node.caption
- 
+        d.revoked = false
+        d.is_latest = false
+        d.versions = node.versions
+
         var avoid_redcation_node_type = ['Header','Campaign','Observables','TTPs','Incidents','Exploit_Targets', 'v2_report']
         if($.inArray(node.type,avoid_redcation_node_type) < 0){
           if(d.label.length >= 10){
             d.label = d.label.substring(0,10) + '...'
           }
         }
-        nodes.add(d)
+        if(node.revoked == true) {
+          d.font = {
+            multi: 'html',
+            color: 'rgba(255, 0, 0, 0.2)'
+          }
+          d.label = `<i>${d.label}</i>`
+          d.revoked = true
+        } else{
+          if(node.is_latest == false) {
+            d.font = {
+              multi: 'html',
+              color: 'rgba(255, 0, 0, 0.5)',
+            }
+            d.label = `<i>${d.label}</i>`
+            d.is_latest = true
+          }
+        }
+        try {
+          nodes.add(d)
+        } catch (error){
+          console.error(error)
+        }
       })
       return nodes
     }
 
     function _get_vis_edges(dataSource){
       var edges = new vis.DataSet([])
+      edges_meta = {}
       $.each(dataSource.edges,function(key,index){
         var edge = dataSource.edges[key]
+        if (edge.id != null) {
+          edges_meta[edge.id] = edge
+        }
         var d = {
-          from: edge.source,
-          to: edge.target,
           label: edge.caption,
           type: edge.type
+        }
+        if (('id' in edge) && ('modified' in edge)) {
+          d.id = edge.id + '--' + edge.modified
+        } else {
+          d.id = edge.id
+        }
+        edges_meta[edge.id] = edge
+        d.from = node_map[edge.source]
+        d.to = node_map[edge.target]
+
+        if (edge.reason){
+          d.reason = edge.reason
+        }else {
+          d.reason = null
         }
 
         if (edge.reason){
@@ -776,11 +891,15 @@ $(function(){
         }
         d.smooth = false
         d.chosen = false
-        edges.add(d)
+        try {
+          edges.add(d)
+        } catch (error){
+          console.error(error)
+        }
       })
       return edges
     }
- 
+
     function _start_network(nodes, edges, config_dom){
       var navbar = document.getElementById('navbar')
       var container = document.getElementById('visjs-network')
@@ -817,7 +936,7 @@ $(function(){
           enabled: true,
           filter: function(option, path){
             if(path[0] === 'nodes'){
-              if(option === 'color' || 
+              if(option === 'color' ||
                  option === 'fixed' ||
                  option === 'scaling' ||
                  option === 'shapeProperties' ||
@@ -825,7 +944,7 @@ $(function(){
                  option === 'physics'){
                 return false
               }
-              if(path[1] === 'color' || 
+              if(path[1] === 'color' ||
                  path[1] === 'fixed' ||
                  path[1] === 'scaling' ||
                  path[1] === 'shapeProperties'){
@@ -902,6 +1021,7 @@ $(function(){
       var value_text = node.value;
       var node_type = node.type;
       var value_node = ["Observables","Observable","Observable_ip","Observable_domain","Observable_hash","Observable_file_name","Observable_uri","Indicators","Indicator","Indicator_ip","Indicator_domain","Indicator_hash","Indicator_uri"];
+      var object_id = '';
 
       if(title_text == null || title_text.length == 0){
         title_text = "No title";
@@ -922,8 +1042,9 @@ $(function(){
 
       l2_title.innerHTML = title_text;
       l2_description.innerHTML = description_text;
-    
-      var stix2_object = node.stix2_object;
+
+      var stix2_object = node.latest_object;
+      var versions = node.versions;
       var user_language = node.user_language;
       var language_contents = node.language_contents;
       if (stix2_object == null){
@@ -934,15 +1055,19 @@ $(function(){
         var display_language = get_default_language(user_language,language_contents);
         var display_language_content = null;
         var original_language = 'no lang_property';
+        var object_id = '';
         if(language_contents != null){
           display_language_content = language_contents[display_language];
         }
         $.each(stix2_object,function(key,index){
           if (key == "name"){
-            title_text = stix2_object[key] ;
+            title_text = stix2_object[key];
           }
           if (key == "lang"){
-            original_language = stix2_object[key] ;
+            original_language = stix2_object[key];
+          }
+          if (key == "id"){
+            object_id = stix2_object[key];
           }
           var span_key = '<span class="l2_stix2_span_key">'+ key + ':</span> ';
           var v = stix2_object[key];
@@ -982,11 +1107,64 @@ $(function(){
           var span_value = '<span class="stix2-description" id="stix2-' + sunitaize_encode(key) + '" data-original="' + sunitaize_encode(original_v) + '">' + v + '</span><br/>\n';
           description_text += (span_key + span_value);
         });
-        l2_description.innerHTML = description_text;
+        const opinion_link = '<a class="note-href" data-object-id="' + object_id + '">Note</a>';
+        const note_link = '<a class="opinion-href" data-object-id="' + object_id + '">Opinion</a>';
+        const revoke_link = '<a class="revoke-href" data-object-id="' + object_id + '">Revoke</a>';
+        const modify_link = '<a class="modify-href" data-object-id="' + object_id + '" data-modified="' + node.modified + '">Modify</a>';
+        l2_description.innerHTML = opinion_link + '&nbsp;' + note_link + '&nbsp;';
+        if ('sco' in node == false) {
+            l2_description.innerHTML += (revoke_link + '&nbsp;' + modify_link);
+        }
+
+        function _get_versions_select_html (versions) {
+          var html = '&nbsp;';
+          const div_row_start = '<div class="form-group row">';
+          html += div_row_start;
+          const div_col1_start = '<div class="col-sm-2">';
+          html += div_col1_start;
+          const label = '<label for="version-select" class="col-form-label choose-version-label">Choose a Version</label>';
+          html += label;
+          const div_col1_end = '</div>'
+          html += div_col1_end;
+          const div_col2_start = '<div class="col-sm-3">';
+          html += div_col2_start;
+          const select_start = '<select class="form-control form-conrol-sm" id="version-select" data-object-id="' + object_id + '">';
+          html += select_start;
+          $.each(versions,function(index,version){
+            const option = '<option value="' + version + '">' + version + '</option>';
+            html += option;
+          });
+          const select_end = '</select>';
+          html += select_end;
+          const div_col2_end = '</div>'
+          html += div_col2_end;
+          const div_col3_start = '<div class="col-sm-3">';
+          html += div_col3_start;
+          const button = '<button type="button" id="open-version-dialog" class="btn btn-info btn-sm">View Specified Version Content</button>';
+          html += button;
+          const div_col3_end = '</div>'
+          html += div_col3_end;
+          const div_row_end = '</div>';
+          html += div_row_end;
+          return html;
+        }
+        if (versions.length > 0) {
+          l2_description.innerHTML += _get_versions_select_html(versions);
+        }
+
+        l2_description.innerHTML += ('<hr/>' + description_text);
+
         if (title_text != null){
           l2_title.innerHTML = title_text;
         }else{
-          l2_title.innerHTML = node.id;
+          l2_title.innerHTML = object_id;
+        }
+        if (node.revoked == true){
+          l2_title.innerHTML = `<s class='sdo-revoked'>${l2_title.innerHTML}</s> (This object has been revoked)`
+        } else{
+          if (node.is_latest == false){
+            l2_title.innerHTML = `<span class='sdo-updated'>${l2_title.innerHTML}</span> (This object has been updated)`
+          }
         }
         if (language_contents == null){
           $("#l2-language-options").css("display","none");
@@ -1403,7 +1581,290 @@ $(function(){
 
     function sunitaize_decode(str){
     	return str.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, '\'').replace(/&amp;/g, '&');
-    } 
+    }
+
+    function _get_oid_from_href(a){
+      return a.data('object-id')
+    }
+
+    function _get_modified_from_href(a){
+      return a.data('modified')
+    }
+
+    $(document).on('click','.note-href',function(){
+      var object_id = _get_oid_from_href($(this))
+      const note_dialog = $('#l2-note-dialog')
+      const title = 'Note for ' + object_id
+      $('#note-abstract').val('')
+      $('#note-content').val('')
+      note_dialog.data('object-id', object_id)
+      note_dialog.dialog('option', 'title', title)
+      note_dialog.dialog('open')
+    })
+
+    $(document).on('click','.opinion-href',function(){
+      var object_id = _get_oid_from_href($(this))
+      const opinion_dialog = $('#l2-opinion-dialog')
+      const title = 'Opinion for ' + object_id
+      $('#opinion-opinion').val('neutral')
+      $('#opinion-explanation').val('')
+      opinion_dialog.data('object-id', object_id)
+      opinion_dialog.dialog('option', 'title', title)
+      opinion_dialog.dialog('open')
+    })
+
+    $(document).on('click','.revoke-href',function(){
+      const object_id = _get_oid_from_href($(this))
+      const s = 'Mark as revoked? (' + object_id + ')?'
+      const ret = confirm(s)
+      if (ret == false) {
+        return
+      }
+      d = {
+        'object_id' : object_id,
+      }
+      $.ajax({
+        type: 'POST',
+        url: '/L2/ajax/revoke',
+        timeout: 60 * 60 * 1000,
+        cache: true,
+        data: d,
+        dataType: 'json',
+        beforeSend: function(xhr, settings){
+          xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+        },
+      }).done(function(ret,textStatus,jqXHR){
+        if(ret.status != 'OK'){
+          alert(ret.message)
+          return false
+        }else{
+          alert('Success!!')
+        }
+      }).fail(function(jqXHR,textStatus,errorThrown){
+        alert(jqXHR.statusText)
+        return false
+      }).always(function(data_or_jqXHR,textStatus,jqHXR_or_errorThrown){
+      });
+      return true
+    })
+
+    $(document).on('click','.modify-href',function(){
+      const DISABLED_FILEDS = [
+        'id', 'type', 'created', 'modified', 'spec_version', 'created_by_ref'
+      ]
+      const oid = _get_oid_from_href($(this))
+      const modified = _get_modified_from_href($(this))
+      const object_id = oid + '--' + modified
+      var elem = null
+      if (object_id.indexOf('relationship--') == 0) {
+        elem = edges_meta[object_id]
+      } else {
+        elem = nodes_meta[object_id]
+      }
+      const stix2_object = elem.stix2_object
+      const div_modify = $('#div-modify')
+      div_modify.empty()
+      $.each(stix2_object,function(key,index){
+        const val = stix2_object[key]
+
+        const label_div = $('<div>', {
+          "class": "col-sm-3"
+        })
+        const label = $('<label>', {
+        })
+        label.text(key)
+        label_div.append(label)
+
+        const form_div = $('<div>', {
+          "class": "col-sm-9"
+        })
+        const textarea = $('<textarea>', {
+          "class": "textarea-stix2-modify"
+        })
+
+        if (typeof(val) == 'object') {
+          textarea.val(JSON.stringify(val))
+        } else{
+          textarea.val(val)
+        }
+
+        textarea.data('prop_name', key)
+        textarea.data('value_type', typeof(val))
+        if (DISABLED_FILEDS.includes(key)) {
+          textarea.prop('disabled', true)
+          textarea.addClass('textarea-stix2-modify-disabled')
+        }
+        form_div.append(textarea)
+
+        const row_div = $('<div>', {
+          "class": "row"
+        })
+        row_div.append(label_div)
+        row_div.append(form_div)
+        div_modify.append(row_div)
+      })
+      const modify_dialog = $('#l2-modify-dialog')
+      const title = 'Modify (' + object_id +')'
+      modify_dialog.data('object-id', object_id)
+      modify_dialog.dialog('option', 'title', title)
+      modify_dialog.dialog('open')
+      return
+    })
+
+    $(document).on('click','#open-version-dialog',function(){
+      const version = $('#version-select').val();
+      var object_id = _get_oid_from_href($('#version-select'))
+      const version_dialog = $('#l2-version-stix-dialog')
+      const title = 'STIX content for ' + object_id + ' (' + version + ')';
+
+      d = {
+        'object_id' : object_id,
+        'version' : version,
+      }
+      $.ajax({
+        type: 'POST',
+        url: '/L2/ajax/get_stix2_content',
+        timeout: 60 * 60 * 1000,
+        cache: true,
+        data: d,
+        dataType: 'json',
+        beforeSend: function(xhr, settings){
+          xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+        },
+      }).done(function(ret,textStatus,jqXHR){
+        if(ret.status != 'OK'){
+          alert(ret.message)
+          return false
+        }else{
+          $('#version-stix-content').val(JSON.stringify(ret.data.object, null, '    '));
+        }
+      }).fail(function(jqXHR,textStatus,errorThrown){
+        alert(jqXHR.statusText)
+        return false
+      }).always(function(data_or_jqXHR,textStatus,jqHXR_or_errorThrown){
+      });
+      version_dialog.dialog('option', 'title', title)
+      version_dialog.dialog('open')
+    });
+
+    function _opinion_submit(object_id){
+      const explanation = $('#opinion-explanation').val()
+      const opinion = $('#opinion-opinion').val()
+      d = {
+        'object_id' : object_id,
+        'explanation' : explanation,
+        'opinion' : opinion,
+      }
+      $.ajax({
+        type: 'POST',
+        url: '/L2/ajax/create_opinion',
+        timeout: 60 * 60 * 1000,
+        cache: true,
+        data: d,
+        dataType: 'json',
+        beforeSend: function(xhr, settings){
+          xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+        },
+      }).done(function(ret,textStatus,jqXHR){
+        if(ret.status != 'OK'){
+          alert(ret.message)
+          return false
+        }else{
+          alert('Success!!')
+        }
+      }).fail(function(jqXHR,textStatus,errorThrown){
+        alert(jqXHR.statusText)
+        return false
+      }).always(function(data_or_jqXHR,textStatus,jqHXR_or_errorThrown){
+      });
+      return true
+    }
+
+    function _note_submit(object_id){
+      const abstract = $('#note-abstract').val()
+      const content = $('#note-content').val()
+      if (content.length == 0){
+        alert('Content is required')
+        return false
+      }
+      d = {
+        'object_id' : object_id,
+        'abstract' : abstract,
+        'content' : content,
+      }
+      $.ajax({
+        type: 'POST',
+        url: '/L2/ajax/create_note',
+        timeout: 60 * 60 * 1000,
+        cache: true,
+        data: d,
+        dataType: 'json',
+        beforeSend: function(xhr, settings){
+          xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+        },
+      }).done(function(ret,textStatus,jqXHR){
+        if(ret.status != 'OK'){
+          alert(ret.message)
+          return false
+        }else{
+          alert('Success!!')
+        }
+      }).fail(function(jqXHR,textStatus,errorThrown){
+        alert(jqXHR.statusText)
+        return false
+      }).always(function(data_or_jqXHR,textStatus,jqHXR_or_errorThrown){
+      });
+      return true
+    }
+
+    function _modify_submit(object_id){
+      var stix2 = {}
+      $.each($('.textarea-stix2-modify'),function(){
+        const name = $(this).data('prop_name')
+        const type_ = $(this).data('value_type')
+        const val = $(this).val()
+        if (type_ == 'string'){
+          stix2[name] = val
+        } else if (type_ == 'number') {
+          stix2[name] = Number(val)
+        } else if (type_ == 'object') {
+          stix2[name] = JSON.parse(val)
+        } else if (type_ == 'boolean') {
+          stix2[name] = (val.toLowerCase() === 'true')
+        } else {
+          alert ('Other type: ' + type_)
+          return
+        }
+      })
+
+      d = {
+        'stix2' : stix2,
+      }
+
+      $.ajax({
+        type: 'POST',
+        url: '/L2/ajax/modify',
+        timeout: 60 * 60 * 1000,
+        cache: true,
+        data: JSON.stringify(d),
+        dataType: 'json',
+        beforeSend: function(xhr, settings){
+          xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+        },
+      }).done(function(ret,textStatus,jqXHR){
+        if(ret.status != 'OK'){
+          alert(ret.message)
+          return false
+        }else{
+          alert('Success!!')
+        }
+      }).fail(function(jqXHR,textStatus,errorThrown){
+        alert(jqXHR.statusText)
+        return false
+      }).always(function(data_or_jqXHR,textStatus,jqHXR_or_errorThrown){
+      });
+      return true
+    }
 
     //content-language の言語クリック時
     $(document).on('click','.content-language-href',function(){
@@ -1417,7 +1878,7 @@ $(function(){
     			$(this).removeClass('display-content-language-href');
     		}
     	});
-    	
+
     	if ($(this).data('language') == 'original_content'){
     		var title= $('#l2-title').text();
     		// original-data に変更する
@@ -1480,7 +1941,7 @@ $(function(){
         			});
         			lc_content = JSON.stringify(tmp_lc_content)
         		}
-        		
+
     	    	$(selector).html(lc_content);
         	});
     	}

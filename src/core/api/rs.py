@@ -218,6 +218,7 @@ class Ctirs(object):
         # ajax呼び出し
         return self._call_post_ctirs_api(url, params, json=j)
 
+    # get : /api/v1/stix_files_v2/search_bundle
     def get_bundle_from_object_id(self, object_id):
         params = {
             'match[object_id]': object_id
@@ -225,11 +226,65 @@ class Ctirs(object):
         url = '/api/v1/stix_files_v2/search_bundle'
         return self._call_get_ctirs_api(url, params)
 
+    # post /api/v1/stix_files_v2/note
+    def post_note(self, object_id, content, abstract):
+        params = {
+            'object_id': object_id,
+            'content': content,
+            'abstract': abstract
+        }
+        url = '/api/v1/stix_files_v2/create_note'
+        # ajax呼び出し
+        return self._call_post_ctirs_api(url, params, files=None)
+
+    # post /api/v1/stix_files_v2/opinion
+    def post_opinion(self, object_id, opinion, explanation):
+        params = {
+            'object_id': object_id,
+            'opinion': opinion,
+            'explanation': explanation
+        }
+        url = '/api/v1/stix_files_v2/create_opinion'
+        # ajax呼び出し
+        return self._call_post_ctirs_api(url, params, files=None)
+
+    # post /api/v1/stix_files_v2/revoke
+    def post_revoke(self, object_id):
+        params = {
+            'object_id': object_id,
+        }
+        url = '/api/v1/stix_files_v2/revoke'
+        # ajax呼び出し
+        return self._call_post_ctirs_api(url, params, files=None)
+
+    # post /api/v1/stix_files_v2/modify
+    def post_modify(self, stix2):
+        url = '/api/v1/stix_files_v2/modify'
+        # ajax呼び出し
+        return self._call_post_ctirs_api(url, {}, files=None, json=stix2)
+
+    # post : /api/v1/stix_files_v2/object/<object_id>/latest
+    def get_latest_object(self, object_id, modified):
+        params = {
+            'modified': modified,
+        }
+        url = '/api/v1/stix_files_v2/object/%s/latest' % (object_id)
+        return self._call_post_ctirs_api(url, params)
+
+    # get : /api/v1/stix_files_v2/object/<object_id>/<version>
+    def get_stix2_content(self, object_id, version):
+        params = {}
+        url = '/api/v1/stix_files_v2/object/%s/%s' % (object_id, version)
+        return self._call_get_ctirs_api(url, params)
+
     # ajax呼び出し(get)
     def _call_get_ctirs_api(self, url_suffix, params):
         # 共通呼び出し
         response = self._call_ctirs_api(url_suffix, params, 'GET')
-        j = response.json()
+        try:
+            j = response.json()
+        except Exception:
+            raise Exception('Cannnot parse json response (%d)' % (response.status_code))
         # statusがない場合はエラー
         if 'return_code' not in j:
             raise Exception('No return_code')
@@ -243,7 +298,7 @@ class Ctirs(object):
         if 'data' not in j:
             return None
         # 200以外はエラー
-        if response.status_code is not 200:
+        if response.status_code != 200:
             raise Exception('Error has occured. CTIRS REST api HTTP Response (%d).' % (response.status_code))
         # 存在する場合はj['data']を返却する
         return j['data']
@@ -253,7 +308,7 @@ class Ctirs(object):
         # 共通呼び出し
         response = self._call_ctirs_api(url_suffix, params, 'PUT')
         # 204以外はエラー
-        if response.status_code is not 204:
+        if response.status_code != 204:
             raise Exception('Error has occured. CTIRS REST api HTTP Response (%d).' % (response.status_code))
         return
 
@@ -261,7 +316,10 @@ class Ctirs(object):
     def _call_post_ctirs_api(self, url_suffix, params, files=None, json=None):
         # 共通呼び出し
         response = self._call_ctirs_api(url_suffix, params, 'POST', files, json)
-        j = response.json()
+        try:
+            j = response.json()
+        except Exception:
+            raise Exception('Cannnot parse json response (%d)' % (response.status_code))
         # statusがない場合はエラー
         if 'return_code' not in j:
             raise Exception('No return_code')
@@ -274,7 +332,7 @@ class Ctirs(object):
         # dataがない場合は None
         if 'data' not in j:
             return None
-        if response.status_code is not 201:
+        if response.status_code != 201:
             raise Exception('Error has occured. CTIRS REST api HTTP Response (%d).' % (response.status_code))
 
         # 存在する場合はj['data']を返却する
@@ -285,14 +343,17 @@ class Ctirs(object):
         # 共通呼び出し
         response = self._call_ctirs_api(url_suffix, params, 'DELETE')
         # 204以外はエラー
-        if response.status_code is not 204:
+        if response.status_code != 204:
             raise Exception('Error has occured. CTIRS REST api HTTP Response (%d).' % (response.status_code))
         return
 
     # ajax呼び出し(共通)
     def _call_ctirs_api(self, url_suffix, params, method, files=None, json=None):
         # URL
-        url = '%s%s' % (self.ctirs_host, url_suffix)
+        if self.ctirs_host[-1] == '/':
+            url = '%s%s' % (self.ctirs_host[0:-1], url_suffix)
+        else:
+            url = '%s%s' % (self.ctirs_host, url_suffix)
         # headers
         headers = self.get_rest_api_headers()
         # request

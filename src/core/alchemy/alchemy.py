@@ -27,7 +27,7 @@ class AlchemyJsonData:
         for node in self._json_nodes.values():
             node.set_user_language(_user_language)
 
-    def get_alchemy_json(self, too_many_nodes='confirm'):
+    def get_alchemy_json(self, ctirs, too_many_nodes='confirm'):
         is_redact = False
         if self.is_over_unlinked_end_nodes():
             if too_many_nodes == 'confirm':
@@ -51,7 +51,7 @@ class AlchemyJsonData:
                     if not self.is_include_in_link(node):
                         redact_nodes.append(node)
                         continue
-            json_nodes.append(node.get_json())
+            json_nodes.append(node.get_json(ctirs))
             json_node_ids.append(node._id_)
         json['nodes'] = json_nodes
         json_edges = []
@@ -69,7 +69,7 @@ class AlchemyJsonData:
             if edge._target not in json_node_ids:
                 print('no edge. skip (%s)' % (edge._target))
                 continue
-            json_edges.append(edge.get_json())
+            json_edges.append(edge.get_json(ctirs))
         json['edges'] = json_edges
         return json
 
@@ -112,18 +112,23 @@ class AlchemyJsonData:
 
 
 class AlchemyJsonBase(object):
-    def get_json(self):
+    def get_json(self, ctirs):
         raise NotImplementedError()
 
 
 class AlchemyEdge(AlchemyJsonBase):
+    _id_ = None
     _source = -1
     _target = -1
     _caption = ''
     _type = ''
     _reason = None
+    _stix2_object = None
 
-    def __init__(self, source, target, caption, type=None, reason=None):
+    def __init__(self, source, target, caption, type=None, object_=None, reason=None):
+        if object_ is not None:
+            self._id_ = object_['id']
+            self._stix2_object = object_
         self._source = source
         self._target = target
         self._caption = caption
@@ -139,8 +144,29 @@ class AlchemyEdge(AlchemyJsonBase):
     def __hash__(self):
         return hash((self._source, self._target))
 
-    def get_json(self):
+    def get_json(self, ctirs):
         r = {}
+        r['revoked'] = False
+        r['is_updated'] = False
+        if self._stix2_object is not None:
+            r['id'] = self._id_
+            r['stix2_object'] = self._stix2_object
+            r['modified'] = self._stix2_object['modified']
+            try:
+                ret = ctirs.get_latest_object(
+                    self._stix2_object['id'],
+                    self._stix2_object['modified'])
+                r['is_latest'] = ret['is_latest']
+                r['latest_object'] = ret['object']
+                r['versions'] = ret['versions']
+                if 'revoked' in ret['object']:
+                    r['revoked'] = ret['object']['revoked']
+            except Exception:
+                r['is_latest'] = True
+                r['latest_object'] = self._stix2_object
+                r['versions'] = [self._stix2_object['modified']]
+                if 'revoked' in self._stix2_object:
+                    r['revoked'] = self._stix2_object['revoked']
         r['source'] = str(self._source)
         r['target'] = str(self._target)
         r['caption'] = str(self._caption)
@@ -160,6 +186,8 @@ class AlchemyNode(AlchemyJsonBase):
     _language_contents = None
     _stix2_object = None
     _user_language = None
+    _revoked = False
+    _is_modified = False
 
     def __init__(self, id_, type_, caption, description, object_=None, observable_=None, cluster=None):
         super(AlchemyNode, self).__init__()
@@ -205,7 +233,7 @@ class AlchemyNode(AlchemyJsonBase):
     def set_value(self, value):
         self._value = value
 
-    def get_json(self):
+    def get_json(self, ctirs):
         r = {}
         r['id'] = self.sanitize(str(self._id_))
         r['type'] = self.sanitize(str(self._type))
@@ -217,6 +245,31 @@ class AlchemyNode(AlchemyJsonBase):
         r['description'] = self.sanitize(description)
         r['cluster'] = self.sanitize(str(self._cluster))
         r['value'] = self.sanitize(self._value)
+        r['revoked'] = False
+        r['is_latest'] = False
+        if self._stix2_object is not None:
+            if 'modified' in self._stix2_object:
+                r['modified'] = self._stix2_object['modified']
+                try:
+                    ret = ctirs.get_latest_object(
+                        self._stix2_object['id'],
+                        self._stix2_object['modified'])
+                    r['is_latest'] = ret['is_latest']
+                    r['latest_object'] = ret['object']
+                    r['versions'] = ret['versions']
+                    if 'revoked' in ret['object']:
+                        r['revoked'] = ret['object']['revoked']
+                except Exception:
+                    r['is_latest'] = True
+                    r['latest_object'] = self._stix2_object
+                    r['versions'] = [self._stix2_object['modified']]
+                    if 'revoked' in self._stix2_object:
+                        r['revoked'] = self._stix2_object['revoked']
+            else:
+                r['is_latest'] = True
+                r['latest_object'] = self._stix2_object
+                r['versions'] = []
+                r['revoked'] = False
         return r
 
     def sanitize(self, s):

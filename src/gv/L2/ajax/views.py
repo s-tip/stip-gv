@@ -53,6 +53,46 @@ def get_l2_ajax_too_many_nodes(request):
     return get_text_field_value(request, 'too_many_nodes', default_value='confirm')
 
 
+def get_l2_ajax_common_object_id(request):
+    return get_text_field_value(request, 'object_id', default_value=None)
+
+
+def get_l2_ajax_note_object_id(request):
+    return get_l2_ajax_common_object_id(request)
+
+
+def get_l2_ajax_note_abstract(request):
+    return get_text_field_value(request, 'abstract', default_value='')
+
+
+def get_l2_ajax_note_content(request):
+    return get_text_field_value(request, 'content', default_value=None)
+
+
+def get_l2_ajax_opinion_object_id(request):
+    return get_l2_ajax_common_object_id(request)
+
+
+def get_l2_ajax_opinion_opinion(request):
+    return get_text_field_value(request, 'opinion', default_value=None)
+
+
+def get_l2_ajax_opinion_explanation(request):
+    return get_text_field_value(request, 'explanation', default_value=None)
+
+
+def get_l2_ajax_mark_revoked_object_id(request):
+    return get_l2_ajax_common_object_id(request)
+
+
+def get_l2_ajax_get_stix2_content_object_id(request):
+    return get_l2_ajax_common_object_id(request)
+
+
+def get_l2_ajax_get_stix2_content_version(request):
+    return get_text_field_value(request, 'version', default_value=None)
+
+
 def str2boolean(s):
     if s == "true":
         return True
@@ -160,7 +200,7 @@ def related_package_nodes(request):
         ae = AlchemyEdge(start_node_id, end_node_id, edge['edge_type'], reason=reason)
         aj.add_json_edge(ae)
 
-    ret_json = aj.get_alchemy_json(is_redact_confirm)
+    ret_json = aj.get_alchemy_json(ctirs, is_redact_confirm)
     if ret_json is None:
         ret_json = {'status': 'WARNING',
                     'message': 'Too many nodes'}
@@ -326,6 +366,7 @@ def set_alchemy_nodes(aj, content, too_many_nodes='confirm'):
         groupings = []
         infrastructures = []
         malware_analysises = []
+        stix_cybox_objects = []
         '''
         x_stip_snses = []
         '''
@@ -382,6 +423,42 @@ def set_alchemy_nodes(aj, content, too_many_nodes='confirm'):
                 infrastructures.append(o_)
             elif object_type == 'malware-analysis':
                 malware_analysises.append(o_)
+            elif object_type == 'artifact':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'autonomous-system':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'directory':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'domain-name':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'email-addr':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'email-message':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'file':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'ipv4-addr':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'ipv6-addr':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'mac-addr':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'mutex':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'network':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'process':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'software':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'url':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'user-account':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'windows-registry-key':
+                stix_cybox_objects.append(o_)
+            elif object_type == 'x509-certificate':
+                stix_cybox_objects.append(o_)
             elif object_type.startswith('x-'):
                 if object_type == 'x-stip-sns':
                     continue
@@ -414,6 +491,7 @@ def set_alchemy_nodes(aj, content, too_many_nodes='confirm'):
         groupings = None
         infrastructures = None
         malware_analysises = None
+        stix_cybox_objects = None
 
     if not is_stix_v2:
         an = AlchemyNode(an_header_id, 'Header', package_name, stix_header.description, cluster=an_package_id)
@@ -576,6 +654,10 @@ def set_alchemy_nodes(aj, content, too_many_nodes='confirm'):
     if malware_analysises is not None:
         for malware_analysis in malware_analysises:
             set_alchemy_node_malware_analysis(aj, malware_analysis, an_package_id)
+
+    if stix_cybox_objects is not None:
+        for sco in stix_cybox_objects:
+            set_alchemy_node_sco(aj, sco, an_package_id)
 
     '''
     if x_stip_snses is not None:
@@ -800,15 +882,21 @@ def set_alchemy_node_observable_v1(aj, observable, an_observables_id, an_package
 def set_alchemy_node_observable_v2(aj, object_, an_package_id):
     value_list = []
     node_id = convert_valid_node_id(object_['id'])
-    for key, observable in object_['objects'].items():
-        values, title, description, type_ = get_v2_observable_value(observable)
-        value_list.extend(values)
-        an_observable_id = '%s_%s' % (node_id, key)
-        an = AlchemyNode(an_observable_id, type_, title, description, cluster=an_package_id)
-        an.set_stix2_object(object_)
-        aj.add_json_node(an)
-        ae = AlchemyEdge(node_id, an_observable_id, LABEL_EDGE)
-        aj.add_json_edge(ae)
+    if 'objects' in object_:
+        for key, observable in object_['objects'].items():
+            values, title, description, type_ = get_v2_observable_value(observable)
+            value_list.extend(values)
+            an_observable_id = '%s_%s' % (node_id, key)
+            an = AlchemyNode(an_observable_id, type_, title, description, cluster=an_package_id)
+            an.set_stix2_object(object_)
+            aj.add_json_node(an)
+            ae = AlchemyEdge(node_id, an_observable_id, LABEL_EDGE)
+            aj.add_json_edge(ae)
+    if 'object_refs' in object_:
+        for ref in object_['object_refs']:
+            ae = AlchemyEdge(node_id, ref, LABEL_V2_OBJECT_REF)
+            aj.add_json_edge(ae)
+
     caption = node_id
     description = '<br/>\n'
     keys = ['first_observed', 'last_observed', 'number_observed']
@@ -1183,6 +1271,15 @@ def set_alchemy_node_malware_analysis(aj, object_, an_package_id):
     return
 
 
+def set_alchemy_node_sco(aj, object_, an_package_id):
+    node_id = convert_valid_node_id(object_['id'])
+    an = AlchemyNode(node_id, 'v2_' + object_['type'], object_['id'], object_['id'], cluster=an_package_id)
+    an.set_stix2_object(object_)
+    aj.add_json_node(an)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
+    return
+
+
 def set_alchemy_node_custom_object(aj, object_, an_package_id):
     return _set_alchemy_node_custom_object(aj, object_, an_package_id)
 
@@ -1198,6 +1295,35 @@ def _set_alchemy_node_custom_object(aj, object_, an_package_id):
     if 'object_refs' in object_:
         for observed_data_ref in object_['object_refs']:
             ae = AlchemyEdge(node_id, convert_valid_node_id(observed_data_ref), LABEL_V2_OBJECT_REF)
+            aj.add_json_edge(ae)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
+
+    stix_customizer = StixCustomizer.get_instance()
+    if object_['type'] not in stix_customizer.get_custom_object_list():
+        custom_properties_list = []
+    else:
+        custom_properties_list = stix_customizer.get_custom_object_dict()[object_['type']]
+    for prop in object_:
+        custom_properties = []
+        for item in custom_properties_list:
+            if StixCustomizer.DICT_PROP_DIVINDER in item:
+                c_prop, c_key = item.split(StixCustomizer.DICT_PROP_DIVINDER)
+                if prop == c_prop:
+                    if c_key in object_[prop]:
+                        v = object_[prop][c_key]
+                        match_prop = item
+                        custom_properties.append((match_prop, v))
+            else:
+                if prop == item:
+                    v = object_[prop]
+                    custom_properties.append((prop, v))
+
+        for custom_prop in custom_properties:
+            match_prop, v = custom_prop
+            prop_node_id = '%s-%s' % (node_id, match_prop)
+            an = AlchemyNode(prop_node_id, 'v2_CustomProperty', match_prop, v, cluster=an_package_id)
+            aj.add_json_node(an)
+            ae = AlchemyEdge(convert_valid_node_id(node_id), prop_node_id, '')
             aj.add_json_edge(ae)
     _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
@@ -1234,6 +1360,7 @@ def _set_alchemy_node_custom_object(aj, object_, an_package_id):
 
 
 
+
 '''
 def set_alchemy_node_x_stip_sns(aj, object_, an_package_id):
     node_id = convert_valid_node_id(object_['id'])
@@ -1262,7 +1389,12 @@ def set_alchemy_node_relationship(aj, object_):
     source_ref = object_['source_ref']
     target_ref = object_['target_ref']
     relationship_type = object_['relationship_type']
-    ae = AlchemyEdge(source_ref, target_ref, relationship_type, LABEL_V2_CUSTOM_OBJECT_REF)
+    ae = AlchemyEdge(
+        source_ref,
+        target_ref,
+        relationship_type,
+        LABEL_V2_CUSTOM_OBJECT_REF,
+        object_=object_)
     aj.add_json_edge(ae)
     return
 
@@ -1325,3 +1457,104 @@ def _set_created_by_ref_edge_stip_custom_object(aj, dict_):
 
 def convert_valid_node_id(id_):
     return id_.replace(':', '--')
+
+
+@csrf_protect
+def create_note(request):
+    request.session.set_expiry(SESSION_EXPIRY)
+    if request.method != 'POST':
+        r = {'status': 'NG',
+             'message': 'Invalid HTTP method'}
+        return JsonResponse(r, safe=False)
+
+    object_id = get_l2_ajax_note_object_id(request)
+    abstract = get_l2_ajax_note_abstract(request)
+    content = get_l2_ajax_note_content(request)
+    try:
+        ctirs = Ctirs(request)
+        ctirs.post_note(object_id, content, abstract)
+        r = {'status': 'OK',
+             'message': ' /api/v1/stix_files_v2/note done successfully.'}
+    except BaseException:
+        r = {'status': 'NG',
+             'message': '/api/v1/gv/contents_and_edges error.'}
+    return JsonResponse(r, safe=False)
+
+
+@csrf_protect
+def create_opinion(request):
+    request.session.set_expiry(SESSION_EXPIRY)
+    if request.method != 'POST':
+        r = {'status': 'NG',
+             'message': 'Invalid HTTP method'}
+        return JsonResponse(r, safe=False)
+    object_id = get_l2_ajax_opinion_object_id(request)
+    opinion = get_l2_ajax_opinion_opinion(request)
+    explanation = get_l2_ajax_opinion_explanation(request)
+    try:
+        ctirs = Ctirs(request)
+        ctirs.post_opinion(object_id, opinion, explanation)
+        r = {'status': 'OK',
+             'message': ' /api/v1/stix_files_v2/note opinion successfully.'}
+    except BaseException:
+        r = {'status': 'NG',
+             'message': ' /api/v1/stix_files_v2/opinion failed.'}
+    return JsonResponse(r, safe=False)
+
+
+@csrf_protect
+def revoke(request):
+    request.session.set_expiry(SESSION_EXPIRY)
+    if request.method != 'POST':
+        r = {'status': 'NG',
+             'message': 'Invalid HTTP method'}
+        return JsonResponse(r, safe=False)
+    object_id = get_l2_ajax_mark_revoked_object_id(request)
+    try:
+        ctirs = Ctirs(request)
+        ctirs.post_revoke(object_id)
+        r = {'status': 'OK',
+             'message': ' /api/v1/stix_files_v2/revoke successfully.'}
+    except BaseException as e:
+        r = {'status': 'NG',
+             'message': ' /api/v1/stix_files_v2/revoke failed. (%s)' % (e)}
+    return JsonResponse(r, safe=False)
+
+
+@csrf_protect
+def modify(request):
+    request.session.set_expiry(SESSION_EXPIRY)
+    if request.method != 'POST':
+        r = {'status': 'NG',
+             'message': 'Invalid HTTP method'}
+        return JsonResponse(r, safe=False)
+    stix2 = json.loads(request.body)['stix2']
+    try:
+        ctirs = Ctirs(request)
+        ctirs.post_modify(stix2)
+        r = {'status': 'OK',
+             'message': ' /api/v1/stix_files_v2/modify successfully.'}
+    except BaseException as e:
+        r = {'status': 'NG',
+             'message': ' /api/v1/stix_files_v2/modify failed. (%s)' % (e)}
+    return JsonResponse(r, safe=False)
+
+
+@csrf_protect
+def get_stix2_content(request):
+    request.session.set_expiry(SESSION_EXPIRY)
+    if request.method != 'POST':
+        r = {'status': 'NG',
+             'message': 'Invalid HTTP method'}
+        return JsonResponse(r, safe=False)
+    object_id = get_l2_ajax_get_stix2_content_object_id(request)
+    version = get_l2_ajax_get_stix2_content_version(request)
+    try:
+        ctirs = Ctirs(request)
+        ret = ctirs.get_stix2_content(object_id, version)
+        r = {'status': 'OK',
+             'data': ret}
+    except BaseException as e:
+        r = {'status': 'NG',
+             'message': ' /api/v1/stix_files_v2/get_stix2_content failed. (%s)' % (e)}
+    return JsonResponse(r, safe=False)
