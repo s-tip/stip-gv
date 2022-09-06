@@ -1328,6 +1328,37 @@ def _set_alchemy_node_custom_object(aj, object_, an_package_id):
     _set_label_alchemy_node(aj, object_, node_id, an_package_id)
     return
 
+    stix_customizer = StixCustomizer.get_instance()
+    if object_['type'] not in stix_customizer.get_custom_object_list():
+        custom_properties_list = []
+    else:
+        custom_properties_list = stix_customizer.get_custom_object_dict()[object_['type']]
+    for prop in object_:
+        custom_properties = []
+        for item in custom_properties_list:
+            if '.' in item:
+                c_prop, c_key = item.split('.')
+                if prop == c_prop:
+                    if c_key in object_[prop]:
+                        v = object_[prop][c_key]
+                        match_prop = item
+                        custom_properties.append((match_prop, v))
+            else:
+                if prop == item:
+                    v = object_[prop]
+                    custom_properties.append((prop, v))
+
+        for custom_prop in custom_properties:
+            match_prop, v = custom_prop
+            prop_node_id = '%s-%s' % (node_id, match_prop)
+            an = AlchemyNode(prop_node_id, 'v2_CustomProperty', match_prop, v, cluster=an_package_id)
+            aj.add_json_node(an)
+            ae = AlchemyEdge(convert_valid_node_id(node_id), prop_node_id, '')
+            aj.add_json_edge(ae)
+    _set_label_alchemy_node(aj, object_, node_id, an_package_id)
+    return
+
+
 
 
 '''

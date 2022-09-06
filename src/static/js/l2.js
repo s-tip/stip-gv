@@ -722,7 +722,7 @@ $(function(){
         d.revoked = false
         d.is_latest = false
         d.versions = node.versions
- 
+
         var avoid_redcation_node_type = ['Header','Campaign','Observables','TTPs','Incidents','Exploit_Targets', 'v2_report']
         if($.inArray(node.type,avoid_redcation_node_type) < 0){
           if(d.label.length >= 10){
@@ -775,6 +775,12 @@ $(function(){
         edges_meta[edge.id] = edge
         d.from = node_map[edge.source]
         d.to = node_map[edge.target]
+
+        if (edge.reason){
+          d.reason = edge.reason
+        }else {
+          d.reason = null
+        }
 
         if (edge.reason){
           d.reason = edge.reason
@@ -893,7 +899,7 @@ $(function(){
       })
       return edges
     }
- 
+
     function _start_network(nodes, edges, config_dom){
       var navbar = document.getElementById('navbar')
       var container = document.getElementById('visjs-network')
@@ -930,7 +936,7 @@ $(function(){
           enabled: true,
           filter: function(option, path){
             if(path[0] === 'nodes'){
-              if(option === 'color' || 
+              if(option === 'color' ||
                  option === 'fixed' ||
                  option === 'scaling' ||
                  option === 'shapeProperties' ||
@@ -938,7 +944,7 @@ $(function(){
                  option === 'physics'){
                 return false
               }
-              if(path[1] === 'color' || 
+              if(path[1] === 'color' ||
                  path[1] === 'fixed' ||
                  path[1] === 'scaling' ||
                  path[1] === 'shapeProperties'){
@@ -1036,7 +1042,7 @@ $(function(){
 
       l2_title.innerHTML = title_text;
       l2_description.innerHTML = description_text;
-    
+
       var stix2_object = node.latest_object;
       var versions = node.versions;
       var user_language = node.user_language;
@@ -1575,7 +1581,7 @@ $(function(){
 
     function sunitaize_decode(str){
     	return str.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, '\'').replace(/&amp;/g, '&');
-    } 
+    }
 
     function _get_oid_from_href(a){
       return a.data('object-id')
@@ -1641,7 +1647,7 @@ $(function(){
       });
       return true
     })
-      
+
     $(document).on('click','.modify-href',function(){
       const DISABLED_FILEDS = [
         'id', 'type', 'created', 'modified', 'spec_version', 'created_by_ref'
@@ -1681,7 +1687,7 @@ $(function(){
         } else{
           textarea.val(val)
         }
-        
+
         textarea.data('prop_name', key)
         textarea.data('value_type', typeof(val))
         if (DISABLED_FILEDS.includes(key)) {
@@ -1872,7 +1878,7 @@ $(function(){
     			$(this).removeClass('display-content-language-href');
     		}
     	});
-    	
+
     	if ($(this).data('language') == 'original_content'){
     		var title= $('#l2-title').text();
     		// original-data に変更する
@@ -1935,7 +1941,7 @@ $(function(){
         			});
         			lc_content = JSON.stringify(tmp_lc_content)
         		}
-        		
+
     	    	$(selector).html(lc_content);
         	});
     	}
