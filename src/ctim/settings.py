@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import json
 from unipath import Path
 from decouple import Csv, config, UndefinedValueError
 from stip.common.stix_customizer import StixCustomizer
@@ -60,6 +61,11 @@ try:
     cookie_domain_name = config('COOKIE_DOMAIN_NAME')
 except UndefinedValueError:
     cookie_domain_name = None
+
+try:
+    CSRF_TRUSTED_ORIGINS = json.loads(config('CSRF_TRUSTED_ORIGINS_GV'))
+except Exception:
+    CSRF_TRUSTED_ORIGINS = []
 
 stix_customizer = StixCustomizer.get_instance()
 try:
