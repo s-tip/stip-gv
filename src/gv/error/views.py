@@ -17,9 +17,13 @@ def get_error_msg():
 # エラーページレンダリング
 def error_page(request, caution_msg=None):
     # username/passwordが'admin'の場合、password変更を促すメッセージを取得
-    caution_msg = caution_msg
+    out_error_msg = get_error_msg()
+    print(out_error_msg)
     # error情報取得
-    err_msg = get_error_msg()
+    if caution_msg:
+        err_msg = caution_msg
+    else:
+        err_msg = 'A system error has occurred. Please check the system log.'
     return error_page_free_format(request, err_msg, caution_msg)
 
 
