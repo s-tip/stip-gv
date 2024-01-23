@@ -5,7 +5,6 @@ from stip.common import get_text_field_value
 from core.common import get_common_replace_dict
 from gv.error.views import error_page, error_page_free_format
 from ctirs.models import Config, Taxii
-from ctim.constant import SESSION_EXPIRY
 from gv.configuration import check_allow_configuration_view
 
 
@@ -27,7 +26,6 @@ def get_configuration_system_rs_host(request):
 
 @login_required
 def system_view_top(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     stip_user = request.user
     # GET以外はエラー
     if request.method != 'GET':
@@ -51,7 +49,6 @@ def system_view_top(request):
 
 @login_required
 def system_modify(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     stip_user = request.user
     # POST以外はエラー
     if request.method != 'POST':

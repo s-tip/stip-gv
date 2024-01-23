@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from stip.common import get_text_field_value
 from core.common import get_common_replace_dict
 from gv.error.views import error_page, error_page_inactive
-from ctim.constant import SESSION_EXPIRY
 from core.api.rs import Ctirs
 
 
@@ -37,7 +36,6 @@ def check_allow_l1_view(request):
 
 @login_required
 def l1_view_top(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     error_ = check_allow_l1_view(request)
     if error_ is not None:
         return error_
@@ -59,7 +57,6 @@ def l1_view_top(request):
 
 @login_required
 def download_stix(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     error_ = check_allow_l1_view(request)
     if error_ is not None:
         return error_

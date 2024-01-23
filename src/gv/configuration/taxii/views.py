@@ -9,7 +9,6 @@ from ctirs.models import Taxii, Config
 
 
 
-from ctim.constant import SESSION_EXPIRY
 from gv.configuration import check_allow_configuration_view
 
 
@@ -51,7 +50,6 @@ def get_configuration_taxii_delete_display_name(request):
 
 @login_required
 def taxii_view_top(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     stip_user = request.user
     # GET以外はエラー
     if request.method != 'GET':
@@ -77,7 +75,6 @@ def taxii_view_top(request):
 
 @login_required
 def create_taxii(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     stip_user = request.user
     # POST以外はエラー
     if request.method != 'POST':
@@ -155,7 +152,6 @@ def create_taxii(request):
 
 @login_required
 def delete_taxii(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     stip_user = request.user
     # GET以外はエラー
     if request.method != 'GET':

@@ -16,6 +16,7 @@ import json
 from unipath import Path
 from decouple import Csv, config, UndefinedValueError
 from stip.common.stix_customizer import StixCustomizer
+from stip.common.session_config import SessionConfig
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -185,6 +186,8 @@ SESSION_COOKIE_NAME = 'stip'
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 CSRF_COOKIE_HTTPONLY = True
 
+SESSION_COOKIE_AGE = SessionConfig.get_session_cokkie_age()
+
 # HTTP 上で動作させるかどうかのフラグ
 ENV_DEV_OVER_HTTP_KEY = 'DEV_OVER_HTTP'
 dev_over_http = False
@@ -195,7 +198,7 @@ if (ENV_DEV_OVER_HTTP_KEY in os.environ):
 if not dev_over_http:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_DOMAIN = cookie_domain_name
+    SESSION_COOKIE_DOMAIN = cookie_domain_name
 
 # GIT_PATH = '/opt/s-tip/ui/src/'
 # GIT_VERTION_COMMAND = 'git -C %s log -1 --date=format:"%%Y/%%m/%%d" --format="%%cd %%h"' % (GIT_PATH)

@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required
 from stip.common import get_text_field_value
 from core.common import get_common_replace_dict
 from ctirs.models import Aliases
-from ctim.constant import SESSION_EXPIRY
 from gv.error.views import error_page, error_page_free_format, error_page_inactive
 
 
@@ -26,7 +25,6 @@ def check_allow_configuration_alias_view(request):
 
 @login_required
 def alias_view_top(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     error_ = check_allow_configuration_alias_view(request)
     if error_ is not None:
         return error_
@@ -44,7 +42,6 @@ def alias_view_top(request):
 
 @login_required
 def create_alias(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     if request.method != 'POST':
         return error_page_free_format(request, 'invalid method')
     error_ = check_allow_configuration_alias_view(request)
@@ -72,7 +69,6 @@ def create_alias(request):
 
 @login_required
 def delete_alias(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     if request.method != 'GET':
         return error_page_free_format(request, 'invalid method')
     error_ = check_allow_configuration_alias_view(request)

@@ -4,7 +4,6 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.http.response import JsonResponse, HttpResponseServerError
 from stip.common import get_text_field_value
-from ctim.constant import SESSION_EXPIRY
 from ctirs.models import Aliases
 from core.api.rs import Ctirs
 from core.common import stix2_str_to_datetime
@@ -39,7 +38,6 @@ def get_l1_ajax_create_sighting_observed_data_id(request):
 
 @login_required
 def create_sighting(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     # GET以外はエラー
     if request.method != 'GET':
         r = {'status': 'NG',
@@ -92,7 +90,6 @@ def create_sighting(request):
 
 @login_required
 def get_l1_info_data_tables(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     # GET以外はエラー
     if request.method != 'GET':
         r = {'status': 'NG',
