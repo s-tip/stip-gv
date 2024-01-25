@@ -15,7 +15,6 @@ from gv.error.views import error_page, error_page_no_view_not_admin, error_page_
 
 
 from ctirs.models import Taxii, Config
-from ctim.constant import SESSION_EXPIRY
 
 
 # filefieldからitem_name指定の値を取得。未定義時はNone
@@ -90,7 +89,6 @@ def check_allow_sharing_view(request):
 
 @login_required
 def sharing_view_top(request, info_msg=''):
-    request.session.set_expiry(SESSION_EXPIRY)
     error_ = check_allow_sharing_view(request)
     if error_ is not None:
         return error_
@@ -126,7 +124,6 @@ def sharing_view_top(request, info_msg=''):
 @csrf_protect
 @login_required
 def stix_upload(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     error_ = check_allow_sharing_view(request)
     if error_ is not None:
         return error_
@@ -155,7 +152,6 @@ def stix_upload(request):
 @csrf_protect
 @login_required
 def stix_download(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     error_ = check_allow_sharing_view(request)
     if error_ is not None:
         return error_
@@ -176,7 +172,6 @@ def stix_download(request):
 @csrf_protect
 @login_required
 def stix_data_csv_download(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     error_ = check_allow_sharing_view(request)
     if error_ is not None:
         return error_
@@ -211,7 +206,6 @@ def stix_data_csv_download(request):
 
 @csrf_protect
 def delete_package(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     error_ = check_allow_sharing_view(request)
     if error_ is not None:
         return error_

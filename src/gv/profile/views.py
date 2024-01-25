@@ -4,7 +4,6 @@ from stip.common import get_text_field_value
 from ctirs.models import STIPUser
 from core.common import get_common_replace_dict
 from gv.error.views import error_page, error_page_inactive
-from ctim.constant import SESSION_EXPIRY
 
 
 def get_profile_change_password_old_password(request):
@@ -21,7 +20,6 @@ def get_profile_change_screen_name_screen_name(request):
 
 @login_required
 def change_password_top(request, msg=None):
-    request.session.set_expiry(SESSION_EXPIRY)
     stip_user = request.user
     # activeユーザー以外はエラー
     if not stip_user.is_active:
@@ -39,7 +37,6 @@ def change_password_top(request, msg=None):
 
 @login_required
 def change_password(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     stip_user = request.user
     # activeユーザー以外はエラー
     if not stip_user.is_active:
@@ -77,7 +74,6 @@ def change_password(request):
 
 @login_required
 def change_screen_name(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     stip_user = request.user
     # activeユーザー以外はエラー
     if not stip_user.is_active:

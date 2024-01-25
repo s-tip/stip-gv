@@ -13,7 +13,6 @@ from stip.common import get_text_field_value
 from core.api.rs import Ctirs
 from core.policy.policy import get_policy, get_policy_communities
 from core.taxii.taxii import Taxii
-from ctim.constant import SESSION_EXPIRY
 
 
 def get_sharing_ajax_get_draw_data_package_id(request):
@@ -83,7 +82,6 @@ def check_allow_sharing_view(request):
 @csrf_protect
 # Commment文の反映
 def change_stix_comment(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     # GET以外はエラー
     if request.method != 'POST':
         r = {'status': 'NG',
@@ -123,7 +121,6 @@ def change_stix_comment(request):
 
 # Comment文取得
 def get_stix_comment(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     # GET以外はエラー)
     if request.method != 'GET':
         r = {'status': 'NG',
@@ -166,7 +163,6 @@ def _is_stix2_(dict_):
 
 
 def get_draw_data(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     # GET以外はエラー
     if request.method != 'GET':
         r = {'status': 'NG',
@@ -215,7 +211,6 @@ def get_draw_data(request):
 
 @csrf_protect
 def get_raw_stix(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     # GET以外はエラー
     if request.method != 'GET':
         r = {'status': 'NG',
@@ -318,7 +313,6 @@ def get_file_name_from_package_id(package_id):
 
 @csrf_protect
 def get_upload_stix(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     # POST以外はエラー
     if request.method != 'POST':
         r = {'status': 'NG',
@@ -345,7 +339,6 @@ def get_upload_stix(request):
 @csrf_protect
 # taxiiに送信する
 def send_taxii(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     # POST以外はエラー
     if request.method != 'POST':
         r = {'status': 'NG',
@@ -429,7 +422,6 @@ def get_pacakge_name_from_vendor_source_hash(vendor_soruce, content):
 @login_required
 @csrf_protect
 def create_language_content(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     # POST以外はエラー
     if request.method != 'POST':
         r = {'status': 'NG',
@@ -463,7 +455,6 @@ def create_language_content(request):
 
 @login_required
 def get_package_table(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     # GET以外はエラー
     if request.method != 'GET':
         r = {'status': 'NG',

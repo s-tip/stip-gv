@@ -11,7 +11,6 @@ from django.http.response import JsonResponse
 from stip.common import get_text_field_value
 from stip.common.label import sanitize_id
 from stip.common.stix_customizer import StixCustomizer
-from ctim.constant import SESSION_EXPIRY, DISPLAY_NODE_THRESHOLD
 from core.api.rs import Ctirs
 from core.alchemy.alchemy import AlchemyJsonData, AlchemyNode, AlchemyEdge
 
@@ -110,7 +109,6 @@ def check_allow_l2_view(request):
 
 
 def related_packages(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     if request.method != 'GET':
         r = {'status': 'NG',
              'message': 'Invalid HTTP method'}
@@ -138,7 +136,6 @@ class TooMuchNodes(Exception):
 
 @csrf_protect
 def related_package_nodes(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     if request.method != 'POST':
         r = {'status': 'NG',
              'message': 'Invalid HTTP method'}
@@ -1461,7 +1458,6 @@ def convert_valid_node_id(id_):
 
 @csrf_protect
 def create_note(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     if request.method != 'POST':
         r = {'status': 'NG',
              'message': 'Invalid HTTP method'}
@@ -1483,7 +1479,6 @@ def create_note(request):
 
 @csrf_protect
 def create_opinion(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     if request.method != 'POST':
         r = {'status': 'NG',
              'message': 'Invalid HTTP method'}
@@ -1504,7 +1499,6 @@ def create_opinion(request):
 
 @csrf_protect
 def revoke(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     if request.method != 'POST':
         r = {'status': 'NG',
              'message': 'Invalid HTTP method'}
@@ -1523,7 +1517,6 @@ def revoke(request):
 
 @csrf_protect
 def modify(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     if request.method != 'POST':
         r = {'status': 'NG',
              'message': 'Invalid HTTP method'}
@@ -1542,7 +1535,6 @@ def modify(request):
 
 @csrf_protect
 def get_stix2_content(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     if request.method != 'POST':
         r = {'status': 'NG',
              'message': 'Invalid HTTP method'}

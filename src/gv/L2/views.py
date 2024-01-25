@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from stip.common import get_text_field_value
 from gv.error.views import error_page, error_page_inactive
-from ctim.constant import SESSION_EXPIRY
 from core.common import get_common_replace_dict
 from core.api.rs import Ctirs
 
@@ -32,7 +31,6 @@ def check_allow_l2_view(request):
 
 @login_required
 def l2_view_top(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     error_ = check_allow_l2_view(request)
     if error_ is not None:
         return error_

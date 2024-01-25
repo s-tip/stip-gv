@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import login_required
 from django.http.response import JsonResponse
 from stip.common import get_text_field_value
 from core.common import get_package_l1_info
-from ctim.constant import SESSION_EXPIRY
 from core.api.rs import Ctirs
 
 
@@ -26,7 +25,6 @@ def get_package_id(request):
 
 @login_required
 def get_stix_counts(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     # GET以外はエラー
     if request.method != 'GET':
         r = {'status': 'NG',
@@ -115,7 +113,6 @@ def get_stix_counts(request):
 
 
 def get_package_info(request):
-    request.session.set_expiry(SESSION_EXPIRY)
     # GET以外はエラー
     if request.method != 'GET':
         r = {'status': 'NG',
