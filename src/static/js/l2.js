@@ -1263,6 +1263,10 @@ $(function(){
         return;
     }
 
+    function get_csrf_token() {
+        return  $('input[name="csrfmiddlewaretoken"]').val();
+    };
+
     //データを取得しグラフ描画
     function getDrawGraph(too_many_view_type, too_many_check){
         //リストボックスで選択されているキャンペーン名を取得
@@ -1305,8 +1309,8 @@ $(function(){
             cache: true,
             data: d,
             dataType: 'json',
-            beforeSend: function(xhr, settings){
-                xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+            headers: {
+                'X-CSRFToken': get_csrf_token()
             },
         }).done(function(alchemy_data,textStatus,jqXHR){
             if('status' in alchemy_data == true){
@@ -1630,8 +1634,8 @@ $(function(){
         cache: true,
         data: d,
         dataType: 'json',
-        beforeSend: function(xhr, settings){
-          xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+        headers: {
+          'X-CSRFToken': get_csrf_token()
         },
       }).done(function(ret,textStatus,jqXHR){
         if(ret.status != 'OK'){
@@ -1728,8 +1732,8 @@ $(function(){
         cache: true,
         data: d,
         dataType: 'json',
-        beforeSend: function(xhr, settings){
-          xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+        headers: {
+          'X-CSRFToken': get_csrf_token()
         },
       }).done(function(ret,textStatus,jqXHR){
         if(ret.status != 'OK'){
@@ -1762,8 +1766,8 @@ $(function(){
         cache: true,
         data: d,
         dataType: 'json',
-        beforeSend: function(xhr, settings){
-          xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+        headers: {
+          'X-CSRFToken': get_csrf_token()
         },
       }).done(function(ret,textStatus,jqXHR){
         if(ret.status != 'OK'){
@@ -1799,8 +1803,8 @@ $(function(){
         cache: true,
         data: d,
         dataType: 'json',
-        beforeSend: function(xhr, settings){
-          xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+        headers: {
+            'X-CSRFToken': get_csrf_token()
         },
       }).done(function(ret,textStatus,jqXHR){
         if(ret.status != 'OK'){
@@ -1848,8 +1852,8 @@ $(function(){
         cache: true,
         data: JSON.stringify(d),
         dataType: 'json',
-        beforeSend: function(xhr, settings){
-          xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+        headers: {
+            'X-CSRFToken': get_csrf_token()
         },
       }).done(function(ret,textStatus,jqXHR){
         if(ret.status != 'OK'){

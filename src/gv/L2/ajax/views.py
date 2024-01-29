@@ -13,6 +13,7 @@ from stip.common.label import sanitize_id
 from stip.common.stix_customizer import StixCustomizer
 from core.api.rs import Ctirs
 from core.alchemy.alchemy import AlchemyJsonData, AlchemyNode, AlchemyEdge
+from ctim.constant import DISPLAY_NODE_THRESHOLD
 
 LABEL_EDGE = 'Includes'
 LABEL_IDREF = 'IDref'

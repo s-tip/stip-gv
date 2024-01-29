@@ -245,6 +245,10 @@ $(function () {
         return;
     };
 
+    function get_csrf_token() {
+     return  $('input[name="csrfmiddlewaretoken"]').val();
+    };
+
     var language_content_dialog = $('#language-content-input-dialog').dialog({
         modal: true,
         autoOpen: false,
@@ -270,6 +274,9 @@ $(function () {
                     timeout: 100 * 1000,
                     cache: true,
                     data: d,
+                    headers: {
+                        'X-CSRFToken': get_csrf_token()
+                    },
                     beforeSend: function (xhr, settings) {
                         xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
                     },

@@ -7,6 +7,8 @@ class Ctirs(object):
         try:
             # コンストラクタでrequestから設定を抽出し
             stip_user = request.user
+            if len(stip_user.hashed_api_key) == 0:
+                stip_user.change_api_key()
             config = Config.objects.get_config()
             self.ctirs_username = stip_user.username
             self.ctirs_apikey = stip_user.api_key

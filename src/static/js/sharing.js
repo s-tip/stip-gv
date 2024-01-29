@@ -56,6 +56,10 @@ $(function(){
         $('#stix-file-file').click();
     });
 
+    function get_csrf_token() {
+        return  $('input[name="csrfmiddlewaretoken"]').val();
+    };
+
     //stix-file-upload-button押下時
     $('#stix-file-upload-button').click(function(){
         //stixチェック
@@ -94,8 +98,8 @@ $(function(){
             contentType :false,
             dataType: 'json',
             data: fd,
-            beforeSend: function(xhr, settings){
-                xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+            headers: {
+              'X-CSRFToken': get_csrf_token()
             },
         }).done(function(r,textStatus,jqXHR){
             if(r['status'] != 'OK'){
@@ -191,8 +195,8 @@ $(function(){
                     timeout: 100 *1000,
                     cache: true,
                     data: d,
-                    beforeSend: function(xhr, settings){
-                        xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+                    headers: {
+                      'X-CSRFToken': get_csrf_token()
                     },
                 }).done(function(r,textStatue,J1XHR){
                     if(r['status'] != 'OK'){
@@ -369,8 +373,8 @@ $(function(){
             cache: true,
             data: d,
             dataType: 'json',
-            beforeSend: function(xhr, settings){
-                xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+            headers: {
+              'X-CSRFToken': get_csrf_token()
             },
         }).done(function(r,textStatus,jqXHR){
             //成功
